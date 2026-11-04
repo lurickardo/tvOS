@@ -1,13 +1,12 @@
 ---
 name: tvos-gitflow
 description: >-
-  Gitflow, branches, commits, PRs, release com tag semver e acompanhamento de pipeline (GitHub
-  Actions) do repo público lurickardo/tvOS: main estável, develop integração, feat/fix a partir de
-  develop, hotfix a partir de main, uma branch de trabalho por vez, template de corpo de PR e de
-  release, pr.yml verde antes do merge, mensagens pt-BR no imperativo sem Co-Authored-By.
-  Consulte ANTES de criar branch, commitar, abrir PR, fazer merge, criar tag/release ou declarar
-  algo publicado, e em pedidos como "abre o PR", "faz o merge", "sobe uma release", "qual tag",
-  "o pipeline passou?", "hotfix", "qual branch base".
+  Git, commits, release com tag semver e acompanhamento de pipeline (GitHub Actions) do repo
+  público lurickardo/tvOS: SEM feature branches — trabalho e commit direto em develop (padrão) ou
+  main; release de develop para main por tag semver + GitHub Release; pr.yml verde, mensagens
+  pt-BR no imperativo sem Co-Authored-By. Consulte ANTES de commitar, subir release, criar tag ou
+  declarar algo publicado, e em pedidos como "sobe uma release", "qual tag", "o pipeline passou?",
+  "qual branch".
 ---
 
 # tvOS — Gitflow e pipelines
@@ -18,41 +17,23 @@ check-encoding) e job `app` (`npm ci`, typecheck, `tv:package`). Release não pu
 
 ## Branches
 
-- **`main`** → estável (o que está na TV). **`develop`** → integração. Ambas de vida longa. Branch
-  padrão do GitHub é `main`; a base dos PRs de feature é `develop` — passe `--base develop` sempre.
-- **`feat/<nome>`** (feature), **`fix/<nome>`** (correção), saindo de `develop`.
-- **Uma branch de trabalho por vez:** fora de `develop`/`main`, pedido novo continua na branch
-  atual (commit por entrega); a próxima nasce depois do PR.
-- **`hotfix/<nome>`** saindo de `main`: PR para `main` (patch + tag + release) **e** PR de volta
-  para `develop`, senão a próxima release desfaz o fix.
+- **`sem feature branches`**: trabalhe e commite **direto em `develop`** (padrão) ou `main`. Nada
+  de `feat/*`/`fix/*`/`hotfix/*` — decisão do dono para este projeto pessoal.
+- **`main`** → estável (o que está na TV). **`develop`** → integração/trabalho. Ambas de vida longa.
+- Branch padrão do GitHub é `main`.
 
 ## Fluxo
 
 ```bash
-git switch develop && git pull
-git switch -c feat/<nome>
-# ... commits (toda entrega termina em commit; confira que nada pessoal/segredo entrou no diff) ...
-git push -u origin feat/<nome>
-gh pr create --base develop --head feat/<nome> \
-  --title "<Assunto no imperativo>" --body-file <arquivo-temporário>.md   # nunca --fill
-gh pr checks <pr> --watch                      # pr.yml verde ANTES do merge
-gh pr merge <pr> --merge --delete-branch
+git switch develop            # (ou main) — é onde o trabalho acontece
+# ... edita e commita direto (toda entrega termina em commit;
+#     confira que nada pessoal/segredo entrou no diff) ...
+git commit -m "<Assunto no imperativo>"
+git push                       # só quando o usuário pedir
 ```
 
-Corpo da PR de feature:
-
-```markdown
-## O quê
-- <mudança visível para quem usa>
-## Por quê
-<problema/pedido em 1–2 frases; ADR/spec quando houver>
-## Como verificar
-- <check/pipeline/passo com o controle ou na TV>
-## Docs/skills
-- <lista> (ou "sem alteração")
-## Riscos
-- <o que pode quebrar> (ou "nenhum")
-```
+Correção urgente do que está na TV: commit direto em `main`, depois traga `main` de volta para
+`develop` (`git merge main`) para a próxima release não desfazer o fix.
 
 ## Release (develop → main)
 

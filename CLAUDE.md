@@ -92,10 +92,10 @@ visual e refatoração interna normalmente não pedem nada.
 - **Relato final curto** (3–6 linhas): o que mudou, gaps/efeitos colaterais reais e a linha de
   docs/skills. Sem repetir o diff.
 - **Escopo**: não expanda; melhoria vista no caminho vira item de "gaps".
-- **Git** (`tvos-gitflow`): `main` = estável, `develop` = integração; trabalho em `feat/*`/`fix/*` a
-  partir de `develop`. **Todo merge é por PR documentada**. Mensagens pt-BR, imperativo. **Nunca**
-  `Co-Authored-By` nem menção a IA. **Toda entrega termina em commit** (sem push salvo pedido);
-  confira que nenhum segredo entrou no diff. **Repo público**: nada pessoal ou sensível versionado.
+- **Git** (`tvos-gitflow`): **sem feature branches** — trabalhe e commite **direto em `develop`**
+  (padrão) ou `main`. Mensagens pt-BR, imperativo. **Nunca** `Co-Authored-By` nem menção a IA.
+  **Toda entrega termina em commit** (sem push salvo pedido); confira que nenhum segredo entrou no
+  diff. **Repo público**: nada pessoal ou sensível versionado.
 - **Custo cloud**: decisão que gere custo estimado **> US$ 5/mês** (ou bem acima do atual) → pare e
   apresente decisão, custo mensal, comparação com hoje, e peça aprovação. < US$ 2 não precisa.
 - **Segurança** (`tvos-security`): nada confia em dado externo (rede, USB, outro app, URL); segredo
