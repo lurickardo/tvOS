@@ -220,7 +220,11 @@ svg { display: block; }
   font-size: 28px; background: rgba(58,58,60,.96); box-shadow: 0 12px 35px rgba(0,0,0,.55); opacity: 0; visibility: hidden; transition: opacity .2s; z-index: 20; }
 #toast.show { opacity: 1; visibility: visible; }
 
-/* modo lite (pouca RAM): sem animação de foco, só o contorno */
+/* modo lite (padrão na TV): sem animação de foco e, acima de tudo, sem repintar sombra borrada a cada
+   tecla — só contorno sólido (blur 0 = barato na GPU da TV). É o que segura o FPS (tvos-performance R3). */
 .lite .f { transition: none; }
-.lite .f:focus { transform: none; }
-.lite .card:focus, .lite .tile:focus, .lite .poster:focus, .lite .key:focus { box-shadow: 0 0 0 4px #fff; }
+.lite .f:focus, .lite #searchbar:focus { transform: none; }
+.lite .tab:focus, .lite .round:focus, .lite #searchbar:focus, .lite .key:focus, .lite .chip:focus,
+.lite .card:focus, .lite .tile:focus, .lite .poster:focus { box-shadow: 0 0 0 4px #fff; }
+/* o tile "pego" (reorganização) mantém o destaque por transform, que é barato; só a sombra vira contorno */
+.lite .tile.grab, .lite .tile.grab:focus { transform: translateY(-12px) scale(1.22); box-shadow: 0 0 0 4px #fff; }

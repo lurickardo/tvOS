@@ -29,8 +29,41 @@ function readCache<T>(key: string): Saved<T> | null {
   }
 }
 
+// Só os caches paginados crescem sem fim (uma entrada por página/título visto); poda por idade mantém
+// o localStorage enxuto sem tocar em chaves pequenas e valiosas (tvos.geo.*, tvos.ssap.clientKey).
+const PAGED = /^tvos\.[td]\./;
+const CACHE_MAX = 80;
+
+function pagedKeys(): string[] {
+  const keys: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && PAGED.test(k)) keys.push(k);
+  }
+  return keys;
+}
+
+/** Remove as entradas paginadas mais antigas até sobrar espaço para `room` novas dentro do teto. */
+function prune(room: number): void {
+  const keys = pagedKeys();
+  const over = keys.length + room - CACHE_MAX;
+  if (over <= 0) return;
+  keys
+    .map((k) => ({ k, at: (readCache(k) || { savedAt: 0 }).savedAt }))
+    .sort((a, b) => a.at - b.at)
+    .slice(0, over)
+    .forEach((e) => localStorage.removeItem(e.k));
+}
+
 function writeCache(key: string, data: unknown): void {
-  try { localStorage.setItem(key, JSON.stringify({ savedAt: Date.now(), data })); } catch (e) { /* storage cheio: segue sem cache */ }
+  const payload = JSON.stringify({ savedAt: Date.now(), data });
+  try {
+    if (PAGED.test(key)) prune(1);
+    localStorage.setItem(key, payload);
+  } catch (e) {
+    // storage cheio mesmo assim: abre espaço de verdade e tenta uma vez; se falhar, segue sem cache
+    try { prune(CACHE_MAX / 2); localStorage.setItem(key, payload); } catch (e2) { /* sem cache */ }
+  }
 }
 
 /**

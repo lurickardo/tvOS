@@ -6,12 +6,16 @@ import { initDrawer, openDrawer } from './features/drawer/drawer';
 import { onSystem, setSystemMode } from './features/system/system';
 import { initHighlights } from './features/titles/highlights';
 import { describe, initWeather, onWeather } from './features/weather/weather';
+import { isWebOS } from './platform/luna';
 import { icon } from './ui/icons';
 import { KEY, setBase } from './ui/nav';
 
 fitStage($('#stage'));
-// Pouca RAM (≤ 1 GB): sem animação de foco (tvos-performance, modo lite).
-if (((navigator as Navigator & { deviceMemory?: number }).deviceMemory || 2) <= 1) document.body.className = 'lite';
+// Modo lite = sem repintar sombra borrada a cada foco (o que derruba o FPS na TV; tvos-performance R3).
+// Padrão na TV (hardware de 2019, ADR 0006 §6; navigator.deviceMemory não existe no Chromium 53) e em
+// qualquer navegador de ≤ 1 GB. O PC de ponta segue no caminho rico.
+const deviceMemory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+if (isWebOS || (deviceMemory || 2) <= 1) document.body.className = 'lite';
 
 $('#searchbar').innerHTML = `${icon('search')}<span>Buscar filmes e séries</span><em>OK para digitar</em>`;
 
