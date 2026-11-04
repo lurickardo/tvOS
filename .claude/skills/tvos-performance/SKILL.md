@@ -56,6 +56,9 @@ description: >-
     depois.
 11. **Zero dependência em runtime** sem medir o custo (bundle + parse + memória).
 12. **Timers, listeners e subscriptions** sempre com cleanup (vazamento = app encerrado pela TV).
+13. **Não redesenhe a prateleira para mudar um item**: `innerHTML` recria os `<img>` e os ícones
+    piscam. Entrar/sair/cancelar mexe só nos nós (`dropTile`/`insertTile`, FLIP com `transform`;
+    transição inline vence o `.lite .f { transition: none }`).
 
 ## Sistema da TV (medido, 2026-11-04)
 

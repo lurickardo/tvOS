@@ -5,11 +5,12 @@ import { $, qsa } from '../../lib/html';
 import { icon } from '../../ui/icons';
 import { KEY, popLayer, pushLayer } from '../../ui/nav';
 import { toast } from '../../ui/toast';
-import { defaultApps, refreshShelf, saveOrder } from './apps';
+import { defaultApps, saveOrder } from './apps';
 import { confirmRemove, removable, toggleHidden } from './options';
 
 let grabbed: HTMLElement | null = null;
 let committed = false;
+let original: string[] = [];
 
 const order = (): string[] => qsa('#track .tile').map((t) => t.dataset.id as string);
 
@@ -40,7 +41,12 @@ function finish(): void {
     const ids = order();
     const same = defaultApps().every((app, i) => app.id === ids[i]);
     saveOrder(same ? null : ids);
-  } else refreshShelf(); // cancelou: desfaz o que foi movido
+  } else {
+    // Cancelou: devolve os mesmos nós à ordem de antes (sem redesenhar = ícones não piscam).
+    const tiles = qsa('#track .tile');
+    const track = $('#track');
+    original.forEach((id) => { const t = tiles.filter((x) => x.dataset.id === id)[0]; if (t) track.appendChild(t); });
+  }
   grabbed = null;
 }
 
@@ -50,6 +56,7 @@ export function startReorder(): void {
   if (!tile.classList || !tile.classList.contains('tile') || !tile.dataset.id) tile = qsa('#track .tile')[0];
   if (!tile || !tile.dataset.id) { toast('Nenhum app para organizar'); return; }
   committed = false;
+  original = order();
   tile.focus();
   const id = tile.dataset.id;
   const title = tile.dataset.title as string;

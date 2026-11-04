@@ -122,7 +122,7 @@ const savedOrder = () => readIds(ORDER_KEY);
 /** App desinstalado: sai da prateleira na hora (a lista da TV demora a refletir). */
 export function forgetApp(id: string): void {
   apps = apps.filter((app) => app.id !== id);
-  refreshShelf();
+  dropTile(id);
 }
 export const isHidden = (id: string): boolean => readIds(HIDDEN_KEY).indexOf(id) >= 0;
 
@@ -131,7 +131,7 @@ export function setHidden(id: string, hidden: boolean): void {
   const ids = readIds(HIDDEN_KEY).filter((x) => x !== id);
   if (hidden) ids.push(id);
   try { localStorage.setItem(HIDDEN_KEY, JSON.stringify(ids)); } catch (e) { /* sem storage */ }
-  refreshShelf();
+  if (hidden) dropTile(id); else insertTile(id);
 }
 
 /** Guarda a ordem escolhida na TV; `null` volta à padrão (apps novos entram no lugar natural). */
@@ -155,6 +155,63 @@ function tile(app: App): string {
   const attrs = `data-a="app" data-id="${esc(app.id)}" data-title="${esc(app.title)}"`;
   if (s) return `<button class="tile f b-${s.key}" ${attrs} aria-label="${s.label}">${logo(s)}</button>`;
   return `<button class="tile icon f" ${attrs}>${iconHtml(app)}<span class="lbl">${esc(app.title)}</span></button>`;
+}
+
+// Entrar/sair da prateleira sem redesenhar (redesenhar recarrega todos os ícones e pisca): só o tile
+// afetado anima e os vizinhos deslizam para o novo lugar (FLIP só com transform/opacity). Estilo inline
+// de propósito: vence o `.lite .f { transition: none }` da TV.
+const FADE = 'opacity .2s ease-out, transform .2s ease-out';
+const SLIDE = 'transform .28s cubic-bezier(.2,.9,.3,1)';
+const tileOf = (id: string) => qsa('#track .tile').filter((t) => t.dataset.id === id)[0];
+
+/** Vizinhos começam deslocados `dx` (onde estavam) e deslizam até o lugar novo. */
+function slide(tiles: HTMLElement[], dx: number): void {
+  tiles.forEach((t) => { t.style.transition = 'none'; t.style.transform = `translateX(${dx}px)`; });
+  void $('#track').offsetWidth; // aplica a posição antiga antes de animar
+  tiles.forEach((t) => { t.style.transition = SLIDE; t.style.transform = ''; });
+  window.setTimeout(() => tiles.forEach((t) => { t.style.transition = ''; }), 300);
+}
+
+/** O tile some (encolhe e esmaece), sai do DOM e os da direita fecham o vão; o foco vai ao vizinho. */
+function dropTile(id: string): void {
+  const gone = tileOf(id);
+  if (!gone) return;
+  const tiles = qsa('#track .tile');
+  const index = tiles.indexOf(gone);
+  gone.style.transition = FADE;
+  gone.style.opacity = '0';
+  gone.style.transform = 'scale(.6)';
+  window.setTimeout(() => {
+    const hadFocus = document.activeElement === gone;
+    if (gone.parentNode) gone.parentNode.removeChild(gone);
+    slide(tiles.slice(index + 1), TILE_PITCH);
+    const rest = qsa('#track .tile');
+    const next = rest[Math.min(index, rest.length - 1)];
+    if (next && (hadFocus || document.activeElement === document.body)) next.focus(); // focusin recentra o carrossel
+    else scrollShelf(shelfIndex, rest.length);
+  }, 200);
+}
+
+/** Volta um app oculto ao lugar dele na ordem: os da direita abrem espaço e ele aparece. */
+function insertTile(id: string): void {
+  if (tileOf(id)) return;
+  const list = shelfApps();
+  const at = list.map((app) => app.id).indexOf(id);
+  if (at < 0) return;
+  const holder = document.createElement('div');
+  holder.innerHTML = tile(list[at]);
+  const added = holder.firstChild as HTMLElement;
+  const after = list.slice(at + 1).map((app) => tileOf(app.id)).filter(Boolean) as HTMLElement[];
+  $('#track').insertBefore(added, after[0] || null);
+  slide(after, -TILE_PITCH);
+  added.style.opacity = '0';
+  added.style.transform = 'scale(.6)';
+  void added.offsetWidth;
+  added.style.transition = FADE;
+  added.style.opacity = '';
+  added.style.transform = '';
+  window.setTimeout(() => { added.style.transition = ''; }, 250);
+  scrollShelf(shelfIndex, qsa('#track .tile').length);
 }
 
 /** O que a prateleira mostra: ordem da pessoa, sem ocultos. */
