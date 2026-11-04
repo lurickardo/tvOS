@@ -1,0 +1,52 @@
+# Anúncios, ACR, telemetria, voz e firmware da LG apontados para 0.0.0.0 (ADR 0007).
+# Base: lgtv-webos-root-launcher (hbertsch), derivado de lg-tv-blocklist (furkan-bayrak, CC BY 4.0) —
+# THIRD_PARTY_NOTICES.md. Mudanças: sem ThinQ/IoT (o usuário usa), prefixos aic./us./br. (TV no Brasil).
+# NÃO bloquear (loja, contas, relógio): lgtvsdp.com, lgappstv.com, lge.com, lgeapi.com,
+# lgtvonline.lge.com, nextlgsdp.com da loja, *.wiselg.com fora dos de firmware abaixo.
+
+# anúncios, ACR e recomendações
+0.0.0.0 ad.lgappstv.com
+0.0.0.0 ads.lgtvcommon.com
+0.0.0.0 aic.ads.lgtvcommon.com
+0.0.0.0 us.ads.lgtvcommon.com
+0.0.0.0 adsdtvc.com
+0.0.0.0 smart.adtvc.app
+0.0.0.0 lgsmartad.com
+0.0.0.0 info.lgsmartad.com
+0.0.0.0 us.info.lgsmartad.com
+0.0.0.0 br.info.lgsmartad.com
+0.0.0.0 us.ad.lgsmartad.com
+0.0.0.0 br.ad.lgsmartad.com
+0.0.0.0 homeprv.lgtvcommon.com
+0.0.0.0 aic.homeprv.lgtvcommon.com
+0.0.0.0 recommend.lgtvcommon.com
+0.0.0.0 aic.recommend.lgtvcommon.com
+0.0.0.0 aic.lgchhomeapp.lgtvcommon.com
+0.0.0.0 nudge.lgtvcommon.com
+0.0.0.0 aic.nudge.lgtvcommon.com
+0.0.0.0 initscr.lge.com
+0.0.0.0 prov-lg.alphonso.tv
+0.0.0.0 ueiwsp.com
+0.0.0.0 www.ueiwsp.com
+
+# telemetria
+0.0.0.0 cdpbeacon.lgtvcommon.com
+0.0.0.0 aic.cdpbeacon.lgtvcommon.com
+0.0.0.0 aic.cdplauncher.lgtvcommon.com
+0.0.0.0 aic.cdpsvc.lgtvcommon.com
+0.0.0.0 rdx2.nextlgsdp.com
+0.0.0.0 us.rdx2.nextlgsdp.com
+0.0.0.0 br.rdx2.nextlgsdp.com
+0.0.0.0 rdl.lgtvcommon.com
+
+# voz (desligada por escolha)
+0.0.0.0 lgsmartweb.com
+
+# firmware (repete os do Homebrew: a montagem empilhada não pode perdê-los). *ngfts* fica de fora: na
+# referência o equivalente regional (eic-ngfts) é preciso para relógio e loja.
+0.0.0.0 nsu.lge.com
+0.0.0.0 snu.lge.com
+0.0.0.0 snu-dev.lge.com
+0.0.0.0 su.lge.com
+0.0.0.0 su-dev.lge.com
+0.0.0.0 su-ssl.lge.com

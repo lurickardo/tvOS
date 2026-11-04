@@ -20,7 +20,7 @@ description: >-
 
 | Escreva ADR | Não precisa |
 |---|---|
-| Distribuição na TV, root, Homebrew Channel (hoje: ADR 0002) | Bump de versão menor |
+| Distribuição na TV, root, Homebrew Channel, debloat (hoje: ADR 0007) | Bump de versão menor |
 | Stack, framework de UI, bundler, alvo de transpile | Nova tela seguindo o padrão |
 | Lib ou serviço novo (navegação espacial, player, sanitizer) | Usar lib já adotada |
 | Persistência, sync, backend, qualquer custo cloud recorrente | Refatoração interna |
@@ -67,13 +67,15 @@ Decisores: <nomes>
 - `0001-contexto-ia-claude-code-repo-unico.md` — repo único, `CLAUDE.md` como fonte, skills
   `tvos-*` em `.claude/skills`, `context/` para rules/adr/specs.
 - `0002-app-home-webos-sem-root.md` — app `.ipk` + JS service pelo Developer Mode, sem root,
-  atalho numérico, Key Server OFF, reuso MIT com atribuição.
+  atalho numérico, Key Server OFF, reuso MIT com atribuição (substituído pelo 0007).
 - `0003-stack-ts-esbuild-sem-framework.md` — TypeScript + esbuild, sem framework nem dependência
   em runtime, orçamento de performance, `@webos-tools/cli` (alvo Chromium 79 substituído pelo 0006).
 - `0004-dados-externos-tmdb-open-meteo.md` — TMDB com imagens leves e token do usuário na TV,
   Open-Meteo, cache com TTL, CSP, sem telemetria (item do token substituído pelo 0005).
 - `0006-tv-alvo-lg-43lm631c0sb-webos-4.md` — TV de destino medida (webOS 4.x): Chromium 53, Node 0.12,
   `chrome53`, `lib: ES2016`, service ES5, `1280x720` escalado; substitui o alvo do 0003.
+- `0007-root-tvos-home-oficial.md` — TV rootada: tvOS como home (`defaultApps.home`), debloat
+  reversível por `root/tvos-root.js` (settings, preload, hosts, daemons), updates bloqueados.
 - `0005-configuracao-pessoal-pelo-env.md` — `.env` (TV_IP, TMDB_TOKEN, CITY) injetado no
   build local; passphrase fora; `.ipk`/`dist/` com `.env` nunca publicados.
 

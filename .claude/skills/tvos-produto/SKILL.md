@@ -36,9 +36,9 @@ e mostra só o que a casa usa — e mais informação útil sobre a TV do que a 
 ## O que o tvOS resolve (e o que não)
 
 Resolve a lentidão **da home**: troca o portal da LG por uma tela leve, abre apps/entradas por
-comando direto (~100 ms) e não carrega anúncio. **Não** muda: o botão Home do controle (continua na
-home da LG — sem root; usa-se o atalho numérico), a velocidade dentro dos apps de streaming, o
-liga/desliga e os menus da LG. Para a TV inteira, o README lista ajustes da LG que ajudam (Live
+comando direto (~100 ms) e não carrega anúncio. Com a TV rootada (ADR 0007) o botão Home abre o
+tvOS e a LG fica mais leve (preload, daemons, hosts). **Não** muda: a velocidade dentro dos apps de
+streaming, o liga/desliga (volta ao último app) e os menus/ajustes da LG. Para a TV inteira, o README lista ajustes da LG que ajudam (Live
 Plus, promoções, recomendações). Nunca prometa mais que isso; meça antes/depois (README).
 
 ## Módulos
@@ -66,7 +66,7 @@ Requisitos e comportamento de cada módulo: `references/modulos.md`.
 ## Referências
 
 - [FreeMyTvWebOS](https://github.com/danielthejoker18/FreeMyTvWebOS) (MIT): mesma ideia em webOS,
-  configuração e instalação — seguimos a linha dele (sem root, Developer Mode).
+  configuração e instalação — seguimos a linha dele até o root (ADR 0007).
 - [free-my-tv](https://github.com/simbasjungles/free-my-tv) (MIT): referência de aparência — layout
   e modo noturno; o tvOS fica sempre no modo escuro.
 

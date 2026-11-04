@@ -45,11 +45,11 @@ description: >-
 | App fecha sozinho / recarrega | memória (imagens grandes, lista sem virtualização, vazamento) | Memory no inspector; descartar o que saiu da tela |
 | Rolagem trava | layout/paint por frame, animação fora de `transform`/`opacity`, imagem decodificando | Performance no inspector |
 | Mídia não toca sozinha | política de autoplay | iniciar por ação do usuário ou `muted` |
-| Não instala / "device not found" | Developer Mode expirado ou IP mudou | app Developer Mode; `ares-setup-device`; botão EXTEND (`tvos-deploy`) |
+| Não instala / "device not found" | TV em standby (SSH cai) ou IP mudou | ligar a TV; `npm run tv:setup` (`tvos-deploy`) |
 | `-5: ipk verified failed` ao instalar | tar do `.ipk` com datas de 1970 (visto no webOS 5) | receita `_fix_ipk_timestamps` (`tvos-deploy`) |
-| App sumiu da TV | sessão do Developer Mode expirou (a TV apaga apps de dev) | renovar (EXTEND) e `npm run tv:install` |
-| CPU/memória "—" na TV | service não instalado/encerrado, ou `/proc` negado no jail do Dev Mode | `npx ares-install -d tv --list`; `npm run tv:inspect` → console (o `ares-shell` não funciona no perfil `tv`); registrar em `tvos-webos-api` |
-| `listLaunchPoints` falha / prateleira vazia | webOS nega a lista a apps de Dev Mode | fallback SSAP (`tvos-webos-api`) |
+| Home do controle abre a home da LG | `defaultApps.home` voltou (reset, `restore`) | `npm run tv:root -- status` / `apply` |
+| CPU/memória "—" na TV | service não instalado/encerrado | `npx ares-install -d tv-root --list`; `npm run tv:inspect` → console; `ps` por SSH |
+| `listLaunchPoints` falha / prateleira vazia | webOS nega a lista ao app (não visto na TV rootada) | fallback SSAP (`tvos-webos-api`) |
 | `invalid origin` no socket 127.0.0.1:3000 | página com origem própria (webOS novo) | conexão pelo JS service com `Origin: file://` |
 | Chamada Luna nunca responde | bridge coletada pelo GC ou serviço sem permissão em `requiredPermissions` | usar `luna()` de `src/platform/luna.ts` (guarda a bridge, timeout); conferir `appinfo.json` |
 | FPS cai ao mover o foco | sombra/blur animados, DOM grande, imagem decodificando no foco | `tvos-performance` (checklist de regressão) |

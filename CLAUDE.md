@@ -5,14 +5,15 @@
 Mostra apps, destaques de filmes/séries, clima, entradas e o **estado do sistema** (CPU, memória,
 FPS…). Produto: `tvos-produto`; plataforma: `tvos-context`.
 
-**Estado:** home do MVP implementada e testada no PC em telas de 1024×768 a 4K; falta validar na TV.
+**Estado:** home do MVP rodando na TV como home oficial (ADR 0007); testada no PC de 1024×768 a 4K.
 
 Decisões tomadas (não reabra sem ADR novo):
 - **ADR 0006**: a TV de destino é a **43LM631C0SB (webOS 4.x)** — medida por `ares-device -i`, não a
   43UP7500PSF. Alvo `chrome53`, `lib: ES2016`, service em ES5, `appinfo` `1280x720` com palco
   1920×1080 escalado.
-- **ADR 0002**: app `.ipk` + JS service instalados pelo **Developer Mode, sem root** (linha do
-  FreeMyTvWebOS); abre por atalho numérico; Key Server OFF depois de instalar.
+- **ADR 0007** (substitui 0002): TV **rootada** (Homebrew Channel, SSH root só por chave, device
+  `tv-root`); tvOS é a **home oficial** (`general.defaultApps.home`); debloat reversível por
+  `root/tvos-root.js` (`npm run tv:root -- apply|status|restore`). **Nunca** escrever em rootfs nem `chattr`.
 - **ADR 0003**: **TypeScript + esbuild, sem framework, zero dependência em runtime**, bundle único
   `target: chrome53`, `lib: ES2016`; **performance é o critério nº 1**.
 - **ADR 0004**: TMDB (imagens leves) e Open-Meteo; sem telemetria.
@@ -48,22 +49,22 @@ plano) só para feature grande ou decisão de arquitetura.
 ## Em aberto
 
 - **Home** (`context/specs/01-home/spec.md`): feita; medir na TV (R1 abrir < 1 s, R11 ≥ 55 fps) e
-  decidir atalhos Sistema/Ajustes do tvOS e entrada sem sinal esmaecida. Ajustes e screensaver viram
+  decidir atalhos Sistema/Ajustes do tvOS. Ajustes e screensaver viram
   specs depois (`tvos-refine`).
-- **Confirmar na TV** (primeira instalação): o JS service lê `/proc` sem root? Versão exata do
-  webOS, keyCodes de mídia, memória total. Registrar em `tvos-webos-api`/`tvos-context`.
+- **Confirmar na TV**: keyCodes de mídia; barra `com.webos.app.home` da LG ainda residente (~17 MB).
 
 ## Comandos
 
 ```bash
 npm install            # uma vez (devDependencies fixadas); depois cp .env.example .env e preencher
-npm run tv:setup       # cadastra a TV pelo TV_IP e busca a chave (passphrase: a pessoa digita)
+npm run tv:setup       # cadastra a TV rootada "tv-root" (TV_IP, chave ~/.ssh/tvos_root_key)
 npm run dev            # http://localhost:8000 no navegador do PC (1920×1080, só teclado)
 npm run check          # typecheck (lib ES2016) + skills + encoding
 npm run tv:package     # build + .ipk em dist/ (sem TV; o CI roda)
 npm run tv:install     # build com o .env, instala e abre na TV "tv" (tutorial: README)
 npm run tv:inspect     # DevTools do app na TV
 npm run tv:monitor     # CPU/memória do processo na TV
+npm run tv:root -- apply|status|restore  # tvOS como home + debloat da LG / estado / desfazer
 ```
 
 ## REGRA 1 — Documentação e skills em dia quando a mudança as desatualiza
@@ -83,7 +84,7 @@ visual e refatoração interna normalmente não pedem nada.
   inglês. Arquivos em UTF-8 + LF.
 - **Autonomia**: rode você mesmo checks, testes e builds locais. Edite sem pedir licença. Pergunte só em
   ambiguidade real de requisito ou ação irreversível/destrutiva (force push, apagar dados, reescrever
-  histórico, instalar algo na TV fora do Developer Mode, mexer em configuração da TV).
+  histórico, escrever em rootfs/`chattr` na TV, mexer em configuração da TV fora do `tvos-root.js`).
 - **Minimalismo** (`tvos-code-patterns`): a melhor linha é a que não foi escrita. YAGNI → reuso →
   stdlib → plataforma nativa → dependência já instalada → só então código novo, o mínimo. Dependência
   nova pesa duas vezes aqui: memória da TV e superfície de ataque.
@@ -114,7 +115,7 @@ visual e refatoração interna normalmente não pedem nada.
 | Grupo | Skills |
 |---|---|
 | Contexto | `context` (hub, plataforma LG/webOS), `produto` (visão, módulos, MVP) |
-| Plataforma | `webos-api` (Luna, appinfo, service), `deploy` (Developer Mode, `tv:*`), `apis-externas` (TMDB, Open-Meteo) |
+| Plataforma | `webos-api` (Luna, appinfo, service), `deploy` (root, debloat, `tv:*`), `apis-externas` (TMDB, Open-Meteo) |
 | Engenharia | `code-patterns` (boas práticas + padrões), `performance`, `design-system` (dark), `debug`, `verify` |
 | Segurança | `security` (regras + revisão de diff), `security-audit` (auditoria profunda, manual) |
 | Workflow | `refine`, `plan-prompt`, `adr`, `gitflow`, `toolbelt`, `skills` |
@@ -128,4 +129,4 @@ Sem acionamento automático (chame pelo `/nome`): `tvos-verify`, `tvos-security-
 - Subagentes só quando o usuário pedir. Revisão separada (`/tvos-verify`) só sob pedido.
 - Documentação de plataforma/API (webOS TV, `@webos-tools/cli`, TMDB, Open-Meteo): MCP context7
   antes de responder de memória.
-- Passphrase do Developer Mode e chave TMDB: a pessoa digita no terminal/TV dela; nunca no chat.
+- Chave SSH root e chave TMDB: ficam na máquina da pessoa; nunca no chat nem no repo.

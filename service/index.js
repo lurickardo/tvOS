@@ -2,7 +2,7 @@
  * Serviço do tvOS no barramento Luna: métricas do sistema lidas de /proc para o painel do app.
  * Node 0.12.2 no webOS TV 4.x: só ES5 (sem const/let, arrow, template string, Buffer.from) e módulos
  * nativos + webos-service (do sistema). Molde: webos/service/service.js de simbasjungles/free-my-tv
- * (MIT — THIRD_PARTY_NOTICES.md). Métodos em allowlist: só `stats`, sem parâmetros vindos do app.
+ * (MIT — THIRD_PARTY_NOTICES.md). Métodos em allowlist: só `stats`, com `interval` (número limitado) como único parâmetro.
  */
 'use strict';
 var fs = require('fs');
@@ -29,21 +29,26 @@ function readMem() {
   return { memTotalKb: total, memUsedKb: total - available };
 }
 
+var timers = {};
+
+// Assinatura (subscribe: true) = um processo vivo respondendo a cada `interval` ms; sem ela, cada
+// chamada subia um Node novo na TV (medido: PID novo a cada poll de 10 s). Sem subscribe: uma resposta.
 service.register('stats', function (message) {
-  var first;
+  var prev;
   try {
-    first = readCpu();
+    prev = readCpu();
   } catch (e) {
     message.respond({ returnValue: false, errorText: 'Sem acesso a /proc/stat' });
     return;
   }
-  // Duas amostras com 250 ms de intervalo: CPU % sem guardar estado entre chamadas.
-  setTimeout(function () {
+  // CPU % = diferença entre a amostra anterior e a atual (a primeira vem 250 ms depois).
+  var tick = function () {
     try {
-      var second = readCpu();
-      var total = second.total - first.total;
-      var busy = total - (second.idle - first.idle);
+      var cur = readCpu();
+      var total = cur.total - prev.total;
+      var busy = total - (cur.idle - prev.idle);
       var mem = readMem();
+      prev = cur;
       message.respond({
         returnValue: true,
         cpuPercent: total > 0 ? (busy / total) * 100 : 0,
@@ -53,5 +58,13 @@ service.register('stats', function (message) {
     } catch (e) {
       message.respond({ returnValue: false, errorText: 'Sem acesso a /proc' });
     }
-  }, 250);
+  };
+  setTimeout(tick, 250);
+  if (!message.isSubscription) return;
+  // Único parâmetro aceito, limitado a 2–60 s.
+  var every = Math.min(60000, Math.max(2000, Number(message.payload && message.payload.interval) || 10000));
+  timers[message.uniqueToken] = setInterval(tick, every);
+}, function (message) {
+  clearInterval(timers[message.uniqueToken]);
+  delete timers[message.uniqueToken];
 });

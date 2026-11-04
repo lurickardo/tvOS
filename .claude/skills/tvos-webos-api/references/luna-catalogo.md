@@ -23,7 +23,7 @@ Ao confirmar na TV, troque o status aqui (REGRA 1).
 | Chamada | Parâmetros | Resposta útil | Status |
 |---|---|---|---|
 | `luna://com.webos.applicationManager/launch` | `{ id, params? }` | `returnValue` | provado (ref) |
-| `luna://com.webos.applicationManager/listLaunchPoints` | `{}` | `launchPoints[]`: `id`, `title`, `icon`, `largeIcon` | provado (ref); **negado a apps de Dev Mode em alguns webOS** → SSAP |
+| `luna://com.webos.applicationManager/listLaunchPoints` | `{}` | `launchPoints[]`: `id`, `title`, `icon`, `largeIcon` | **provado na TV** (rootada); negado a apps de Dev Mode em alguns webOS → SSAP |
 | `luna://com.webos.applicationManager/getAppLoadStatus` | `{ appId }` | se está instalado | provado (ref, free-my-tv) |
 
 Abrir app: ignore OK repetido enquanto a abertura está pendente; sem resposta em 8 s → mensagem.
@@ -32,12 +32,12 @@ Abrir app: ignore OK repetido enquanto a abertura está pendente; sem resposta e
 
 | Chamada | Parâmetros | Resposta útil | Status |
 |---|---|---|---|
-| `luna://com.webos.service.eim/getAllInputStatus` | `{}` | lista de entradas e se há sinal/dispositivo | provado (ref) |
+| `luna://com.webos.service.eim/getAllInputStatus` | `{}` | `devices[]`: `id` (`HDMI_1`…, `AV_1`, `COMP_1`), `port`, `label`, `appId`, `hdmiPlugIn` | **provado na TV**; a gaveta usa só `HDMI_*` |
 | launch `com.webos.app.hdmi1` / `hdmi2` | — | abre a entrada | provado (ref) |
 | launch `com.webos.app.livetv` | — | TV ao vivo (antena/cabo) | provado (ref, free-my-tv) |
 
-Quantas portas HDMI a 43LM631C0SB tem: **verificar** (a gaveta assume HDMI 1 e 2). Nome do dispositivo por porta é escolha da pessoa (não há detecção
-confiável de console).
+A 43LM631C0SB tem **HDMI 1–3** (EIM); `hdmiPlugIn: false` = sem cabo (esmaecida na gaveta). Nome do
+dispositivo por porta é escolha da pessoa (`HDMI1_NAME`/`HDMI2_NAME` no `.env`).
 
 ## Sistema e rede
 
@@ -48,7 +48,7 @@ confiável de console).
 | `luna://com.palm.connectionmanager/getStatus` | `{ subscribe?: true }` | `isInternetConnectionAvailable`, `wifi`/`wired` com `state`, `ipAddress` | provado (ref) |
 | `PalmSystem.deviceInfo` (JSON) | — | `modelName`, `platformVersion`, `screenWidth/Height` | provado (ref, `webOSTV.js`) |
 | `navigator.deviceMemory` | — | RAM em potência de 2 (≤ 1 → modo lite) | provado (ref) |
-| CPU %, memória total/usada, uptime | JS service lendo `/proc` | ver abaixo | **verificar** (esqueleto pronto para testar) |
+| CPU %, memória total/usada, uptime | JS service lendo `/proc` | ver abaixo | **provado na TV** |
 
 ## Ajustes
 
@@ -57,7 +57,10 @@ confiável de console).
 | launch `com.palm.app.settings` | provado (ref) |
 | `luna://com.webos.settingsservice/getSystemSettings` (`{ category, keys }`) — ex.: `sound`/`soundOutput` | provado (ref, `webOSTV.js`) para som; outras categorias **verificar** |
 
-Mudar ajuste da TV pelo tvOS: **não** sem pedido explícito e ADR (princípio "reversível").
+Mudar ajuste da TV pelo app: **não**. Settings de home/debloat (`general.defaultApps.home`,
+`homeAutoLaunch`, `option.*`, `eulaStatus` sem `category`) e preload
+(`com.webos.service.config` `com.webos.service.preloadmanager.supportAppList`) só pelo
+`root/tvos-root.js` (ADR 0007), com original guardado e `restore`.
 
 ## Screensaver
 
@@ -96,9 +99,8 @@ service/
 
 - `ares-package dist/app dist/service` junta app e service num `.ipk`.
 - Responda sempre (`returnValue: true|false`); erro → `{ returnValue: false, errorText }` em pt-BR.
-- `stats` (já existe): CPU % por duas leituras de `/proc/stat` com 250 ms de intervalo
-  (`(total − idle) / total`), memória por `/proc/meminfo` (`MemTotal − MemAvailable`).
-- **A confirmar na TV:** se o jail do Developer Mode deixa o service ler `/proc` (o
-  `ares-device -r` da LG lê CPU/memória pelo mesmo usuário do Dev Mode, então é provável). Se
-  negar: painel mostra "—", registrar aqui e no ADR 0003.
-- Polling só com a tela visível; o webOS encerra service ocioso (primeira chamada pode demorar).
+- `stats`: CPU % pela diferença entre leituras de `/proc/stat` (`(total − idle) / total`),
+  memória por `/proc/meminfo` (`MemTotal − MemAvailable`). Provado na TV.
+- **Assinatura** (`subscribe: true`, `interval` 2–60 s): o service fica num processo só enquanto
+  houver assinatura (activity do `webos-service`; ocioso sai em 5 s). Chamada avulsa a cada N s
+  subia um Node 0.12 novo por chamada (medido: PID novo a cada poll). Cancelar ao esconder.

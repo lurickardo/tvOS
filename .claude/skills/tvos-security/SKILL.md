@@ -3,7 +3,7 @@ name: tvos-security
 description: >-
   Segurança do tvOS e modo revisão rápida: modelo de ameaça de uma interface web rodando na TV da
   casa (rede local, conteúdo e URLs externas, mídia por USB/rede, APIs do sistema webOS/Luna,
-  Developer Mode com SSH, apps e iframes de terceiros, backend opcional), regras para código novo
+  TV rootada com SSH root, apps e iframes de terceiros, backend opcional), regras para código novo
   (dado externo não confiável, XSS, CSP, segredo fora do bundle, storage, CORS de file://,
   postMessage, dependências e supply chain, privacidade de uso), checklist por tipo de mudança e
   saída path:linha. Acione ao mexer em rede, fetch, URL, conteúdo HTML/Markdown externo, iframe,
@@ -18,7 +18,7 @@ description: >-
 Atores: **pessoas da casa** (usuário do controle), **rede local** (outros dispositivos, quem está
 no Wi-Fi), **internet** (serviços e conteúdo consumido), **terceiros** (libs, apps/iframes
 embutidos). Ativos: contas e tokens de serviços, histórico/hábitos de uso, a própria TV (APIs do
-sistema, Developer Mode) e a rede da casa.
+sistema, root via Homebrew Channel) e a rede da casa.
 
 > **Regra de ouro:** nada vindo de fora do código é confiável — resposta de rede, URL, arquivo do
 > USB, mensagem de outro frame, dado do `localStorage`. Valide a forma na entrada, escape na saída,
@@ -46,8 +46,8 @@ sistema, Developer Mode) e a rede da casa.
    justificada; nunca montar URI/parâmetro de Luna com texto do usuário sem validação.
 9. **Rede local**: serviço que escuta na LAN (se existir) exige autenticação/pareamento e escopo
    mínimo; descoberta (SSDP/mDNS) trata resposta como não confiável.
-10. **Developer Mode**: chave, passphrase e IP da TV fora do git; Dev Mode desligado quando não
-    estiver desenvolvendo (SSH aberto na rede).
+10. **Root (ADR 0007)**: SSH root **só por chave** (`~/.ssh/tvos_root_key`, fora do git), telnet
+    desligado (`webosbrew_telnet_disabled`), IP fora do git. Nunca reinstalar o Developer Mode.
 11. **Dependência nova**: necessária? mantida? licença? tamanho? `npm audit`/equivalente limpo de
     crítica/alta alcançável; versão fixada no lockfile. Pacote com `postinstall` desconhecido =
     suspeito.
@@ -56,12 +56,14 @@ sistema, Developer Mode) e a rede da casa.
 13. **Erro**: mensagem genérica ao usuário, detalhe técnico só no log local; nunca fail-open em
     checagem (erro na validação = negar).
 14. **JS service** (`service/`): métodos em allowlist, sem parâmetro livre da página virando
-    caminho de arquivo, comando ou URI; só lê o necessário (`/proc/stat`, `/proc/meminfo`).
+    caminho de arquivo, comando ou URI (`interval` é número limitado); só lê `/proc/stat`,
+    `/proc/meminfo`. Root nunca no app/service: só em `root/tvos-root.js`, que não aceita entrada
+    de rede nem da página (só o subcomando).
 15. **CSP** do `app/index.html`: `connect-src`/`img-src` só com os domínios do ADR 0004; domínio
     novo = ADR. Nada de `unsafe-eval`.
-16. **Developer Mode**: Key Server OFF depois de instalar; `ares-setup-device -l` e `-m` imprimem a
-    passphrase guardada (`~/.webos`) — scripts não mostram essa saída e ela nunca vai para o chat; passphrase digitada pela pessoa, nunca no
-    chat, em arquivo ou argumento de comando (`tvos-deploy`).
+16. **Hooks root**: nunca escrever em rootfs/kernel nem usar `chattr`; hook de boot em segundo
+    plano e sempre `exit 0`; mudanças por settings, `/var` e bind mount em `/tmp` com original
+    guardado e `restore` (`tvos-deploy`). Hosts bloqueia anúncio/ACR/telemetria/firmware.
 17. **`.env`**: a IA não lê nem imprime; só o `.env.example` (sem valores) é versionado.
 
 ## Gaps conhecidos

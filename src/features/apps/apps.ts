@@ -214,10 +214,19 @@ function listOverSsap(): Promise<App[]> {
   });
 }
 
+const idsOf = (list: App[]) => list.map((app) => app.id).join();
+
 export function loadApps(): void {
+  const reload = !loading && apps.length > 0; // tvOS voltou à frente: só atualiza se algo mudou
   loading = true;
   luna('luna://com.webos.applicationManager/listLaunchPoints', {}, 6000).then((result) => {
-    apps = parse(result);
+    const list = parse(result);
+    if (reload) {
+      loading = false;
+      if (list.length && idsOf(list) !== idsOf(apps)) { apps = list; refreshShelf(); }
+      return; // falha passageira não apaga a prateleira nem pede pareamento SSAP
+    }
+    apps = list;
     if (apps.length || !isWebOS) { loading = false; refreshShelf(); loadLogos(refreshShelf); return; }
     refreshShelf();
     listOverSsap().then((list) => { apps = list; loading = false; refreshShelf(); loadLogos(refreshShelf); });

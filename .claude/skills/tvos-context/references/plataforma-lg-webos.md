@@ -99,11 +99,11 @@ Eventos `keydown` com `keyCode`:
 
 ## App web no webOS (resumo)
 
-Decidido no ADR 0002: app `.ipk` pelo Developer Mode, sem root.
+Decidido no ADR 0007 (substitui o 0002): app `.ipk` instalado pelo SSH root e definido como home
+(`general.defaultApps.home`). Não dá para trocar o SO: rootfs assinado e só-leitura.
 
-- Passo a passo do Developer Mode, `ares-*`, renovação da sessão e problemas de instalação:
-  skill `tvos-deploy`.
-- `appinfo.json`, chamadas Luna, JS service, Voltar/`platformBack`: skill `tvos-webos-api`.
+- `ares-*` no device `tv-root`, root/debloat e problemas de instalação: skill `tvos-deploy`.
+- `appinfo.json`, chamadas Luna, JS service, Voltar, `webOSRelaunch`: skill `tvos-webos-api`.
 - App roda de `file://`: chamada HTTP externa sofre CORS como origem `null`; o servidor precisa
   permitir (TMDB e Open-Meteo permitem) ou a chamada sai pelo JS service.
 - IP da TV, chave e passphrase **não entram no git** (`.gitignore` cobre `*.ipk`, `*.pem`, `*.key`).

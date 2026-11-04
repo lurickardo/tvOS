@@ -54,3 +54,14 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## lg-tv-blocklist (via lgtv-webos-root-launcher)
+
+`root/hosts.block` seleciona e adapta nomes de
+[lg-tv-blocklist](https://github.com/furkan-bayrak/lg-tv-blocklist) (furkan-bayrak), na curadoria
+de [lgtv-webos-root-launcher](https://github.com/hbertsch/lgtv-webos-root-launcher)
+(`scripts/root/blocklist.hosts`). Licença: Creative Commons Attribution 4.0
+(https://creativecommons.org/licenses/by/4.0/). Mudanças: sem ThinQ/IoT, sem `*ngfts*`, prefixos
+de região das Américas (`aic.`/`us.`/`br.`).

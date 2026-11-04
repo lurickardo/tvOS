@@ -12,9 +12,12 @@
     "check": "npm run typecheck && node scripts/check-skills.mjs && node scripts/check-encoding.mjs",
     "tv:setup": "node scripts/tv-setup.mjs",
     "tv:package": "npm run build && ares-package dist/app dist/service -o dist",
-    "tv:install": "npm run tv:package && ares-install -d tv dist/com.lurickardo.tvos_0.1.0_all.ipk && ares-launch -d tv com.lurickardo.tvos",
-    "tv:inspect": "ares-inspect -d tv --app com.lurickardo.tvos --open",
-    "tv:monitor": "ares-device -d tv -r -id com.lurickardo.tvos -t 2"
+    "tv:debug-package": "node scripts/build.mjs --debug && ares-package --no-minify dist/app dist/service -o dist",
+    "tv:debug-install": "npm run tv:debug-package && ares-install -d tv-root dist/com.lurickardo.tvos_0.1.0_all.ipk && ares-launch -d tv-root com.lurickardo.tvos",
+    "tv:install": "npm run tv:package && ares-install -d tv-root dist/com.lurickardo.tvos_0.1.0_all.ipk && ares-launch -d tv-root com.lurickardo.tvos",
+    "tv:inspect": "ares-inspect -d tv-root --app com.lurickardo.tvos",
+    "tv:root": "node scripts/tv-root.mjs",
+    "tv:monitor": "ares-device -d tv-root -r -id com.lurickardo.tvos -t 2"
   },
   "devDependencies": {
     "@webos-tools/cli": "3.2.6",

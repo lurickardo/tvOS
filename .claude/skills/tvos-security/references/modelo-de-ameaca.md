@@ -15,7 +15,7 @@
 | Roubo de sessão de serviço | token salvo sem expiração, em URL ou log | escopo/duração mínimos; nunca em URL/log; logout limpa |
 | Abuso de APIs da TV | parâmetro de Luna montado com texto externo; app embutido chamando sistema | módulo `platform` único, parâmetros validados, sem expor a iframes |
 | Rede local hostil | dispositivo na LAN falando com serviço do tvOS; resposta SSDP forjada | autenticação/pareamento; validar tudo que chega da LAN |
-| Developer Mode exposto | SSH da TV aberto com chave versionada | chave fora do git; Dev Mode desligado fora de desenvolvimento |
+| SSH root exposto (ADR 0007) | shell root na TV para qualquer um na LAN | só chave (senha padrão `alpine` some com `authorized_keys`), telnet off, chave fora do git |
 | Mídia/arquivo hostil (USB/rede) | nome de arquivo com HTML, arquivo gigante, formato inesperado | nome como texto; limite de tamanho; tipo conferido pelo conteúdo |
 | Supply chain | pacote typosquat, `postinstall` malicioso, lib abandonada | justificar dependência; lockfile; audit; versão fixa |
 | Negação de serviço local | lista/infinita sem teto, imagem enorme, loop de retry | limites, backoff, virtualização |

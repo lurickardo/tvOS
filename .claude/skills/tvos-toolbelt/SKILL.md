@@ -31,8 +31,8 @@ description: >-
 | Ver UI rodando rápido | `npm run dev` → http://localhost:8000 em 1920×1080, só teclado | Chrome headless `--window-size=1920,1080 --screenshot` em `dist/app/index.html` (rAF não roda no headless: FPS fica "…") |
 | Instalar e abrir na TV | `npm run tv:install` | `ares-package` → `ares-install -d tv` → `ares-launch` (primeira vez: `tvos-deploy`) |
 | Depurar na TV | `npm run tv:inspect` | Console, Network, Performance, Memory |
-| Medir CPU/memória na TV | `npm run tv:monitor` / `npx ares-device -d tv -r` | processo do tvOS / TV inteira |
-| Developer Mode expirando | botão EXTEND no app Developer Mode | a CLI 3.x não tem `ares-extend-dev` |
+| Medir CPU/memória na TV | `npm run tv:monitor` / `npm run tv:root -- status` | processo do tvOS / TV inteira (swap, top RSS) |
+| Shell root na TV | `ssh -i ~/.ssh/tvos_root_key root@<TV_IP>` | `luna-send ... </dev/null`; nunca escrever em rootfs |
 | PR, issues, CI, release | `gh` | `gh pr create --base develop`; `gh run watch` |
 | Texto com acento quebrado | `node scripts/check-encoding.mjs` | `--fix` e revise o diff |
 | Skill nova/alterada | `node scripts/check-skills.mjs` | antes do commit |

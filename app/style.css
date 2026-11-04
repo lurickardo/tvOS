@@ -149,6 +149,7 @@ svg { display: block; }
 .key:last-child { margin-right: 0; }
 .key svg { width: 40px; height: 40px; margin: 26px auto 10px; fill: currentColor; }
 .key:focus { background: var(--focus-bg); color: var(--focus-text); transform: scale(1.06); box-shadow: 0 14px 30px rgba(0,0,0,.5); z-index: 2; }
+.key[data-off]:not(:focus) { opacity: .45; } /* porta HDMI sem cabo */
 #panels { position: absolute; left: calc(var(--mx) - 24px); right: calc(var(--mx) - 24px); bottom: 64px; height: 300px; display: flex; }
 .panel { position: relative; height: 100%; min-width: 0; border-radius: 30px; background: var(--surface); box-shadow: 0 10px 30px rgba(0,0,0,.35), var(--glass-edge); }
 .panel h3 { position: absolute; left: 34px; top: 26px; margin: 0; font-size: 26px; font-weight: 500; color: var(--text-3); white-space: nowrap; }

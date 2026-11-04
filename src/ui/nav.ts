@@ -1,6 +1,5 @@
 // Navegação só com o controle: foco espacial (vizinho mais próximo na direção da seta) dentro da
-// camada do topo (home, gaveta, catálogo…). Voltar fecha a camada; na raiz devolve ao webOS.
-import { exitApp } from '../platform/luna';
+// camada do topo (home, gaveta, catálogo…). Voltar fecha a camada.
 import { qsa } from '../lib/html';
 
 export interface Layer {
@@ -33,7 +32,11 @@ export function popLayer(): void {
   if (layer.from && document.body.contains(layer.from)) layer.from.focus();
 }
 
-export function back(): void { if (layers.length > 1) popLayer(); else exitApp(); }
+// Voltar na raiz não faz nada: o tvOS é a home da TV (ADR 0007), não há para onde sair.
+export function back(): void { popLayer(); }
+
+/** Fecha todas as camadas e volta à tela inicial (botão Home com o tvOS já aberto). */
+export function goHome(): void { while (layers.length > 1) popLayer(); }
 
 export function focusFirst(selector?: string): void {
   const top = layers[layers.length - 1];

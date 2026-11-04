@@ -35,3 +35,6 @@ id_rsa*
 
 # Config local da TV e dados gerados (lista de apps, chaves)
 *.local.json
+
+# Tutorial local de root da TV (reabre ADR 0002, não versionar)
+ROOT-TV.md

@@ -3,12 +3,12 @@ import { fitStage } from './platform/stage';
 import { loadApps } from './features/apps/apps';
 import { startReorder } from './features/apps/reorder';
 import { initDrawer, openDrawer } from './features/drawer/drawer';
-import { onSystem, setSystemMode } from './features/system/system';
+import { onSystem, setSystemMode, SystemMode } from './features/system/system';
 import { initHighlights } from './features/titles/highlights';
-import { describe, initWeather, onWeather } from './features/weather/weather';
+import { describe, initWeather, onWeather, refreshWeather } from './features/weather/weather';
 import { isWebOS } from './platform/luna';
 import { icon } from './ui/icons';
-import { KEY, setBase } from './ui/nav';
+import { goHome, KEY, setBase } from './ui/nav';
 
 fitStage($('#stage'));
 // Modo lite = sem repintar sombra borrada a cada foco (o que derruba o FPS na TV; tvos-performance R3).
@@ -46,8 +46,20 @@ qsa('#rounds .round').forEach((button, i) => { button.innerHTML = `${icon(rounds
 onSystem((s) => {
   $('#s-cpu').textContent = s.cpu === null ? '—' : `${Math.round(s.cpu)}%`;
   $('#s-mem').textContent = s.memPct === null ? '—' : `${Math.round(s.memPct)}%`;
-  $('#s-fps').textContent = s.fps === null ? '—' : String(s.fps);
 });
+
+// O tvOS é a home (ADR 0007): fica residente atrás dos outros apps, então escondido não roda nada,
+// e ao voltar relê os apps (instalados/removidos nesse meio-tempo). O modo sai da tela em vista, não de
+// um valor guardado: o Home pode ter fechado gaveta/catálogo enquanto o tvOS estava escondido.
+const visibleMode = (): SystemMode => ($('#overlay').className ? 'off' : $('#stage').classList.contains('drawer-open') ? 'drawer' : 'home');
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { setSystemMode('off'); return; }
+  setSystemMode(visibleMode());
+  loadApps();
+  refreshWeather();
+});
+// Home apertado com o tvOS já aberto: volta à tela inicial.
+document.addEventListener('webOSRelaunch', goHome, true);
 onWeather((w, stale) => {
   $('#s-wx').textContent = w ? `${Math.round(w.temp)}° ${describe(w.code, w.day).text}${stale ? ' · desatualizado' : ''}` : 'Clima indisponível';
 });

@@ -2,6 +2,7 @@
 // A home sobe 560 px; topo e destaques somem (tvos-design-system, "Drawer").
 import { config } from '../../config';
 import { $, esc } from '../../lib/html';
+import { luna } from '../../platform/luna';
 import { icon, IconName } from '../../ui/icons';
 import { actions, back, focusFirst, KEY, pushLayer } from '../../ui/nav';
 import { openAllApps } from '../apps/apps';
@@ -15,10 +16,43 @@ let open = false;
 const key = (name: IconName, label: string, attrs: string) => `<button class="key f" ${attrs}>${icon(name)}${label}</button>`;
 const live = (id: string, label: string) => `data-a="app" data-id="${id}" data-title="${esc(label)}"`;
 
+interface Input { appId: string; port: number; label: string; plugged: boolean }
+
+// Sem resposta do EIM (PC, falha): as duas portas do .env.
+const FALLBACK: Input[] = [
+  { appId: 'com.webos.app.hdmi1', port: 1, label: 'HDMI 1', plugged: true },
+  { appId: 'com.webos.app.hdmi2', port: 2, label: 'HDMI 2', plugged: true },
+];
+const NAMES: Record<number, string> = { 1: config.hdmi1Name, 2: config.hdmi2Name };
+
+function inputsHtml(inputs: Input[]): string {
+  return `<div class="row-title">Entradas</div>${key('tv', 'TV ao vivo', live('com.webos.app.livetv', 'TV ao vivo'))}`
+    + inputs.map((i) => {
+      const name = NAMES[i.port] || i.label;
+      const attrs = `${live(i.appId, name)}${i.plugged ? '' : ` aria-label="${esc(name)}, sem cabo"`}`;
+      return key('hdmi', esc(name), i.plugged ? attrs : `${attrs} data-off="1"`);
+    }).join('');
+}
+
+/** Portas HDMI reais (o EIM sabe quantas há e onde tem cabo); redesenha sem perder o foco. */
+function refreshInputs(): void {
+  luna('luna://com.webos.service.eim/getAllInputStatus', {}, 3000).then((r) => {
+    const devices = r && Array.isArray(r.devices) ? (r.devices as Array<Record<string, unknown>>) : [];
+    const inputs = devices.filter((d) => /^HDMI_/.test(String(d.id)) && typeof d.appId === 'string').map((d) => ({
+      appId: d.appId as string, port: Number(d.port), label: String(d.label || d.id), plugged: d.hdmiPlugIn !== false,
+    }));
+    if (!inputs.length) return;
+    const active = document.activeElement as HTMLElement | null;
+    const keep = active && active.closest('#inputs') ? active.dataset.id : '';
+    $('#inputs').innerHTML = inputsHtml(inputs);
+    const again = keep ? document.querySelector(`#inputs [data-id="${keep}"]`) as HTMLElement | null : null;
+    if (again) again.focus();
+  });
+}
+
 function build(): void {
   $('#drawer').innerHTML =
-    `<div id="inputs" class="keyrow"><div class="row-title">Entradas</div>${key('tv', 'TV ao vivo', live('com.webos.app.livetv', 'TV ao vivo'))}`
-    + `${key('hdmi', esc(config.hdmi1Name), live('com.webos.app.hdmi1', config.hdmi1Name))}${key('hdmi', esc(config.hdmi2Name), live('com.webos.app.hdmi2', config.hdmi2Name))}</div>`
+    `<div id="inputs" class="keyrow">${inputsHtml(FALLBACK)}</div>`
     + `<div id="shortcuts" class="keyrow"><div class="row-title">Atalhos</div>${key('apps', 'Todos os apps', 'data-a="all-apps"')}${key('swap', 'Organizar apps', 'data-a="reorder"')}${key('tvStar', 'Ajustes da TV', live('com.palm.app.settings', 'Ajustes da TV'))}</div>`
     + `<div id="panels"><section id="wx" class="panel"></section><section id="sys" class="panel"><h3>Sistema</h3><div class="model">${MODEL}</div><div id="sys-rows"></div></section></div>`;
 }
@@ -66,6 +100,7 @@ export function openDrawer(): void {
     onClose: () => { open = false; $('#stage').classList.remove('drawer-open'); setSystemMode('home'); },
   });
   focusFirst('#inputs .f');
+  refreshInputs();
 }
 
 export function initDrawer(): void {

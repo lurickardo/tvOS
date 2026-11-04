@@ -100,5 +100,6 @@ export function refreshWeather(): void {
 
 export function initWeather(): void {
   refreshWeather();
-  window.setInterval(refreshWeather, HALF_HOUR);
+  // Escondido não busca; ao voltar, main.ts chama refreshWeather (o cache evita rede se ainda vale).
+  window.setInterval(() => { if (!document.hidden) refreshWeather(); }, HALF_HOUR);
 }

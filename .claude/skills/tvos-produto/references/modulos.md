@@ -21,7 +21,8 @@ Cada item é ponto de partida para uma spec (`tvos-refine`); a spec decide o det
 - Meio: destaques. Base: prateleira de apps.
 - **↓ na prateleira abre a gaveta**: Entradas, Atalhos, painel de Clima e painel de Sistema; Voltar
   ou ↑ fecha.
-- Voltar na tela inicial devolve ao webOS (`platformBack`); em qualquer outra camada, fecha a camada.
+- Voltar na tela inicial não faz nada (o tvOS é a home); em qualquer outra camada, fecha a camada.
+  Home com o tvOS aberto volta à tela inicial (`webOSRelaunch`).
 - Foco começa na prateleira (o que a pessoa mais usa) e volta para onde estava ao fechar algo.
 
 ## Prateleira de apps

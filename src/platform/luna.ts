@@ -9,7 +9,6 @@ interface PalmBridge {
 
 interface PalmWindow extends Window {
   PalmServiceBridge?: new () => PalmBridge;
-  PalmSystem?: { platformBack?: () => void };
 }
 
 const palm = window as PalmWindow;
@@ -40,21 +39,31 @@ export function luna(uri: string, params: object = {}, timeoutMs = 8000): Promis
       bridge.cancel();
       finish(null);
     }, timeoutMs);
-    bridge.onservicecallback = (message) => {
-      let result: LunaResult | null = null;
-      try {
-        result = JSON.parse(message) as LunaResult;
-      } catch (e) {
-        // resposta malformada = falha
-      }
-      finish(result && result.returnValue !== false ? result : null);
-    };
+    bridge.onservicecallback = (message) => finish(parse(message));
     bridge.call(uri, JSON.stringify(params));
   });
 }
 
-/** Voltar na tela raiz: devolve o controle ao webOS (fecha/minimiza o app). */
-export function exitApp(): void {
-  if (palm.PalmSystem && palm.PalmSystem.platformBack) palm.PalmSystem.platformBack();
-  else window.close();
+function parse(message: string): LunaResult | null {
+  let result: LunaResult | null = null;
+  try {
+    result = JSON.parse(message) as LunaResult;
+  } catch (e) {
+    // resposta malformada = falha
+  }
+  return result && result.returnValue !== false ? result : null;
+}
+
+/** Assinatura Luna (subscribe: true): `on` a cada resposta, null em erro. Devolve a função que cancela. */
+export function lunaSubscribe(uri: string, params: object, on: (result: LunaResult | null) => void): () => void {
+  const Bridge = palm.PalmServiceBridge;
+  if (!Bridge) { on(null); return () => undefined; }
+  const bridge = new Bridge();
+  pending.push(bridge);
+  bridge.onservicecallback = (message) => on(parse(message));
+  bridge.call(uri, JSON.stringify({ ...params, subscribe: true }));
+  return () => {
+    bridge.cancel();
+    pending.splice(pending.indexOf(bridge), 1);
+  };
 }

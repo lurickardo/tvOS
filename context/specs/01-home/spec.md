@@ -15,7 +15,7 @@ Atalhos, Clima e Sistema. Tudo com o controle, a 60 fps.
 ## Requisitos (EARS)
 1. QUANDO o tvOS abre O SISTEMA DEVE mostrar a home com o foco na prateleira em menos de 1 s.
 2. O SISTEMA DEVE mostrar no topo o título, as abas Explorar/Filmes/Séries, os botões TV ao vivo,
-   Entradas e Ajustes, e a linha CPU · memória · FPS · clima.
+   Entradas e Ajustes, e a linha CPU · memória · clima (FPS só na gaveta: o rAF contínuo pesa na home residente, ADR 0007).
 3. QUANDO uma aba recebe foco O SISTEMA DEVE trocar os destaques para os em alta da semana daquela
    aba (TMDB, `w780` no card em foco, `w342` nos pôsteres).
 4. QUANDO um destaque recebe foco O SISTEMA DEVE alargá-lo e mostrar título, gênero, duração e

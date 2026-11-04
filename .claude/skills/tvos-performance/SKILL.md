@@ -24,7 +24,7 @@ description: >-
 | Métrica | Alvo | Como medir |
 |---|---|---|
 | Bundle JS | ≤ 60 KB gzip | `gzip -c dist/app/main.js \| wc -c` após `npm run build` |
-| Navegação | 60 fps (nunca < 50 ao mover foco) | painel/overlay de FPS do tvOS |
+| Navegação | 60 fps (nunca < 50 ao mover foco) | FPS na gaveta (Sistema) do tvOS |
 | Abrir o app | < 1 s até a prateleira com foco | `performance.now()` no boot + cronômetro na TV |
 | Resposta à tecla | < 100 ms | Performance no `npm run tv:inspect` |
 | Memória do processo | **≤ 40 MB** e estável (sem subir a cada navegação) — a TV tem 658 MB no total, ~160 MB livres e já usa swap | `npm run tv:monitor` por alguns minutos |
@@ -49,11 +49,28 @@ description: >-
    `decoding="async"`, carregue a próxima fora do caminho do foco; descarte as que saíram.
 8. **Fonte do sistema** (`'LG Smart UI'`, fallback Helvetica/Arial). Fonte embutida só subset
    WOFF2 ≤ 50 KB com ADR.
-9. **Polling só com a tela visível** (métricas, clima); pare no `visibilitychange`/ao sair da tela.
+9. **Nada roda com o tvOS escondido**: ele é a home residente (ADR 0007). `visibilitychange` para
+   métricas, FPS (rAF só na gaveta) e clima; dado periódico de service = **assinatura** (poll sobe
+   um Node novo por chamada — medido).
 10. **Cache** de dados de rede no `localStorage` com TTL: a tela abre com o último dado e atualiza
     depois.
 11. **Zero dependência em runtime** sem medir o custo (bundle + parse + memória).
 12. **Timers, listeners e subscriptions** sempre com cleanup (vazamento = app encerrado pela TV).
+
+## Sistema da TV (medido, 2026-11-04)
+
+`npm run tv:root -- status` mostra memória, swap, carga e top RSS. Ruído alto: Netflix em
+segundo plano sozinho ocupa ~114 MB; meça com só o tvOS em frente.
+
+| Momento | MemAvailable | Swap usado |
+|---|---|---|
+| Home da LG de fábrica, TV ao vivo em frente (18 min) | 198 MB | 226 MB |
+| tvOS em frente, antes do debloat (25 min) | 177 MB | 275 MB |
+| tvOS home + debloat (ADR 0007), só tvOS em frente (~9 min) | 256 MB | 227 MB |
+
+Maiores ganhos: `fullhome` fora (66 MB + swap), preload sem streaming, 8 daemons parados. Ainda
+residente: `com.webos.app.home` (barra LG, ~17 MB + swap; ignora `closeByAppId`), TV ao vivo e
+HDMI 1–3 pré-carregados (escolha do usuário).
 
 ## Checklist de regressão (tela nova ou mudança visual)
 

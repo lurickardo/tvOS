@@ -1,5 +1,5 @@
 // Leituras do sistema (CPU, memória, FPS, rede). Só rodam com a home/gaveta visíveis:
-// 10 s na home, 2 s na gaveta, nada com catálogo/lista em tela (spec 01-home, R7).
+// 10 s na home, 2 s na gaveta (+ FPS), nada com catálogo/lista em tela nem com o tvOS escondido (spec 01-home, R7).
 import { luna } from '../../platform/luna';
 import { watchFps } from './fps';
 import { watchStats } from './metrics';
@@ -42,7 +42,8 @@ export function setSystemMode(next: SystemMode): void {
   stops.forEach((stop) => stop());
   stops = [];
   if (mode === 'off') return;
-  stops.push(watchFps((fps) => { state.fps = fps; emit(); }));
+  // FPS só na gaveta: o laço de rAF acorda a CPU 60×/s e a home fica residente o tempo todo (ADR 0007).
+  if (mode === 'drawer') stops.push(watchFps((fps) => { state.fps = fps; emit(); }));
   stops.push(watchStats((stats) => {
     state.cpu = stats ? stats.cpuPercent : null;
     state.memPct = stats ? (stats.memUsedKb / stats.memTotalKb) * 100 : null;
