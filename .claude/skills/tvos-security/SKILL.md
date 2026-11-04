@@ -57,8 +57,10 @@ sistema, root via Homebrew Channel) e a rede da casa.
     checagem (erro na validação = negar).
 14. **JS service** (`service/`): métodos em allowlist, sem parâmetro livre da página virando
     caminho de arquivo, comando ou URI (`interval` é número limitado); só lê `/proc/stat`,
-    `/proc/meminfo`. Root nunca no app/service: só em `root/tvos-root.js`, que não aceita entrada
-    de rede nem da página (só o subcomando).
+    `/proc/meminfo`. O service é **elevado** (ADR 0008): método novo nele = revisão de segurança;
+    hoje só `uninstall` (id validado, sistema recusado) e `closeLgHome`. Nenhum comando de shell
+    vindo da página. Dependência root de terceiro (ex.: LG Input Hook) só com ADR — o Input Hook
+    foi recusado por abrir root sem senha na porta 1842.
 15. **CSP** do `app/index.html`: `connect-src`/`img-src` só com os domínios do ADR 0004; domínio
     novo = ADR. Nada de `unsafe-eval`.
 16. **Hooks root**: nunca escrever em rootfs/kernel nem usar `chattr`; hook de boot em segundo

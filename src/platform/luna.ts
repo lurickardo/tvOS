@@ -67,3 +67,7 @@ export function lunaSubscribe(uri: string, params: object, on: (result: LunaResu
     pending.splice(pending.indexOf(bridge), 1);
   };
 }
+
+/** Método do JS service do tvOS (elevado no boot pelo Homebrew, ADR 0007); null em falha ou no PC. */
+export const tvService = (method: string, params: object = {}, timeoutMs = 8000): Promise<LunaResult | null> =>
+  luna(`luna://com.lurickardo.tvos.service/${method}`, params, timeoutMs);

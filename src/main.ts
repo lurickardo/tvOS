@@ -1,6 +1,7 @@
 import { $, qsa } from './lib/html';
 import { fitStage } from './platform/stage';
-import { loadApps } from './features/apps/apps';
+import { closeLgIfOpened, loadApps } from './features/apps/apps';
+import './features/apps/options'; // segurar OK num app
 import { startReorder } from './features/apps/reorder';
 import { initDrawer, openDrawer } from './features/drawer/drawer';
 import { onSystem, setSystemMode, SystemMode } from './features/system/system';
@@ -55,6 +56,7 @@ const visibleMode = (): SystemMode => ($('#overlay').className ? 'off' : $('#sta
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { setSystemMode('off'); return; }
   setSystemMode(visibleMode());
+  closeLgIfOpened();
   loadApps();
   refreshWeather();
 });

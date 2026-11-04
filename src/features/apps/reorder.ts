@@ -1,9 +1,12 @@
 // Reorganizar a prateleira só com o controle: pega o app focado, ← → movem, OK solta (grava),
-// ↓ volta à ordem padrão, Voltar cancela. Entradas: atalho "Organizar apps" da gaveta e tecla amarela.
+// ↓ volta à ordem padrão, ↑ vai à barra com lixeira (desinstalar) e ocultar, Voltar cancela.
+// Entradas: segurar OK num app (options.ts) e tecla amarela.
 import { $, qsa } from '../../lib/html';
+import { icon } from '../../ui/icons';
 import { KEY, popLayer, pushLayer } from '../../ui/nav';
 import { toast } from '../../ui/toast';
 import { defaultApps, refreshShelf, saveOrder } from './apps';
+import { confirmRemove, removable, toggleHidden } from './options';
 
 let grabbed: HTMLElement | null = null;
 let committed = false;
@@ -48,13 +51,33 @@ export function startReorder(): void {
   if (!tile || !tile.dataset.id) { toast('Nenhum app para organizar'); return; }
   committed = false;
   tile.focus();
+  const id = tile.dataset.id;
+  const title = tile.dataset.title as string;
+  // Barra acima da prateleira: lixeira (só app de loja) e ocultar; ↑ entra nela, ↓ volta ao app.
+  $('#hint').innerHTML = `<div id="grabbar">${removable(id) ? `<button class="hb" data-v="remove">${icon('trash')}Desinstalar</button>` : ''}`
+    + `<button class="hb" data-v="hide">${icon('eyeOff')}Ocultar</button></div>`
+    + '<b>← →</b>mover<b>OK</b>soltar<b>↑</b>lixeira<b>↓</b>ordem padrão<b>Voltar</b>cancelar';
+  let inBar = false;
   pushLayer({
     selector: '#track .tile',
     onKey: (code) => {
+      if (inBar) {
+        const buttons = qsa('#grabbar .hb');
+        const at = buttons.indexOf(document.activeElement as HTMLElement);
+        if (code === KEY.down) { inBar = false; tile.focus(); }
+        else if (code === KEY.left || code === KEY.right) { const next = buttons[at + (code === KEY.left ? -1 : 1)]; if (next) next.focus(); }
+        else if (code === KEY.enter) {
+          const what = buttons[at] && buttons[at].dataset.v;
+          popLayer(); // cancela o mover; a ação vem depois
+          if (what === 'remove') confirmRemove(id, title); else toggleHidden(id, title);
+        }
+        return true;
+      }
       if (code === KEY.left || code === KEY.right) { move(code === KEY.left ? -1 : 1); return true; }
       if (code === KEY.down) { restoreDefault(); return true; }
       if (code === KEY.enter) { committed = true; popLayer(); return true; }
-      return code === KEY.up; // ↑ não faz nada enquanto organiza
+      if (code === KEY.up) { inBar = true; qsa('#grabbar .hb')[0].focus(); return true; }
+      return false;
     },
     onClose: finish,
   });

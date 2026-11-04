@@ -3,13 +3,14 @@ import { $ } from '../lib/html';
 import { getSystemMode, setSystemMode } from '../features/system/system';
 import { actions, back, pushLayer } from './nav';
 
-export function openOverlay(): void {
+export function openOverlay(onKey?: (code: number) => boolean): void {
   const overlay = $('#overlay');
   const resume = getSystemMode();
   setSystemMode('off');
   overlay.className = 'open';
   pushLayer({
     selector: '#overlay .f',
+    onKey,
     onClose: () => { overlay.className = ''; overlay.innerHTML = ''; setSystemMode(resume); },
   });
 }

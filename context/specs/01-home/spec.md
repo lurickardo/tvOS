@@ -42,8 +42,10 @@ Atalhos, Clima e Sistema. Tudo com o controle, a 60 fps.
 14. O SISTEMA DEVE nunca mostrar app só com texto: logo de marca embutido (`app/assets/brands/`), senão
     glifo de sistema (HDMI, navegador…), senão logo oficial do serviço (TMDB/JustWatch, por nome),
     senão ícone informado pela TV, senão monograma colorido.
-15. QUANDO "Organizar apps" (gaveta) ou a tecla amarela é acionada O SISTEMA DEVE pegar o app focado:
-    ← → movem, OK solta e grava a ordem, ↓ volta à ordem padrão, Voltar cancela. A ordem guardada vale
+15. QUANDO a pessoa segura OK (≥ 600 ms) num app da prateleira ou aperta a tecla amarela O SISTEMA DEVE
+    pegar o app: ← → movem, OK solta e grava a ordem, ↓ volta à ordem padrão, ↑ leva à barra com
+    lixeira (desinstalar, com confirmação) e ocultar, Voltar cancela. TV ao vivo é o 1º tile e o
+    webOS da LG o último (ADR 0007/0008). A ordem guardada vale
     para a prateleira e para "Todos os apps"; apps novos entram no fim.
 16. O SISTEMA DEVE preencher qualquer tamanho de janela (de 4:3 a ultrawide e retrato), sem faixas,
     ajustando margens, largura dos destaques e quantos apps cabem no carrossel.

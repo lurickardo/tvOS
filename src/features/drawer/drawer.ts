@@ -6,7 +6,6 @@ import { luna } from '../../platform/luna';
 import { icon, IconName } from '../../ui/icons';
 import { actions, back, focusFirst, KEY, pushLayer } from '../../ui/nav';
 import { openAllApps } from '../apps/apps';
-import { startReorder } from '../apps/reorder';
 import { onSystem, setSystemMode, SystemState } from '../system/system';
 import { cityName, describe, onWeather, Weather } from '../weather/weather';
 
@@ -53,7 +52,7 @@ function refreshInputs(): void {
 function build(): void {
   $('#drawer').innerHTML =
     `<div id="inputs" class="keyrow">${inputsHtml(FALLBACK)}</div>`
-    + `<div id="shortcuts" class="keyrow"><div class="row-title">Atalhos</div>${key('apps', 'Todos os apps', 'data-a="all-apps"')}${key('swap', 'Organizar apps', 'data-a="reorder"')}${key('tvStar', 'Ajustes da TV', live('com.palm.app.settings', 'Ajustes da TV'))}</div>`
+    + `<div id="shortcuts" class="keyrow"><div class="row-title">Atalhos</div>${key('apps', 'Todos os apps', 'data-a="all-apps"')}${key('tvStar', 'Ajustes da TV', live('com.palm.app.settings', 'Ajustes da TV'))}</div>`
     + `<div id="panels"><section id="wx" class="panel"></section><section id="sys" class="panel"><h3>Sistema</h3><div class="model">${MODEL}</div><div id="sys-rows"></div></section></div>`;
 }
 
@@ -111,5 +110,4 @@ export function initDrawer(): void {
   onSystem((s) => { if (open) renderSystem(s); });
   actions.drawer = openDrawer;
   actions['all-apps'] = openAllApps;
-  actions.reorder = () => { back(); startReorder(); }; // fecha a gaveta e pega o app que estava em foco
 }

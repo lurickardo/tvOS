@@ -13,8 +13,8 @@
     "tv:setup": "node scripts/tv-setup.mjs",
     "tv:package": "npm run build && ares-package dist/app dist/service -o dist",
     "tv:debug-package": "node scripts/build.mjs --debug && ares-package --no-minify dist/app dist/service -o dist",
-    "tv:debug-install": "npm run tv:debug-package && ares-install -d tv-root dist/com.lurickardo.tvos_0.1.0_all.ipk && ares-launch -d tv-root com.lurickardo.tvos",
-    "tv:install": "npm run tv:package && ares-install -d tv-root dist/com.lurickardo.tvos_0.1.0_all.ipk && ares-launch -d tv-root com.lurickardo.tvos",
+    "tv:debug-install": "npm run tv:debug-package && ares-install -d tv-root dist/com.lurickardo.tvos_0.1.0_all.ipk && ares-launch -d tv-root com.lurickardo.tvos && node scripts/tv-root.mjs elevate",
+    "tv:install": "npm run tv:package && ares-install -d tv-root dist/com.lurickardo.tvos_0.1.0_all.ipk && ares-launch -d tv-root com.lurickardo.tvos && node scripts/tv-root.mjs elevate",
     "tv:inspect": "ares-inspect -d tv-root --app com.lurickardo.tvos",
     "tv:root": "node scripts/tv-root.mjs",
     "tv:monitor": "ares-device -d tv-root -r -id com.lurickardo.tvos -t 2"

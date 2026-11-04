@@ -76,6 +76,8 @@ Decisores: <nomes>
   `chrome53`, `lib: ES2016`, service ES5, `1280x720` escalado; substitui o alvo do 0003.
 - `0007-root-tvos-home-oficial.md` — TV rootada: tvOS como home (`defaultApps.home`), debloat
   reversível por `root/tvos-root.js` (settings, preload, hosts, daemons), updates bloqueados.
+- `0008-service-elevado-e-acoes-de-app.md` — service elevado (desinstalar, fechar webOS da LG),
+  barra antiga da LG fora da RAM, LG Input Hook recusado.
 - `0005-configuracao-pessoal-pelo-env.md` — `.env` (TV_IP, TMDB_TOKEN, CITY) injetado no
   build local; passphrase fora; `.ipk`/`dist/` com `.env` nunca publicados.
 

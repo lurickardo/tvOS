@@ -68,9 +68,10 @@ segundo plano sozinho ocupa ~114 MB; meça com só o tvOS em frente.
 | tvOS em frente, antes do debloat (25 min) | 177 MB | 275 MB |
 | tvOS home + debloat (ADR 0007), só tvOS em frente (~9 min) | 256 MB | 227 MB |
 
-Maiores ganhos: `fullhome` fora (66 MB + swap), preload sem streaming, 8 daemons parados. Ainda
-residente: `com.webos.app.home` (barra LG, ~17 MB + swap; ignora `closeByAppId`), TV ao vivo e
-HDMI 1–3 pré-carregados (escolha do usuário).
+Maiores ganhos: `fullhome` fora (66 MB + swap), preload sem streaming, 8 daemons parados. A barra
+`com.webos.app.home` (~17 MB + swap; ignora `closeByAppId`) é morta no boot e não volta; o webOS da
+LG abre como app e sai da memória ao voltar ao tvOS (ADR 0008). Residentes por escolha: TV ao vivo e
+HDMI 1–3 pré-carregados.
 
 ## Checklist de regressão (tela nova ou mudança visual)
 

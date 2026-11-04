@@ -99,6 +99,10 @@ O computador não precisa ficar ligado depois disso.
 ### Parte 5 — Usar no dia a dia
 
 - **Home** do controle abre o tvOS de qualquer lugar; Voltar na raiz de um app também volta a ele.
+- Prateleira: **TV ao vivo** em primeiro e **webOS da LG** no fim (abre a home da LG como app; ao
+  voltar ao tvOS ela sai da memória).
+- **Segure OK** num app para movê-lo com ← →; com ele pego, ↑ mostra a **lixeira** (desinstalar,
+  com confirmação) e **Ocultar**. Ocultos continuam em "Todos os apps" (segure OK lá para mostrar).
 - No tvOS: setas e OK navegam; **Voltar** fecha a camada aberta; ↓ na prateleira abre a gaveta
   (entradas HDMI reais — sem cabo aparece esmaecida —, atalhos, clima e sistema).
 - Tecla INPUT e engrenagem continuam abrindo os painéis da LG.

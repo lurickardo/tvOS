@@ -12,3 +12,5 @@ SVGs recortados no enquadramento do logo e recoloridos para o tile; sem outra al
 | telecine | [Wikimedia Commons, "Rede Telecine vertical logo.svg"](https://commons.wikimedia.org/wiki/File:Rede_Telecine_vertical_logo.svg) | PD-textlogo (marca registrada) |
 | disney | [Wikimedia Commons, "Disney+ 2024.svg"](https://commons.wikimedia.org/wiki/File:Disney+_2024.svg) | domínio público (logotipo simples) |
 | globoplay | [Wikimedia Commons, "Globoplay logo 2020.svg"](https://commons.wikimedia.org/wiki/File:Globoplay_logo_2020.svg) | domínio público (logotipo simples) |
+| livetv | desenho próprio do tvOS (glifo de TV + texto) | MIT, este repo |
+| webos | desenho próprio do tvOS (só texto "webOS da LG") | MIT, este repo; webOS é marca da LG |

@@ -22,9 +22,10 @@ description: >-
 
 ## Invariantes
 
-1. **TV rootada, app sem privilégio** (ADR 0007): o app e o service usam só o que a TV já concede a
-   eles; root fica no `root/tvos-root.js` (settings, preload, hosts), nunca no bundle. Nada de
-   `org.webosbrew.hbchannel.service` no app.
+1. **TV rootada** (ADR 0007/0008): a página não tem privilégio; o service é **elevado** pelo
+   Homebrew (`tvos-root.js elevate`, refeito no boot e no `tv:install`) e faz, por `tvService()`, o
+   que a página não pode: `uninstall` (só app de loja) e `closeLgHome`. Root de sistema (settings,
+   preload, hosts) só em `root/tvos-root.js`.
 2. **Wrapper único** `luna(uri, params, timeoutMs)` em `src/platform/luna.ts`: devolve
    `Promise<resultado | null>`, guarda a bridge até a resposta (senão o GC a coleta) e no PC
    responde `null` — o app roda no navegador sem quebrar. Leitura periódica = `lunaSubscribe`
@@ -59,6 +60,10 @@ Voltar = 461 (também `Escape`/`GoBack` no PC). Na raiz não faz nada: o tvOS é
 - Home com o tvOS já aberto dispara `webOSRelaunch` (mesmo com `handlesRelaunch: false`) → `goHome()`.
 - Escondido (`document.hidden`) o app para assinatura de métricas, FPS e clima; ao voltar relê apps.
 - Shell root: `luna-send ... </dev/null` (sem stdin solto não imprime nada).
+- `/dev/input` não serve para tecla global: o `lginput2` prende o controle. LG Input Hook recusado
+  (1.5.x quebra o webOS 4.10; 1.4.0 abre root sem senha na porta 1842) — ADR 0008.
+- `appInstallService/remove` responde antes de terminar e o `listLaunchPoints` demora a refletir:
+  o app sai da prateleira na hora (`forgetApp`).
 Ponteiro do Magic Remote: `cursorStateChange` (`detail.visibility`). Tabela completa de keyCodes:
 `tvos-context`.
 

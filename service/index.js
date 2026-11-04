@@ -1,8 +1,11 @@
 /*
- * Serviço do tvOS no barramento Luna: métricas do sistema lidas de /proc para o painel do app.
+ * Serviço do tvOS no barramento Luna: métricas de /proc e as ações de sistema que a página não pode
+ * fazer (desinstalar app, fechar o webOS da LG).
+ * Elevado pelo Homebrew Channel (ADR 0007: `npm run tv:root -- elevate`, refeito a cada boot).
  * Node 0.12.2 no webOS TV 4.x: só ES5 (sem const/let, arrow, template string, Buffer.from) e módulos
  * nativos + webos-service (do sistema). Molde: webos/service/service.js de simbasjungles/free-my-tv
- * (MIT — THIRD_PARTY_NOTICES.md). Métodos em allowlist: só `stats`, com `interval` (número limitado) como único parâmetro.
+ * (MIT — THIRD_PARTY_NOTICES.md). Métodos em allowlist; todo parâmetro vindo da página é validado
+ * contra lista ou formato fixo antes de virar chamada Luna.
  */
 'use strict';
 var fs = require('fs');
@@ -67,4 +70,27 @@ service.register('stats', function (message) {
 }, function (message) {
   clearInterval(timers[message.uniqueToken]);
   delete timers[message.uniqueToken];
+});
+
+function call(uri, params, cb) {
+  service.call(uri, params, function (m) { cb(m.payload || {}); });
+}
+
+function reply(message) {
+  return function (r) { message.respond(r.returnValue === false ? { returnValue: false, errorText: r.errorText || 'Falhou' } : { returnValue: true }); };
+}
+
+// Desinstalar: só app de loja; sistema, Homebrew e o próprio tvOS ficam de fora.
+var APP_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{1,120}$/;
+var PROTECTED = /^(com\.webos\.|com\.palm\.|com\.lge\.|com\.lurickardo\.|org\.webosbrew\.)/;
+
+service.register('uninstall', function (message) {
+  var id = String((message.payload || {}).id || '');
+  if (!APP_ID.test(id) || PROTECTED.test(id)) { message.respond({ returnValue: false, errorText: 'App protegido' }); return; }
+  call('luna://com.webos.appInstallService/remove', { id: id }, reply(message));
+});
+
+// O webOS da LG é aberto como app pelo tvOS; ao voltar, sai da memória (~66 MB).
+service.register('closeLgHome', function (message) {
+  call('luna://com.webos.applicationManager/closeByAppId', { id: 'com.webos.app.fullhome' }, reply(message));
 });

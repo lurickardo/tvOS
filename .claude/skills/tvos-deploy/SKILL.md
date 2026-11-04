@@ -23,7 +23,7 @@ Chave em `~/.ssh/tvos_root_key`, pública em `/home/root/.ssh/authorized_keys` d
 
 ```bash
 npm run tv:setup             # cadastra "tv-root" (root@TV_IP:22, privatekey=tvos_root_key) e confirma
-npm run tv:install           # build → .ipk → ares-install -d tv-root → abre
+npm run tv:install           # build → .ipk → ares-install -d tv-root → abre → eleva o service
 npm run tv:root -- apply     # tvOS como home + debloat + hook de boot (guarda originais uma vez)
 ```
 
@@ -32,6 +32,7 @@ npm run tv:root -- apply     # tvOS como home + debloat + hook de boot (guarda o
 ```bash
 npm run tv:install           # reinstalar depois de mudar código
 npm run tv:root -- status    # home, preload, hosts, daemons, memória/swap/carga, top RSS
+npm run tv:root -- elevate   # reeleva o service (toda instalação desfaz; o boot refaz)
 npm run tv:inspect           # Web Inspector (Chromium 68 do webOS TV IDE; ver README)
 npm run tv:monitor           # CPU/memória do processo do tvOS (ares-device -r)
 npx ares-install -d tv-root --list

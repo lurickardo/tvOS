@@ -1,7 +1,7 @@
 // Apps instalados na TV: Luna listLaunchPoints; se negado (apps de Developer Mode), SSAP com
 // pareamento único. Negado nos dois = sem apps (nunca apps fictícios). Ver tvos-webos-api.
 import { esc, $, qsa } from '../../lib/html';
-import { isWebOS, luna } from '../../platform/luna';
+import { isWebOS, luna, tvService } from '../../platform/luna';
 import { actions, ensureFocus } from '../../ui/nav';
 import { iconHtml, loadLogos } from './appicon';
 import { openOverlay, setOverlay } from '../../ui/overlay';
@@ -15,11 +15,12 @@ interface Service { key: string; label: string; match: RegExp; provider?: number
 // assets/brands/<key>.svg e classe .b-<key> (cor do tile; a CSP não aceita style inline).
 // `provider` = id do TMDB no Brasil.
 const SERVICES: Service[] = [
+  { key: 'livetv', label: 'TV ao vivo', match: /livetv/ },
   { key: 'netflix', label: 'Netflix', match: /netflix/, provider: 8 },
   { key: 'youtube', label: 'YouTube', match: /youtube(?! ?(music|kids))/ },
   { key: 'globoplay', label: 'Globoplay', match: /globoplay/, provider: 307 },
   { key: 'primevideo', label: 'Prime Video', match: /prime video|primevideo|amazon(?! music)/, provider: 119 },
-  { key: 'disney', label: 'Disney+', match: /disney/, provider: 337 },
+  { key: 'disney', label: 'Disney+', match: /disneyplus/, provider: 337 }, // Star+ (com.disney.alch…) não é Disney+
   { key: 'hbomax', label: 'HBO Max', match: /hbo|(^| )max( |$)/, provider: 1899 },
   { key: 'appletv', label: 'Apple TV', match: /apple ?tv/, provider: 350 },
   { key: 'paramountplus', label: 'Paramount+', match: /paramount/, provider: 531 },
@@ -42,9 +43,15 @@ const SERVICES: Service[] = [
   { key: 'soundcloud', label: 'SoundCloud', match: /soundcloud/ },
   { key: 'youtubemusic', label: 'YouTube Music', match: /youtube ?music/ },
   { key: 'youtubekids', label: 'YouTube Kids', match: /youtube ?kids/ },
+  { key: 'webos', label: 'webOS da LG', match: /fullhome/ },
 ];
-const TILE_GAP = 40;
-const TILE_PITCH = 200 + TILE_GAP; // tile de 200
+
+const LIVE = 'com.webos.app.livetv';
+export const LG_HOME = 'com.webos.app.fullhome';
+// Sempre na prateleira, mesmo fora do listLaunchPoints: TV ao vivo (1º) e o webOS da LG como app (último).
+const VIRTUAL: App[] = [{ id: LIVE, title: 'TV ao vivo' }, { id: LG_HOME, title: 'webOS da LG' }];
+const TILE_GAP = 24;
+const TILE_PITCH = 160 + TILE_GAP; // tile de 160: ~9 apps visíveis em 16:9
 const TRACK_PAD = 34; // 17 de cada lado da trilha
 const SHELF_GUTTER = 64; // vão de cada lado da plataforma para as setas ‹ ›
 const SHELF_BLEED = 20; // folga para o tile focado crescer sem ser cortado
@@ -54,6 +61,7 @@ let apps: App[] = [];
 let loading = true;
 let launching = false;
 let shelfIndex = 0;
+let lgOpened = false;
 
 const normalize = (app: App) => `${app.id} ${app.title}`.toLowerCase().replace(/[^a-z0-9]+/g, ' ');
 const serviceOf = (app: App): Service | undefined => SERVICES.filter((s) => s.match.test(normalize(app)))[0];
@@ -76,27 +84,54 @@ export function appForProviders(ids: number[]): App | null {
 export function launchApp(id: string, label: string): void {
   if (launching) return; // OK repetido enquanto abre
   launching = true;
+  if (id === LG_HOME) lgOpened = true;
   luna(LAUNCH, { id }, 8000).then((result) => {
     launching = false;
     if (!result) toast(`Não foi possível abrir ${label}`);
   });
 }
 
-const ORDER_KEY = 'tvos.order';
-
-/** Ordem padrão: conhecidos primeiro (ordem da lista acima), depois os demais por nome. */
-export function defaultApps(): App[] {
-  const rank = (app: App) => { const s = serviceOf(app); return s ? SERVICES.indexOf(s) : 99; };
-  return apps.slice().sort((a, b) => rank(a) - rank(b) || a.title.localeCompare(b.title));
+/** Voltou ao tvOS depois de abrir o webOS da LG: tira a home dela da memória (~66 MB). */
+export function closeLgIfOpened(): void {
+  if (!lgOpened) return;
+  lgOpened = false;
+  tvService('closeLgHome');
 }
 
-function savedOrder(): string[] {
+const ORDER_KEY = 'tvos.order';
+const HIDDEN_KEY = 'tvos.hidden';
+
+/** Ordem padrão: TV ao vivo e conhecidos primeiro (ordem da lista acima), depois os demais por nome; webOS da LG por último. */
+export function defaultApps(): App[] {
+  const rank = (app: App) => { const s = serviceOf(app); return !s ? 99 : s.key === 'webos' ? 100 : SERVICES.indexOf(s); };
+  const all = apps.concat(VIRTUAL.filter((v) => !apps.some((a) => a.id === v.id)));
+  return all.sort((a, b) => rank(a) - rank(b) || a.title.localeCompare(b.title));
+}
+
+function readIds(key: string): string[] {
   try {
-    const value = JSON.parse(localStorage.getItem(ORDER_KEY) || '[]');
+    const value = JSON.parse(localStorage.getItem(key) || '[]');
     return Array.isArray(value) ? value.filter((id): id is string => typeof id === 'string') : [];
   } catch (e) {
     return [];
   }
+}
+
+const savedOrder = () => readIds(ORDER_KEY);
+
+/** App desinstalado: sai da prateleira na hora (a lista da TV demora a refletir). */
+export function forgetApp(id: string): void {
+  apps = apps.filter((app) => app.id !== id);
+  refreshShelf();
+}
+export const isHidden = (id: string): boolean => readIds(HIDDEN_KEY).indexOf(id) >= 0;
+
+/** Oculta/mostra um app na prateleira (continua em "Todos os apps"). */
+export function setHidden(id: string, hidden: boolean): void {
+  const ids = readIds(HIDDEN_KEY).filter((x) => x !== id);
+  if (hidden) ids.push(id);
+  try { localStorage.setItem(HIDDEN_KEY, JSON.stringify(ids)); } catch (e) { /* sem storage */ }
+  refreshShelf();
 }
 
 /** Guarda a ordem escolhida na TV; `null` volta à padrão (apps novos entram no lugar natural). */
@@ -122,12 +157,16 @@ function tile(app: App): string {
   return `<button class="tile icon f" ${attrs}>${iconHtml(app)}<span class="lbl">${esc(app.title)}</span></button>`;
 }
 
-/** Cartão da lista "Todos os apps". */
-export function appCard(app: App): string {
+/** O que a prateleira mostra: ordem da pessoa, sem ocultos. */
+export const shelfApps = (): App[] => sortedApps().filter((app) => !isHidden(app.id));
+
+/** Cartão da lista "Todos os apps" (e das escolhas de app); `a` = ação do OK. */
+export function appCard(app: App, a = 'app', extra = ''): string {
   const s = serviceOf(app);
-  const attrs = `data-a="app" data-id="${esc(app.id)}" data-title="${esc(app.title)}"`;
-  if (s) return `<button class="poster app f b-${s.key}" ${attrs}>${logo(s)}<span>${esc(app.title)}</span></button>`;
-  return `<button class="poster app f" ${attrs}>${iconHtml(app, ' big')}<span>${esc(app.title)}</span></button>`;
+  const attrs = `data-a="${a}" data-id="${esc(app.id)}" data-title="${esc(app.title)}"`;
+  const badge = extra || (a === 'app' && isHidden(app.id) ? '<i class="bdg">Oculto</i>' : '');
+  if (s) return `<button class="poster app f b-${s.key}" ${attrs}>${badge}${logo(s)}<span>${esc(app.title)}</span></button>`;
+  return `<button class="poster app f" ${attrs}>${badge}${iconHtml(app, ' big')}<span>${esc(app.title)}</span></button>`;
 }
 
 /** Lista completa (atalho "Todos os apps" da gaveta). */
@@ -136,7 +175,7 @@ export function openAllApps(): void {
   openOverlay();
   setOverlay(
     `<div class="ov-head"><div><h2>Todos os apps</h2><div class="sub">${list.length} instalados na TV</div></div><button class="chip f" data-a="close">Voltar</button></div>`
-    + (list.length ? `<div class="grid grid-apps"><div class="gridin">${list.map(appCard).join('')}</div></div>` : '<div class="cards-msg"><h2>Lista de apps indisponível</h2><p>A TV não liberou a lista de apps instalados.</p></div>'),
+    + (list.length ? `<div class="grid grid-apps"><div class="gridin">${list.map((app) => appCard(app)).join('')}</div></div>` : '<div class="cards-msg"><h2>Lista de apps indisponível</h2><p>A TV não liberou a lista de apps instalados.</p></div>'),
   );
   const first = document.querySelector('#overlay .poster') || document.querySelector('#overlay .chip');
   if (first) (first as HTMLElement).focus();
@@ -162,12 +201,13 @@ function scrollShelf(index: number, count: number): void {
 export function refreshShelf(): void {
   const active = document.activeElement as HTMLElement | null;
   const keep = active && active.closest('#track') ? active.dataset.id : '';
-  const list = sortedApps();
+  const list = shelfApps();
   const note = loading ? (isWebOS ? 'Aguardando autorização na TV…' : 'Carregando apps…') : isWebOS ? 'Apps indisponíveis · OK para tentar de novo' : 'Os apps aparecem na TV';
-  $('#shelf').innerHTML = `<div id="track">${list.length ? list.map(tile).join('') : `<button class="tile other f" data-a="apps-retry"><span>${note}</span></button>`}</div>`;
+  const retry = apps.length ? '' : `<button class="tile other f" data-a="apps-retry"><span>${note}</span></button>`;
+  $('#shelf').innerHTML = `<div id="track">${list.map(tile).join('')}${retry}</div>`;
   const again = keep ? qsa('#track .tile').filter((t) => t.dataset.id === keep)[0] : null;
   if (again) again.focus();
-  else { scrollShelf(0, list.length); ensureFocus('#platter .f'); }
+  else { scrollShelf(0, qsa('#track .tile').length); ensureFocus('#platter .f'); }
 }
 
 function parse(result: Record<string, unknown> | null): App[] {
@@ -240,7 +280,7 @@ $('#shelf').addEventListener('focusin', (event) => {
 });
 
 // A janela mudou de tamanho: recalcula quantos tiles cabem.
-window.addEventListener('resize', () => window.requestAnimationFrame(() => { if (apps.length) scrollShelf(shelfIndex, apps.length); }));
+window.addEventListener('resize', () => window.requestAnimationFrame(() => scrollShelf(shelfIndex, qsa('#track .tile').length)));
 
 actions.app = (el) => { if (!$('#stage').classList.contains('reorder')) launchApp(el.dataset.id as string, el.dataset.title as string); };
 actions['apps-retry'] = () => loadApps();

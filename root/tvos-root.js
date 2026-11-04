@@ -5,6 +5,7 @@
  *   boot    — a cada boot frio (hook do Homebrew): hosts sem anúncio/telemetria, para daemons e abre o tvOS.
  *   status  — o que está aplicado + memória, swap, carga e maiores processos.
  *   restore — desfaz tudo e devolve a home da LG (reboot recomendado depois).
+ *   elevate — eleva o service do tvOS (toda instalação desfaz; o boot refaz).
  * Nunca escreve em rootfs nem usa chattr: só settings Luna, /var e bind mount de arquivo em /tmp.
  */
 'use strict';
@@ -27,6 +28,7 @@ var JOBS = ['rdxd', 'uploadd', 'contentminer', 'nudge', 'voiceconductor', 'voice
 var EULA_OFF = ['acrOnAllowed', 'acrAdAllowed', 'customAdAllowed', 'chpAllowed', 'voiceAllowed', 'voice2Allowed', 'additionalDataAllowed'];
 var OPTION_OFF = ['webOSPromotionVideo', 'channelplus'];
 var MARK = '# tvOS blocklist';
+var ELEVATE = '/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service';
 
 function log(message) { console.log(new Date().toTimeString().slice(0, 8) + ' ' + message); }
 
@@ -157,8 +159,19 @@ function front(next) {
   });
 }
 
+/** O service do tvOS faz ajustes, só áudio, Bluetooth etc.: precisa ser elevado (toda instalação desfaz). */
+function elevate(next) {
+  run(ELEVATE + ' com.lurickardo.tvos.service', function (err) { log('service elevado ' + (err ? 'FALHOU' : 'ok')); if (next) next(); });
+}
+
+// Barra da home antiga da LG: sobe no boot (snapshot), fica ~30 MB residente e não é usada — o webOS
+// da LG abre como app (fullhome) pelo tvOS. Morta, não volta sozinha (medido).
+function killLgBar(next) {
+  run('kill $(pidof com.webos.app.home) 2>/dev/null', function () { log('barra da LG fora da memória'); next(); });
+}
+
 function boot(skipFront) {
-  series([mountHosts, stopJobs].concat(skipFront ? [] : [front]), function () { log('boot pronto'); });
+  series([mountHosts, stopJobs, elevate, killLgBar].concat(skipFront ? [] : [front]), function () { log('boot pronto'); });
 }
 
 function status() {
@@ -204,7 +217,7 @@ function restore() {
   });
 }
 
-var commands = { apply: apply, boot: function () { boot(false); }, status: status, restore: restore };
+var commands = { apply: apply, boot: function () { boot(false); }, status: status, restore: restore, elevate: function () { elevate(); } };
 var command = commands[process.argv[2]];
 if (command) command();
-else console.log('uso: node tvos-root.js apply|boot|status|restore');
+else console.log('uso: node tvos-root.js apply|boot|status|restore|elevate');

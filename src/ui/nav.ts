@@ -78,8 +78,13 @@ function pick(current: HTMLElement, key: number, candidates: HTMLElement[]): HTM
 document.addEventListener('keydown', (event) => {
   const code = event.keyCode;
   if (code === KEY.back || code === KEY.escape) { event.preventDefault(); back(); return; }
+  if (code === KEY.enter) {
+    if (okDown) { event.preventDefault(); return; } // OK seguro: o controle repete o keydown
+    okDown = true;
+  }
   const top = layers[layers.length - 1];
   if (top.onKey && top.onKey(code)) { event.preventDefault(); return; }
+  if (code === KEY.enter) { startHold(event); return; }
   if (code < KEY.left || code > KEY.down) return;
   const target = event.target as HTMLElement;
   if (target.tagName === 'INPUT' && (code === KEY.left || code === KEY.right)) return; // cursor do texto
@@ -92,6 +97,33 @@ document.addEventListener('keydown', (event) => {
   if (next) next.focus();
   else if (layer.edge) layer.edge(code, current);
 });
+
+/** "Segurar OK" (≥ 600 ms) por `data-a`: com ação de segurar, o clique só sai ao soltar rápido. */
+export const holds: Record<string, (el: HTMLElement) => void> = {};
+const HOLD_MS = 600;
+let okDown = false;
+let holdEl: HTMLElement | null = null;
+let holdTimer = 0;
+
+function startHold(event: KeyboardEvent): void {
+  const el = (event.target as HTMLElement).closest('[data-a]') as HTMLElement | null;
+  const hold = el && holds[el.dataset.a as string];
+  if (!el || !hold) return;
+  event.preventDefault(); // segura o clique do OK até saber se foi toque ou segurar
+  holdEl = el;
+  holdTimer = window.setTimeout(() => { holdEl = null; hold(el); }, HOLD_MS);
+}
+
+document.addEventListener('keyup', (event) => {
+  if (event.keyCode !== KEY.enter) return;
+  okDown = false;
+  if (!holdEl) return;
+  window.clearTimeout(holdTimer);
+  const el = holdEl;
+  holdEl = null;
+  el.click(); // soltou antes: era um toque
+});
+window.addEventListener('blur', () => { okDown = false; }); // keyup perdido ao trocar de app
 
 document.addEventListener('click', (event) => {
   const el = (event.target as HTMLElement).closest('[data-a]') as HTMLElement | null;

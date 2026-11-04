@@ -74,14 +74,17 @@ svg { display: block; }
 #platter { position: absolute; left: calc(var(--mx) - 32px); right: calc(var(--mx) - 32px); top: calc(var(--H) - 254px); height: 190px; border-radius: 62px;
   background: linear-gradient(rgba(34,34,38,.72), rgba(17,17,19,.6)); box-shadow: 0 18px 40px rgba(0,0,0,.32), inset 0 1.5px 0 rgba(255,255,255,.14), inset 0 0 0 1px rgba(255,255,255,.08); }
 #shelf { position: absolute; left: 50%; top: 0; width: 1830px; margin-left: -915px; height: 190px; overflow: hidden; }
-#track { display: flex; padding: 39px 37px; transition: transform .3s var(--ease); }
+#track { display: flex; padding: 50px 37px; transition: transform .3s var(--ease); }
 #platter:before, #platter:after { position: absolute; top: 0; bottom: 0; width: 84px; font-size: 64px; line-height: 186px; color: var(--text-2); z-index: 3; opacity: 0; pointer-events: none; transition: opacity .2s; }
 #platter:before { content: '\2039'; padding-left: 24px; left: 0; border-radius: 62px 0 0 62px; background: linear-gradient(90deg, rgba(14,14,16,.85), rgba(14,14,16,0)); }
 #platter:after { content: '\203A'; padding-right: 24px; text-align: right; right: 0; border-radius: 0 62px 62px 0; background: linear-gradient(270deg, rgba(14,14,16,.85), rgba(14,14,16,0)); }
 #platter.more-l:before, #platter.more-r:after { opacity: 1; }
-.tile { flex: 0 0 200px; width: 200px; height: 112px; margin-right: 40px; border-radius: 22px; box-shadow: 0 4px 22px rgba(0,0,0,.3);
-  display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; white-space: nowrap; overflow: hidden; }
-.tile .logo { max-width: 132px; max-height: 66px; }
+.tile { flex: 0 0 160px; width: 160px; height: 90px; margin-right: 24px; border-radius: 18px; box-shadow: 0 4px 22px rgba(0,0,0,.3);
+  display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; white-space: nowrap; overflow: hidden; }
+.tile .logo { max-width: 110px; max-height: 54px; }
+.tile .ico { flex-basis: 44px; width: 44px; height: 44px; border-radius: 12px; font-size: 22px; }
+.tile .ico svg { width: 26px; height: 26px; }
+.tile .lbl { max-width: 148px; margin-top: 4px; font-size: 17px; }
 .tile.other { flex-direction: column; background: var(--surface); color: var(--text); box-shadow: 0 4px 22px rgba(0,0,0,.3), var(--glass-edge); }
 .tile.other img { max-width: 90px; max-height: 54px; object-fit: contain; margin-bottom: 6px; }
 .tile.other span { max-width: 190px; overflow: hidden; text-overflow: ellipsis; }
@@ -122,6 +125,9 @@ svg { display: block; }
 .b-vivo { background: #FFFFFF; }
 .b-telecine { background: #FFFFFF; }
 .b-clarotv { background: linear-gradient(135deg, #2A2A2E, #111113); }
+.b-livetv { background: linear-gradient(135deg, #FF3B30, #B3125B); }
+.b-livetv .logo, .b-webos .logo { max-width: 128px; }
+.b-webos { background: linear-gradient(135deg, #3A3A40, #16161A); }
 .tile:last-child { margin-right: 0; }
 .tile.grab, .tile.grab:focus { transform: translateY(-12px) scale(1.22); box-shadow: 0 24px 46px rgba(0,0,0,.7), 0 0 0 4px #fff; z-index: 4; }
 .tile:focus { transform: scale(1.2); box-shadow: 0 18px 40px rgba(0,0,0,.6), 0 0 0 3px rgba(255,255,255,.9); z-index: 2; }
@@ -130,7 +136,15 @@ svg { display: block; }
 #hint { position: absolute; left: 50%; bottom: 278px; height: 64px; padding: 0 36px; display: flex; align-items: center; white-space: nowrap; border-radius: 32px; transform: translateX(-50%);
   font-size: 24px; color: var(--text-2); background: rgba(58,58,60,.96); box-shadow: 0 12px 35px rgba(0,0,0,.5), var(--glass-edge); opacity: 0; visibility: hidden; transition: opacity .2s; }
 #hint b { margin: 0 8px 0 22px; padding: 2px 12px; border-radius: 8px; font-size: 21px; font-weight: 700; color: var(--focus-text); background: var(--focus-bg); }
-#hint b:first-child { margin-left: 0; }
+#grabbar + b { margin-left: 0; }
+/* barra do app pego: lixeira e ocultar, acima da dica (↑ entra, ↓ volta ao app) */
+#grabbar { position: absolute; left: 50%; bottom: 84px; display: flex; transform: translateX(-50%); }
+.hb { display: flex; align-items: center; height: 72px; padding: 0 30px; margin: 0 8px; border-radius: 36px; font-size: 26px; font-weight: 600; color: var(--text);
+  background: rgba(58,58,60,.96); box-shadow: 0 12px 35px rgba(0,0,0,.5), var(--glass-edge); }
+.hb svg { width: 32px; height: 32px; margin-right: 12px; fill: currentColor; }
+.hb[data-v="remove"] svg { fill: #FF453A; }
+.hb:focus { color: var(--focus-text); background: var(--focus-bg); box-shadow: 0 0 0 4px #fff; }
+.hb[data-v="remove"]:focus svg { fill: #D70015; }
 .reorder #hint { opacity: 1; visibility: visible; }
 .reorder #searchbar { opacity: 0; }
 .reorder #top, .reorder #cards { opacity: .25; }
