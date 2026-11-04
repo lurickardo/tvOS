@@ -24,7 +24,7 @@ description: >-
 2. Abrir o Developer Mode de novo → **Key Server ON**. Anotar IP e passphrase (6 caracteres).
 3. No PC (pasta do repo, `npm install` feito, `TV_IP` no `.env` — ver `.env.example`):
    ```bash
-   npm run tv:setup   # cadastra a TV "tv" pelo TV_IP, pede a passphrase (a PESSOA digita) e confirma a conexão
+   npm run tv:setup   # cadastra a TV "tv" pelo TV_IP; só pede a passphrase se não houver chave válida; confirma a conexão
    ```
    Equivalente manual: `npx ares-setup-device` (nome `tv`, IP, porta 9922, usuário `prisoner`) +
    `npx ares-novacom -d tv --getkey` + `npx ares-device -i -d tv`.
@@ -70,7 +70,9 @@ instala o `.ipk` de `dist/` por interface gráfica.
 | Sintoma | Causa provável | O que fazer |
 |---|---|---|
 | `ares-install` não acha a TV / timeout | IP mudou, TV desligada, Dev Mode expirado | conferir IP no app Developer Mode; `ares-setup-device` para atualizar; `ares-device -i -d tv` |
-| Autenticação falha | chave antiga após reinstalar o Dev Mode | Key Server ON → `ares-novacom -d tv --getkey` → Key Server OFF |
+| Autenticação falha | chave antiga após reinstalar o Dev Mode | Key Server ON → `npm run tv:setup` (pede a passphrase) → Key Server OFF |
+| `Failed to get ssh private key` | Key Server OFF ou passphrase antiga | só é preciso se não houver chave válida; ligar o Key Server e usar a passphrase **atual** |
+| `ares-shell`: "not supported by current profile" | o perfil `tv` do ares não tem shell | use `ares-device -i`/`-r`, `tv:inspect`; não troque o perfil |
 | `-5: ipk verified failed` | entradas do tar com data 1970 (visto no webOS 5) | aplicar `_fix_ipk_timestamps` do FreeMyTvWebOS (`scripts/build.py`, MIT) ao `.ipk`; só se acontecer nesta TV |
 | App sumiu da TV | sessão do Dev Mode expirou | renovar e reinstalar |
 | Tela branca ao abrir | erro de JS no motor da TV | `npm run tv:inspect` → Console; ver `tvos-debug` |

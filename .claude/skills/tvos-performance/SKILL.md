@@ -27,7 +27,7 @@ description: >-
 | Navegação | 60 fps (nunca < 50 ao mover foco) | painel/overlay de FPS do tvOS |
 | Abrir o app | < 1 s até a prateleira com foco | `performance.now()` no boot + cronômetro na TV |
 | Resposta à tecla | < 100 ms | Performance no `npm run tv:inspect` |
-| Memória do processo | estável (sem subir a cada navegação) | `npm run tv:monitor` por alguns minutos |
+| Memória do processo | **≤ 40 MB** e estável (sem subir a cada navegação) — a TV tem 658 MB no total, ~160 MB livres e já usa swap | `npm run tv:monitor` por alguns minutos |
 | Imagem | ≤ ~150 KB cada | Network no inspector |
 
 ## Técnicas que funcionam

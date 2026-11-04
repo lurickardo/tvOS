@@ -48,7 +48,7 @@ description: >-
 | Não instala / "device not found" | Developer Mode expirado ou IP mudou | app Developer Mode; `ares-setup-device`; botão EXTEND (`tvos-deploy`) |
 | `-5: ipk verified failed` ao instalar | tar do `.ipk` com datas de 1970 (visto no webOS 5) | receita `_fix_ipk_timestamps` (`tvos-deploy`) |
 | App sumiu da TV | sessão do Developer Mode expirou (a TV apaga apps de dev) | renovar (EXTEND) e `npm run tv:install` |
-| CPU/memória "—" na TV | service não instalado/encerrado, ou `/proc` negado no jail do Dev Mode | `npx ares-install -d tv --list`; `luna-send` pelo `ares-shell`; registrar em `tvos-webos-api` |
+| CPU/memória "—" na TV | service não instalado/encerrado, ou `/proc` negado no jail do Dev Mode | `npx ares-install -d tv --list`; `npm run tv:inspect` → console (o `ares-shell` não funciona no perfil `tv`); registrar em `tvos-webos-api` |
 | `listLaunchPoints` falha / prateleira vazia | webOS nega a lista a apps de Dev Mode | fallback SSAP (`tvos-webos-api`) |
 | `invalid origin` no socket 127.0.0.1:3000 | página com origem própria (webOS novo) | conexão pelo JS service com `Origin: file://` |
 | Chamada Luna nunca responde | bridge coletada pelo GC ou serviço sem permissão em `requiredPermissions` | usar `luna()` de `src/platform/luna.ts` (guarda a bridge, timeout); conferir `appinfo.json` |

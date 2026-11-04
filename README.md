@@ -29,8 +29,14 @@ desinstalar devolve tudo como era.
 Referência: o FreeMyTvWebOS, que faz a mesma coisa, mede menos de 0,2 s para abrir contra 3,5–5 s da
 home da LG (medido por eles no webOS 24; nesta TV vamos medir — veja "Medir antes e depois").
 
-Para a **TV inteira** ficar mais leve, faça também os ajustes da Parte 6 (desligar Live Plus,
-promoções e recomendações da LG). Eles reduzem o que roda em segundo plano o tempo todo.
+**Medido na sua TV (43LM631C0SB):** 4 núcleos e **só 658 MB de RAM**. Parada, ela já tinha ~160 MB
+livres e **~300 MB em swap** (memória jogada para o armazenamento, que é muito mais lento). Boa
+parte da lentidão vem daí: o sistema da LG ocupa quase toda a memória. Por isso:
+- o tvOS é feito para gastar pouco (meta ≤ 40 MB e pacote de poucos KB), mas a home da LG continua
+  carregada por baixo: **ele não libera a memória que a LG usa**;
+- os ajustes da Parte 6 (desligar Live Plus, promoções e recomendações) são o que mais alivia a TV
+  inteira, porque cortam processos que rodam o tempo todo;
+- desligar a TV da tomada de vez em quando limpa o swap acumulado.
 
 ---
 
@@ -89,8 +95,9 @@ Tempo: ~30 min na primeira vez. Você precisa de:
    ```bash
    npm run tv:setup
    ```
-   Ele cadastra a TV (nome `tv`) com o `TV_IP`, pede a **passphrase** (digite a que aparece na TV) e
-   mostra o modelo e a versão do webOS se a conexão funcionou.
+   Ele cadastra a TV (nome `tv`) com o `TV_IP`, pede a **passphrase** só na primeira vez (digite a
+   que aparece na TV) e mostra o modelo e a versão do webOS. Pode rodar de novo sem problema: se a
+   chave já vale, ele não pede nada.
 2. Na TV, **desligue o Key Server** (com ele ligado, qualquer um na sua rede com a passphrase pode
    pegar a chave da TV).
 3. Instale e abra o tvOS:
@@ -146,7 +153,7 @@ De vez em quando, desligar a TV **da tomada por 1 minuto** limpa a memória acum
 | Sintoma | O que fazer |
 |---|---|
 | `tv:setup` não acha a TV | TV e computador na mesma rede? `TV_IP` certo? Developer Mode aberto com Key Server ON? |
-| Passphrase recusada | Use a que está na tela **agora** (ela muda); Key Server precisa estar ON |
+| Passphrase recusada / `Failed to get ssh private key` | Só acontece se o `tv:setup` precisar de chave nova: ligue o Key Server e use a passphrase que está na tela **agora** |
 | `tv:install` dá timeout | TV desligada, IP mudou ou Developer Mode expirou (Parte 7) |
 | tvOS sumiu da TV | Developer Mode expirou: EXTEND e `npm run tv:install` |
 | CPU/memória mostram "—" | Normal no computador; na TV, avise (pode ser limitação do Developer Mode) |

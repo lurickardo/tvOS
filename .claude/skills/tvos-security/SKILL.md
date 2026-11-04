@@ -59,7 +59,8 @@ sistema, Developer Mode) e a rede da casa.
     caminho de arquivo, comando ou URI; só lê o necessário (`/proc/stat`, `/proc/meminfo`).
 15. **CSP** do `app/index.html`: `connect-src`/`img-src` só com os domínios do ADR 0004; domínio
     novo = ADR. Nada de `unsafe-eval`.
-16. **Developer Mode**: Key Server OFF depois de instalar; passphrase digitada pela pessoa, nunca no
+16. **Developer Mode**: Key Server OFF depois de instalar; `ares-setup-device -l` e `-m` imprimem a
+    passphrase guardada (`~/.webos`) — scripts não mostram essa saída e ela nunca vai para o chat; passphrase digitada pela pessoa, nunca no
     chat, em arquivo ou argumento de comando (`tvos-deploy`).
 17. **`.env`**: a IA não lê nem imprime; só o `.env.example` (sem valores) é versionado.
 

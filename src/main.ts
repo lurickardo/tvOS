@@ -24,9 +24,11 @@ const cpu = el('cpu');
 const mem = el('mem');
 const fps = el('fps');
 
-const timeFormat = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' });
+// ponytail: HH:MM à mão — o Chromium 53 da TV pode ter ICU sem pt-BR (Intl cairia em "02:06 AM").
+const two = (n: number) => (n < 10 ? '0' : '') + n;
 function tickClock() {
-  clock.textContent = timeFormat.format(new Date());
+  const now = new Date();
+  clock.textContent = `${two(now.getHours())}:${two(now.getMinutes())}`;
 }
 tickClock();
 setInterval(tickClock, 10000);
