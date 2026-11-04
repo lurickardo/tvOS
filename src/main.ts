@@ -23,7 +23,7 @@ setBase({
   edge: (code, current) => { if (code === KEY.down && current.closest('#platter')) { openDrawer(); return true; } return false; },
 });
 
-const rounds: Array<'live' | 'hdmi' | 'gear'> = ['live', 'hdmi', 'gear'];
+const rounds: Array<'search' | 'live' | 'hdmi' | 'gear'> = ['search', 'live', 'hdmi', 'gear'];
 qsa('#rounds .round').forEach((button, i) => { button.innerHTML = `${icon(rounds[i])}<span class="rl">${button.getAttribute('aria-label')}</span>`; });
 
 // Linha de estado do topo: CPU · memória · FPS · clima.

@@ -41,7 +41,7 @@ function toTitle(raw: Raw, kind: Kind): Title | null {
 function request(q: Query): [string, Record<string, string>] {
   const kind: Kind = q.kind === 'all' ? 'movie' : q.kind;
   const params: Record<string, string> = { language: 'pt-BR', page: String(q.page) };
-  if (q.text) { params.query = q.text; return [`search/${kind}`, params]; }
+  if (q.text) { params.query = q.text; return [q.kind === 'all' ? 'search/multi' : `search/${kind}`, params]; }
   if (q.kind === 'all') return ['trending/all/week', params];
   if (q.providers.length) {
     // Só o que passa nos apps instalados (provedores brasileiros).
