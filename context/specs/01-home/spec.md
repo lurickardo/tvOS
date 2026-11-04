@@ -28,8 +28,8 @@ Atalhos, Clima e Sistema. Tudo com o controle, a 60 fps.
 7. ENQUANTO a gaveta estiver aberta O SISTEMA DEVE atualizar CPU e memória a cada 2 s e FPS a cada
    1 s; QUANDO fechar O SISTEMA DEVE parar essas leituras.
 8. SE um dado do sistema não estiver disponível ENTÃO O SISTEMA DEVE mostrar "—".
-9. SE `TMDB_TOKEN` ou `CITY` não estiverem no `.env` ENTÃO O SISTEMA DEVE mostrar como configurar no
-   lugar dos destaques/clima, sem quebrar o resto.
+9. SE `TMDB_TOKEN` não estiver no `.env` ENTÃO O SISTEMA DEVE mostrar como configurar no lugar dos
+   destaques, sem quebrar o resto; SE `CITY` faltar ENTÃO O SISTEMA DEVE usar São Vicente, São Paulo.
 10. QUANDO Voltar é pressionado com a gaveta aberta O SISTEMA DEVE fechá-la; na home, devolver ao
     webOS.
 11. O SISTEMA DEVE manter ≥ 55 fps ao mover o foco por toda a home e a gaveta.

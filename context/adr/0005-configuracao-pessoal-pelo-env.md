@@ -17,7 +17,8 @@ release publica o pacote (`tvos-gitflow`).
    documenta cada chave: `TV_IP`, `TMDB_TOKEN`, `CITY`.
 2. `scripts/build.mjs` lê o `.env` e injeta `TMDB_TOKEN` e `CITY` no bundle
    (`define __TVOS_CONFIG__`, lido por `src/config.ts`). Falta de valor = recurso desligado, sem
-   quebrar o build (o CI builda sem `.env`).
+   quebrar o build (o CI builda sem `.env`). Padrões: `CITY` = `São Vicente, São Paulo` (vale se a
+   variável faltar ou vier vazia; valor do `.env` sempre vence); `TV_IP` e `TMDB_TOKEN` não têm padrão.
 3. `TV_IP` só é usado no PC: `npm run tv:setup` cadastra a TV no ares e busca a chave SSH.
 4. **Passphrase do Developer Mode nunca vai para o `.env`**: é digitada uma vez no terminal, no
    prompt do `ares-novacom`.

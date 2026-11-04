@@ -8,10 +8,11 @@ import { cpSync, existsSync, rmSync } from 'node:fs';
 const serve = process.argv.includes('--serve');
 
 if (existsSync('.env')) process.loadEnvFile('.env');
-const env = (name) => (process.env[name] || '').trim();
+const env = (name, fallback = '') => (process.env[name] || '').trim() || fallback;
+// Padrões valem se a variável faltar ou estiver vazia no .env; valor do .env sempre vence.
 const config = {
   tmdbToken: env('TMDB_TOKEN'),
-  city: env('CITY'),
+  city: env('CITY', 'São Vicente, São Paulo'),
 };
 
 rmSync('dist/app', { recursive: true, force: true });

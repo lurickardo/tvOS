@@ -62,7 +62,7 @@ Pedido explícito do usuário: o tvOS mostra como a TV está rodando.
 ## Clima
 
 - Agora (temperatura, condição), próximas 5–6 horas, nascer/pôr do sol, pela `CITY` do `.env`
-  (Open-Meteo). Sem cidade: o painel diz como configurar.
+  (Open-Meteo; padrão São Vicente, São Paulo).
 
 ## Entradas
 
