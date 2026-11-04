@@ -1,14 +1,25 @@
-// O design é um palco fixo de 1920×1080 (tvos-design-system). Escala para caber na janela do app
-// (1280×720 pelo appinfo, ou qualquer tamanho no PC) mantendo a proporção e centralizando.
-const STAGE_W = 1920;
-const STAGE_H = 1080;
+// Palco fluido: altura lógica de 1080 e largura que acompanha a janela (mínimo 1600, para telas mais
+// "altas" que 16:10). O palco é escalado para preencher a janela inteira, sem faixas. Valores lógicos
+// em CSS: --H (altura), --mx (margem lateral: o conteúdo fica num quadro de até 1768 de largura,
+// centralizado).
+const DESIGN_H = 1080;
+const MIN_W = 1600;
+const FRAME_W = 1768;
+const MARGIN = 76;
 
 export function fitStage(stage: HTMLElement): void {
   const fit = () => {
-    const scale = Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H);
-    const x = (window.innerWidth - STAGE_W * scale) / 2;
-    const y = (window.innerHeight - STAGE_H * scale) / 2;
-    stage.style.transform = `translate(${x}px,${y}px) scale(${scale})`;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const scale = vw / vh >= MIN_W / DESIGN_H ? vh / DESIGN_H : vw / MIN_W;
+    const width = vw / scale;
+    const height = vh / scale;
+    const style = stage.style;
+    style.width = `${width}px`;
+    style.height = `${height}px`;
+    style.transform = `scale(${scale})`;
+    style.setProperty('--H', `${height}px`);
+    style.setProperty('--mx', `${Math.max(MARGIN, (width - FRAME_W) / 2)}px`);
   };
   fit();
   window.addEventListener('resize', fit);

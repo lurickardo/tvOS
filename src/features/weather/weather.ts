@@ -1,6 +1,7 @@
 // Clima pelo Open-Meteo (ADR 0004): cidade do .env (padrão São Vicente, SP), cache de 30 min,
 // sem chave e sem geolocalização por IP. Horas em "YYYY-MM-DDTHH:MM" local da cidade (timezone=auto).
 import { config } from '../../config';
+import { plain } from '../../lib/html';
 import { cachedJson, getJson } from '../../lib/net';
 import type { IconName } from '../../ui/icons';
 
@@ -31,7 +32,6 @@ export const getWeather = (): { weather: Weather | null; stale: boolean } => ({ 
 export const cityName = (): string => (current ? current.place : city.split(',')[0].trim());
 export function onWeather(cb: (w: Weather | null, stale: boolean) => void): void { listeners.push(cb); }
 
-const plain = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 /** "São Vicente, São Paulo": o nome sozinho acha cidades de outros países/estados, então o estado desempata. */
 interface Place { latitude: number; longitude: number; name: string }

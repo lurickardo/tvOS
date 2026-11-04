@@ -1,6 +1,7 @@
 import { $, qsa } from './lib/html';
 import { fitStage } from './platform/stage';
 import { loadApps } from './features/apps/apps';
+import { startReorder } from './features/apps/reorder';
 import { initDrawer, openDrawer } from './features/drawer/drawer';
 import { onSystem, setSystemMode } from './features/system/system';
 import { initHighlights } from './features/titles/highlights';
@@ -22,12 +23,15 @@ document.addEventListener('scroll', (event) => {
 
 // Ícone de app que não carrega (caminho inválido na TV) some e deixa só o nome.
 document.addEventListener('error', (event) => {
-  const img = event.target as HTMLElement;
-  if (img.tagName === 'IMG' && img.parentNode) img.parentNode.removeChild(img);
+  const img = event.target as HTMLImageElement;
+  if (img.tagName !== 'IMG' || !img.parentNode) return;
+  const next = img.dataset.next; // próxima fonte do mesmo ícone (logo oficial → ícone da TV)
+  if (next) { img.dataset.next = ''; img.src = next; } else img.parentNode.removeChild(img);
 }, true);
 
 setBase({
   selector: '#top .f, #cards .f, #searchbar, #platter .f',
+  onKey: (code) => { if (code !== KEY.yellow) return false; startReorder(); return true; }, // tecla amarela do controle
   edge: (code, current) => { if (code === KEY.down && current.closest('#platter')) { openDrawer(); return true; } return false; },
 });
 

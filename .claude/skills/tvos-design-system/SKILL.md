@@ -27,11 +27,15 @@ description: >-
    sombra; os outros recuam. Um foco por vez, sempre visível.
 4. **Vidro sem blur**: superfícies semi-opacas com borda interna de 1 px clara — o "vidro" do
    free-my-tv sem `backdrop-filter` (`tvos-performance`).
-5. **Palco fixo 1920×1080** em px (a TV Full HD desenha o app em 1280×720 e `src/main.ts` escala o
-   palco por `min(innerWidth/1920, innerHeight/1080)`, centralizado, em `src/platform/stage.ts` — o design não muda, ADR 0006), com safe area (≈ 76–96 px nas laterais, 52–54 px em cima/baixo).
+5. **Palco fluido de altura lógica 1080** em px, em `src/platform/stage.ts`: escala para preencher a
+   janela inteira (sem faixas) e expõe `--H` (altura lógica) e `--mx` (margem lateral; o conteúdo fica
+   num quadro de até 1768 de largura, centralizado). Largura lógica ≥ 1600; telas mais "altas" escalam
+   pela largura e ganham altura (destaques+busca ficam centralizados, sem esticar). A TV Full HD
+   (1280×720 no appinfo, ADR 0006) cai no caso 16:9 exato: 1920×1080 lógicos. Safe area ≈ 76 px nas
+   laterais, 52–54 px em cima/baixo. Alturas e posições verticais ancoradas na base usam `calc(var(--H) - …)`.
 6. **Um movimento por ação**, curto (0,2–0,38 s), só `transform`/`opacity`.
 
-## Layout da home (palco 1920×1080)
+## Layout da home (palco 1920×1080 na TV; fluido nas demais telas)
 
 Cópia do layout do free-my-tv em modo escuro, com o sistema no lugar das criptomoedas. Referência
 visual aprovada: `context/specs/01-home/mockup-home.jpg` e `mockup-drawer.jpg` (fonte:

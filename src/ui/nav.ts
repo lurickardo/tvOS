@@ -8,11 +8,13 @@ export interface Layer {
   selector: string;
   /** Seta que não achou vizinho: devolve true se tratou (ex.: ↓ da prateleira abre a gaveta). */
   edge?: (key: number, current: HTMLElement) => boolean;
+  /** Tecla tratada pela camada antes da navegação por foco (devolve true se consumiu). */
+  onKey?: (key: number) => boolean;
   onClose?: () => void;
   from?: HTMLElement | null;
 }
 
-const KEY = { left: 37, up: 38, right: 39, down: 40, back: 461, escape: 27 };
+const KEY = { enter: 13, left: 37, up: 38, right: 39, down: 40, back: 461, escape: 27, yellow: 405 };
 const layers: Layer[] = [];
 
 export const actions: Record<string, (el: HTMLElement) => void> = {};
@@ -73,6 +75,8 @@ function pick(current: HTMLElement, key: number, candidates: HTMLElement[]): HTM
 document.addEventListener('keydown', (event) => {
   const code = event.keyCode;
   if (code === KEY.back || code === KEY.escape) { event.preventDefault(); back(); return; }
+  const top = layers[layers.length - 1];
+  if (top.onKey && top.onKey(code)) { event.preventDefault(); return; }
   if (code < KEY.left || code > KEY.down) return;
   const target = event.target as HTMLElement;
   if (target.tagName === 'INPUT' && (code === KEY.left || code === KEY.right)) return; // cursor do texto

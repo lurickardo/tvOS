@@ -3,6 +3,7 @@
 import { esc, $, qsa } from '../../lib/html';
 import { isWebOS, luna } from '../../platform/luna';
 import { actions, ensureFocus } from '../../ui/nav';
+import { iconHtml, loadLogos } from './appicon';
 import { openOverlay, setOverlay } from '../../ui/overlay';
 import { toast } from '../../ui/toast';
 
@@ -15,25 +16,44 @@ interface Service { key: string; label: string; match: RegExp; provider?: number
 // `provider` = id do TMDB no Brasil.
 const SERVICES: Service[] = [
   { key: 'netflix', label: 'Netflix', match: /netflix/, provider: 8 },
-  { key: 'youtube', label: 'YouTube', match: /youtube/ },
+  { key: 'youtube', label: 'YouTube', match: /youtube(?! ?(music|kids))/ },
   { key: 'globoplay', label: 'Globoplay', match: /globoplay/, provider: 307 },
-  { key: 'primevideo', label: 'Prime Video', match: /prime video|primevideo|amazon/, provider: 119 },
+  { key: 'primevideo', label: 'Prime Video', match: /prime video|primevideo|amazon(?! music)/, provider: 119 },
   { key: 'disney', label: 'Disney+', match: /disney/, provider: 337 },
   { key: 'hbomax', label: 'HBO Max', match: /hbo|(^| )max( |$)/, provider: 1899 },
   { key: 'appletv', label: 'Apple TV', match: /apple ?tv/, provider: 350 },
   { key: 'paramountplus', label: 'Paramount+', match: /paramount/, provider: 531 },
-  { key: 'spotify', label: 'Spotify', match: /spotify/ },
+  { key: 'telecine', label: 'Telecine', match: /telecine/ },
+  { key: 'vivo', label: 'Vivo', match: /(^| )vivo( |$)/ },
+  { key: 'clarotv', label: 'Claro tv+', match: /claro/ },
+  { key: 'tubi', label: 'Tubi', match: /(^| )tubi( |$)/ },
+  { key: 'mubi', label: 'MUBI', match: /(^| )mubi( |$)/ },
+  { key: 'dazn', label: 'DAZN', match: /dazn/ },
   { key: 'plex', label: 'Plex', match: /(^| )plex( |$)/ },
+  { key: 'kodi', label: 'Kodi', match: /(^| )kodi( |$)/ },
+  { key: 'jellyfin', label: 'Jellyfin', match: /jellyfin/ },
+  { key: 'stremio', label: 'Stremio', match: /stremio/ },
+  { key: 'vimeo', label: 'Vimeo', match: /vimeo/ },
   { key: 'twitch', label: 'Twitch', match: /twitch/ },
   { key: 'crunchyroll', label: 'Crunchyroll', match: /crunchyroll/ },
+  { key: 'kick', label: 'Kick', match: /(^| )kick( |$)/ },
+  { key: 'spotify', label: 'Spotify', match: /spotify/ },
+  { key: 'applemusic', label: 'Apple Music', match: /apple ?music/ },
+  { key: 'soundcloud', label: 'SoundCloud', match: /soundcloud/ },
+  { key: 'youtubemusic', label: 'YouTube Music', match: /youtube ?music/ },
+  { key: 'youtubekids', label: 'YouTube Kids', match: /youtube ?kids/ },
 ];
-const TILE_PITCH = 258; // 210 de tile + 48 de espaço
-const TILES_VISIBLE = 7;
+const TILE_GAP = 40;
+const TILE_PITCH = 200 + TILE_GAP; // tile de 200
+const TRACK_PAD = 34; // 17 de cada lado da trilha
+const SHELF_GUTTER = 64; // vão de cada lado da plataforma para as setas ‹ ›
+const SHELF_BLEED = 20; // folga para o tile focado crescer sem ser cortado
 const LAUNCH = 'luna://com.webos.applicationManager/launch';
 
 let apps: App[] = [];
 let loading = true;
 let launching = false;
+let shelfIndex = 0;
 
 const normalize = (app: App) => `${app.id} ${app.title}`.toLowerCase().replace(/[^a-z0-9]+/g, ' ');
 const serviceOf = (app: App): Service | undefined => SERVICES.filter((s) => s.match.test(normalize(app)))[0];
@@ -62,10 +82,35 @@ export function launchApp(id: string, label: string): void {
   });
 }
 
-/** Conhecidos primeiro (ordem da imagem), depois os demais por nome. */
-export function sortedApps(): App[] {
+const ORDER_KEY = 'tvos.order';
+
+/** Ordem padrão: conhecidos primeiro (ordem da lista acima), depois os demais por nome. */
+export function defaultApps(): App[] {
   const rank = (app: App) => { const s = serviceOf(app); return s ? SERVICES.indexOf(s) : 99; };
   return apps.slice().sort((a, b) => rank(a) - rank(b) || a.title.localeCompare(b.title));
+}
+
+function savedOrder(): string[] {
+  try {
+    const value = JSON.parse(localStorage.getItem(ORDER_KEY) || '[]');
+    return Array.isArray(value) ? value.filter((id): id is string => typeof id === 'string') : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+/** Guarda a ordem escolhida na TV; `null` volta à padrão (apps novos entram no lugar natural). */
+export function saveOrder(ids: string[] | null): void {
+  try { if (ids) localStorage.setItem(ORDER_KEY, JSON.stringify(ids)); else localStorage.removeItem(ORDER_KEY); } catch (e) { /* sem storage */ }
+}
+
+/** Ordem da pessoa; apps novos (fora da ordem guardada) vão para o fim na ordem padrão. */
+export function sortedApps(): App[] {
+  const base = defaultApps();
+  const saved = savedOrder();
+  if (!saved.length) return base;
+  const rank = (app: App) => { const i = saved.indexOf(app.id); return i < 0 ? saved.length : i; };
+  return base.map((app, i) => ({ app, i })).sort((a, b) => rank(a.app) - rank(b.app) || a.i - b.i).map((x) => x.app);
 }
 
 const logo = (s: Service) => `<img class="logo" src="assets/brands/${s.key}.svg" alt="${s.label}">`;
@@ -74,7 +119,7 @@ function tile(app: App): string {
   const s = serviceOf(app);
   const attrs = `data-a="app" data-id="${esc(app.id)}" data-title="${esc(app.title)}"`;
   if (s) return `<button class="tile f b-${s.key}" ${attrs} aria-label="${s.label}">${logo(s)}</button>`;
-  return `<button class="tile f other" ${attrs}>${app.icon ? `<img src="${esc(app.icon)}" alt="">` : ''}<span>${esc(app.title)}</span></button>`;
+  return `<button class="tile icon f" ${attrs}>${iconHtml(app)}<span class="lbl">${esc(app.title)}</span></button>`;
 }
 
 /** Cartão da lista "Todos os apps". */
@@ -82,7 +127,7 @@ export function appCard(app: App): string {
   const s = serviceOf(app);
   const attrs = `data-a="app" data-id="${esc(app.id)}" data-title="${esc(app.title)}"`;
   if (s) return `<button class="poster app f b-${s.key}" ${attrs}>${logo(s)}<span>${esc(app.title)}</span></button>`;
-  return `<button class="poster app f" ${attrs}>${app.icon ? `<img src="${esc(app.icon)}" alt="">` : ''}<span>${esc(app.title)}</span></button>`;
+  return `<button class="poster app f" ${attrs}>${iconHtml(app, ' big')}<span>${esc(app.title)}</span></button>`;
 }
 
 /** Lista completa (atalho "Todos os apps" da gaveta). */
@@ -99,17 +144,30 @@ export function openAllApps(): void {
 
 /** Carrossel: a trilha anda por transform para o tile focado ficar no meio; setas nas bordas avisam que há mais. */
 function scrollShelf(index: number, count: number): void {
-  const first = Math.max(0, Math.min(index - 3, count - TILES_VISIBLE));
-  $('#track').style.transform = `translateX(${-first * TILE_PITCH}px)`;
-  $('#platter').className = `${first > 0 ? 'more-l ' : ''}${first < count - TILES_VISIBLE ? 'more-r' : ''}`;
+  const room = $('#platter').clientWidth - 2 * SHELF_GUTTER - TRACK_PAD;
+  const visible = Math.max(1, Math.floor((room + TILE_GAP) / TILE_PITCH)); // quantos tiles inteiros cabem
+  const first = Math.max(0, Math.min(index - Math.floor(visible / 2), count - visible));
+  const shown = Math.max(1, Math.min(count, visible));
+  const width = shown * TILE_PITCH - TILE_GAP + TRACK_PAD + 2 * SHELF_BLEED; // janela exata dos tiles, centrada
+  const shelf = $('#shelf');
+  shelf.style.width = `${width}px`;
+  shelf.style.marginLeft = `${-width / 2}px`;
+  const track = $('#track');
+  track.style.transform = `translateX(${-first * TILE_PITCH}px)`;
+  $('#platter').className = `${first > 0 ? 'more-l ' : ''}${first < count - visible ? 'more-r' : ''}`;
+  shelfIndex = index;
 }
 
-function renderShelf(): void {
+/** Desenha a prateleira de novo (apps, ordem ou logos mudaram) sem perder o foco no mesmo app. */
+export function refreshShelf(): void {
+  const active = document.activeElement as HTMLElement | null;
+  const keep = active && active.closest('#track') ? active.dataset.id : '';
   const list = sortedApps();
   const note = loading ? (isWebOS ? 'Aguardando autorização na TV…' : 'Carregando apps…') : isWebOS ? 'Apps indisponíveis · OK para tentar de novo' : 'Os apps aparecem na TV';
   $('#shelf').innerHTML = `<div id="track">${list.length ? list.map(tile).join('') : `<button class="tile other f" data-a="apps-retry"><span>${note}</span></button>`}</div>`;
-  scrollShelf(0, list.length);
-  ensureFocus('#platter .f');
+  const again = keep ? qsa('#track .tile').filter((t) => t.dataset.id === keep)[0] : null;
+  if (again) again.focus();
+  else { scrollShelf(0, list.length); ensureFocus('#platter .f'); }
 }
 
 function parse(result: Record<string, unknown> | null): App[] {
@@ -160,9 +218,9 @@ export function loadApps(): void {
   loading = true;
   luna('luna://com.webos.applicationManager/listLaunchPoints', {}, 6000).then((result) => {
     apps = parse(result);
-    if (apps.length || !isWebOS) { loading = false; renderShelf(); return; }
-    renderShelf();
-    listOverSsap().then((list) => { apps = list; loading = false; renderShelf(); });
+    if (apps.length || !isWebOS) { loading = false; refreshShelf(); loadLogos(refreshShelf); return; }
+    refreshShelf();
+    listOverSsap().then((list) => { apps = list; loading = false; refreshShelf(); loadLogos(refreshShelf); });
   });
 }
 
@@ -172,5 +230,8 @@ $('#shelf').addEventListener('focusin', (event) => {
   if (index >= 0) scrollShelf(index, tiles.length);
 });
 
-actions.app = (el) => launchApp(el.dataset.id as string, el.dataset.title as string);
+// A janela mudou de tamanho: recalcula quantos tiles cabem.
+window.addEventListener('resize', () => window.requestAnimationFrame(() => { if (apps.length) scrollShelf(shelfIndex, apps.length); }));
+
+actions.app = (el) => { if (!$('#stage').classList.contains('reorder')) launchApp(el.dataset.id as string, el.dataset.title as string); };
 actions['apps-retry'] = () => loadApps();

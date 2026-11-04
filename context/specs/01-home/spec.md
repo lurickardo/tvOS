@@ -39,6 +39,14 @@ Atalhos, Clima e Sistema. Tudo com o controle, a 60 fps.
 
 13. O SISTEMA DEVE mostrar na prateleira todos os apps instalados como carrossel (conhecidos primeiro,
     com o logo da marca); a trilha rola com ←/→ mantendo o foco no meio, com `‹ ›` nas bordas.
+14. O SISTEMA DEVE nunca mostrar app só com texto: logo de marca embutido (`app/assets/brands/`), senão
+    glifo de sistema (HDMI, navegador…), senão logo oficial do serviço (TMDB/JustWatch, por nome),
+    senão ícone informado pela TV, senão monograma colorido.
+15. QUANDO "Organizar apps" (gaveta) ou a tecla amarela é acionada O SISTEMA DEVE pegar o app focado:
+    ← → movem, OK solta e grava a ordem, ↓ volta à ordem padrão, Voltar cancela. A ordem guardada vale
+    para a prateleira e para "Todos os apps"; apps novos entram no fim.
+16. O SISTEMA DEVE preencher qualquer tamanho de janela (de 4:3 a ultrawide e retrato), sem faixas,
+    ajustando margens, largura dos destaques e quantos apps cabem no carrossel.
 
 ## Navegação
 Foco inicial na prateleira. ↑ da prateleira → barra de busca → destaques → abas/botões. ↓ da prateleira → gaveta;
@@ -46,7 +54,8 @@ Foco inicial na prateleira. ↑ da prateleira → barra de busca → destaques �
 
 ## Fora de escopo
 Screensaver, dim, editar a prateleira na TV, deep link para o título no serviço, criptomoedas.
-Adiados: atalhos "Sistema" e "Ajustes do tvOS" (sem função ainda) e entrada HDMI sem sinal esmaecida
+Adiados: atalhos "Sistema" e "Ajustes do tvOS" (sem função ainda); a tecla amarela (405) precisa ser
+confirmada na TV (o atalho da gaveta é o caminho garantido) e entrada HDMI sem sinal esmaecida
 (formato do `eim/getAllInputStatus` não confirmado). Na home, CPU/memória atualizam a cada 10 s (R2
 exige a linha); na gaveta, a cada 2 s; com catálogo/lista em tela, nada (R7).
 

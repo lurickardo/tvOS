@@ -1,5 +1,6 @@
 // Cliente TMDB (ADR 0004): token do .env no header, imagens w342/w780, cache de 1 h (detalhe 24 h).
 import { config } from '../../config';
+import { plain } from '../../lib/html';
 import { cachedJson, getJson } from '../../lib/net';
 
 export type Kind = 'movie' | 'tv';
@@ -23,7 +24,7 @@ interface RawDetail {
 
 const HOUR = 3600000;
 export const hasToken = config.tmdbToken !== '';
-export const img = (path: string, size: 'w342' | 'w780'): string => (path ? `https://image.tmdb.org/t/p/${size}${path}` : '');
+export const img = (path: string, size: 'w154' | 'w342' | 'w780'): string => (path ? `https://image.tmdb.org/t/p/${size}${path}` : '');
 
 function call<T>(path: string, params: Record<string, string>): Promise<T> {
   const query = Object.keys(params).map((k) => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`).join('&');
@@ -85,4 +86,20 @@ export function fetchDetail(t: Title, on: (detail: Detail) => void): Promise<voi
     };
   });
   return cachedJson(`tvos.d.${t.kind}.${t.id}`, 24 * HOUR, load, (d) => on(d));
+}
+
+/** Logos oficiais dos serviços de streaming do Brasil (dados do JustWatch via TMDB), por nome normalizado. */
+export interface ProviderLogo { n: string; p: string }
+
+export function fetchProviderLogos(on: (logos: ProviderLogo[]) => void): Promise<void> {
+  const load = () => Promise.all(['movie', 'tv'].map((k) => call<{ results?: Array<{ provider_name: string; logo_path?: string }> }>(`watch/providers/${k}`, { language: 'pt-BR', watch_region: 'BR' }))).then((lists): ProviderLogo[] => {
+    const seen: Record<string, boolean> = {};
+    const out: ProviderLogo[] = [];
+    lists.forEach((l) => (l.results || []).forEach((p) => {
+      const n = plain(p.provider_name);
+      if (p.logo_path && !seen[n]) { seen[n] = true; out.push({ n, p: p.logo_path }); }
+    }));
+    return out;
+  });
+  return cachedJson('tvos.pl', 7 * 24 * HOUR, load, (logos) => on(logos));
 }

@@ -5,6 +5,7 @@ import { $, esc } from '../../lib/html';
 import { icon, IconName } from '../../ui/icons';
 import { actions, back, focusFirst, KEY, pushLayer } from '../../ui/nav';
 import { openAllApps } from '../apps/apps';
+import { startReorder } from '../apps/reorder';
 import { onSystem, setSystemMode, SystemState } from '../system/system';
 import { cityName, describe, onWeather, Weather } from '../weather/weather';
 
@@ -18,9 +19,8 @@ function build(): void {
   $('#drawer').innerHTML =
     `<div id="inputs" class="keyrow"><div class="row-title">Entradas</div>${key('tv', 'TV ao vivo', live('com.webos.app.livetv', 'TV ao vivo'))}`
     + `${key('hdmi', esc(config.hdmi1Name), live('com.webos.app.hdmi1', config.hdmi1Name))}${key('hdmi', esc(config.hdmi2Name), live('com.webos.app.hdmi2', config.hdmi2Name))}</div>`
-    + `<div id="shortcuts" class="keyrow"><div class="row-title">Atalhos</div>${key('apps', 'Todos os apps', 'data-a="all-apps"')}${key('tvStar', 'Ajustes da TV', live('com.palm.app.settings', 'Ajustes da TV'))}</div>`
-    + '<section id="wx" class="panel"></section>'
-    + `<section id="sys" class="panel"><h3>Sistema</h3><div class="model">${MODEL}</div><div id="sys-rows"></div></section>`;
+    + `<div id="shortcuts" class="keyrow"><div class="row-title">Atalhos</div>${key('apps', 'Todos os apps', 'data-a="all-apps"')}${key('swap', 'Organizar apps', 'data-a="reorder"')}${key('tvStar', 'Ajustes da TV', live('com.palm.app.settings', 'Ajustes da TV'))}</div>`
+    + `<div id="panels"><section id="wx" class="panel"></section><section id="sys" class="panel"><h3>Sistema</h3><div class="model">${MODEL}</div><div id="sys-rows"></div></section></div>`;
 }
 
 const hm = (clock: string) => `${Number(clock.slice(0, 2))}h${clock.slice(3)}`;
@@ -30,11 +30,11 @@ function renderWeather(weather: Weather | null, stale: boolean, empty = 'Clima i
   const title = `<h3>Clima · ${esc(cityName())}${stale ? ' · desatualizado' : ''}</h3>`;
   if (!weather) { $('#wx').innerHTML = `${title}<div class="wx-empty">${empty}</div>`; return; }
   const now = describe(weather.code, weather.day);
-  $('#wx').innerHTML = `${title}<div class="wx-now">${icon(now.icon)}<span class="big">${deg(weather.temp)}</span></div>`
-    + `<div class="wx-cond">${now.text}</div><div class="wx-range">Máx. ${deg(weather.high)} · Mín. ${deg(weather.low)}</div><div class="wx-sep"></div>`
-    + `<div class="hours">${weather.hours.map((h) => `<div class="hour">${h.time}h${icon(describe(h.code, h.day).icon)}<b>${deg(h.temp)}</b></div>`).join('')}</div>`
-    + `<div class="wx-extra">Sensação ${deg(weather.feels)} · Umidade ${Math.round(weather.humidity)}% · Vento ${Math.round(weather.wind)} km/h</div>`
-    + `<div class="wx-sun">Nascer ${hm(weather.sunrise)} · Pôr ${hm(weather.sunset)}</div>`;
+  $('#wx').innerHTML = `${title}<div class="wx-body"><div class="wx-left"><div class="wx-now">${icon(now.icon)}<span class="big">${deg(weather.temp)}</span></div>`
+    + `<div class="wx-cond">${now.text}</div><div class="wx-range">Máx. ${deg(weather.high)} · Mín. ${deg(weather.low)}</div></div>`
+    + `<div class="wx-right"><div class="hours">${weather.hours.map((h) => `<div class="hour">${h.time}h${icon(describe(h.code, h.day).icon)}<b>${deg(h.temp)}</b></div>`).join('')}</div>`
+    + `<div class="wx-extra">Sensação ${deg(weather.feels)} · Umidade ${Math.round(weather.humidity)}%</div>`
+    + `<div class="wx-extra">Vento ${Math.round(weather.wind)} km/h · Nascer ${hm(weather.sunrise)} · Pôr ${hm(weather.sunset)}</div></div></div>`;
 }
 
 const level = (pct: number): string => (pct < 70 ? 'ok' : pct < 90 ? 'warn' : 'bad');
@@ -76,4 +76,5 @@ export function initDrawer(): void {
   onSystem((s) => { if (open) renderSystem(s); });
   actions.drawer = openDrawer;
   actions['all-apps'] = openAllApps;
+  actions.reorder = () => { back(); startReorder(); }; // fecha a gaveta e pega o app que estava em foco
 }
