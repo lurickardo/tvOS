@@ -77,7 +77,7 @@ sistema, root via Homebrew Channel) e a rede da casa.
 | 1 | Token TMDB (v4, só leitura) vai do `.env` para o bundle (ADR 0005): fica em `dist/` no PC e no `.ipk` na TV. Nunca publicar `.ipk`/`dist/` gerados com `.env`; dev server só em `127.0.0.1` | baixa (risco aceito) |
 | 2 | `@webos-tools/cli` traz vulnerabilidades transitivas (express/`proxy-addr` crítica, `body-parser`, `js-yaml`, eslint…): só ferramenta de dev no PC, nunca vai ao `.ipk`; atualizar a CLI quando houver versão nova | média (só dev) |
 | 3 | Socket SSAP (`127.0.0.1:3000`) devolve `client-key` que abre o controle remoto da TV: guardar só para listar apps, nunca expor nem logar; service só repassa `listLaunchPoints` | média (quando implementado) |
-| 4 | Firewall (ADR 0010) só sobe ~40 s após o boot frio (hook); IPv6 sem filtro (sem `ip6tables`; só link-local, ouvem SSH e CoAP); 3000/3001 (SSAP) seguem abertos ao Wi-Fi para o app ThinQ, com pareamento na tela | baixa |
+| 4 | Firewall (ADR 0010) só sobe ~40 s após o boot frio (hook); 1024–2047 aberta inteira (upnpd sorteia porta); IPv6 sem filtro (sem `ip6tables`; só link-local, ouvem SSH e CoAP); 3000/3001 (SSAP) seguem abertos ao Wi-Fi para o app ThinQ, com pareamento na tela | baixa |
 
 ## Roteador
 

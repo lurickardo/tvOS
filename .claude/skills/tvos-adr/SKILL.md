@@ -81,7 +81,7 @@ Decisores: <nomes>
 - `0009-preload-zero.md` — nenhum preload (todo `isEnabled`/`isPinUp` false, `maxPreloadApp: 0`);
   substitui o item preload do 0007.
 - `0010-firewall-da-tv.md` — `iptables` stateless no hook: TCP de fora só SSH (chave), cast DIAL e
-  app LG ThinQ; DevTools 9998, crashreportd e DLNA fechados.
+  app LG ThinQ (upnpd em 1024–2047, porta sorteada); DevTools 9998 e crashreportd fechados.
 - `0005-configuracao-pessoal-pelo-env.md` — `.env` (TV_IP, TMDB_TOKEN, CITY) injetado no
   build local; passphrase fora; `.ipk`/`dist/` com `.env` nunca publicados.
 

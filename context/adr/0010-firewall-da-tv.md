@@ -18,14 +18,17 @@ processo e anúncio SSDP:
 | 1434, 1708, 3000, 3001 | upnpd (second screen, `urn:lge:device:tv`), xinetd `ssg_http(s)` | app LG ThinQ / controle pelo celular |
 | 9998 | WebAppMgr | DevTools — fechar |
 | 11111 | crashreportd | relatório de crash à LG — fechar |
-| 1191, 1473 | upnpd (Neptune, não anunciados) | UPnP/DLNA não usado — fechar |
+| 1191, 1473 | upnpd (Neptune, não anunciados) | UPnP não anunciado — fica (mesma faixa) |
+
+As portas do upnpd **mudam a cada boot** (depois do reboot: 1467, 1839, 1900), sempre em
+1024–2047; nenhum outro serviço escuta nessa faixa.
 
 O kernel não tem `conntrack` (só os matches `tcp`/`udp`/`icmp`) nem `ip6tables`.
 
 ## Decisão
 
 1. `root/tvos-root.js` cria a chain `TVOS` no `INPUT` a cada boot (hook) e no `apply`: aceita
-   `lo` e TCP para `22 1434 1708 2003 3000 3001 18181 36866`; todo outro **SYN** TCP leva
+   `lo` e TCP para `22`, `1024:2047` (upnpd), `3000 3001 18181 36866`; todo outro **SYN** TCP leva
    `REJECT tcp-reset`. Regras só em memória (somem no reboot, o hook refaz); `restore` remove.
 2. Stateless: bloqueia só conexão nova vinda de fora; respostas das conexões que a TV abre
    (TMDB, clima, streaming, DNS) passam. UDP fica (SSDP, mDNS, CoAP do ThinQ, DNS).
@@ -40,13 +43,13 @@ O kernel não tem `conntrack` (só os matches `tcp`/`udp`/`icmp`) nem `ip6tables
 
 ## Consequências
 
-- Positivas: 9998, crashreportd e DLNA fora da rede; porta nova que a LG abrir nasce fechada.
+- Positivas: 9998 e crashreportd fora da rede; porta nova que a LG abrir fora da lista nasce fechada.
 - Negativas: ~40 s após o boot frio (até o hook rodar) tudo fica aberto; IPv6 sem filtro (só
   link-local; ouvem 22 e CoAP); serviço da LG que dependa de porta TCP fora da lista para de
-  responder à rede (acrescentar em `TCP_OPEN`).
+  responder à rede (acrescentar em `TCP_OPEN`); a faixa 1024–2047 fica toda aberta por causa do upnpd.
 - Custo: zero.
 
 ## Como verificar que está sendo seguida
 
-`npm run tv:root -- status` mostra 9 regras ACCEPT; do PC, conexão em 9998/11111 recusada e em
-22/2003/3000 aceita; `iptables -S INPUT` na TV tem `-j TVOS`.
+`npm run tv:root -- status` mostra 7 regras ACCEPT; do PC, conexão em 9998/11111 recusada e em
+22/3000/36866 e na porta DIAL do SSDP aceita; `iptables -S INPUT` na TV tem `-j TVOS`.

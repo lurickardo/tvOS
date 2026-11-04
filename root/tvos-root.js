@@ -30,10 +30,11 @@ var EULA_OFF = ['acrOnAllowed', 'acrAdAllowed', 'customAdAllowed', 'chpAllowed',
 var OPTION_OFF = ['webOSPromotionVideo', 'channelplus'];
 var MARK = '# tvOS blocklist';
 // Firewall (ADR 0010): conexão TCP nova vinda da rede só nestas portas — SSH (só por chave), cast DIAL
-// (2003, 18181, 36866) e app LG ThinQ / second screen (1434, 1708, 3000, 3001). Fecha DevTools 9998,
-// crashreportd 11111, UPnP/DLNA e qualquer porta nova. Sem conntrack no kernel: bloqueia só o SYN
-// (resposta de conexão que a TV abre passa); UDP de descoberta (SSDP, mDNS, CoAP) fica.
-var TCP_OPEN = [22, 1434, 1708, 2003, 3000, 3001, 18181, 36866];
+// (18181, 36866) e app LG ThinQ / second screen (3000, 3001); o upnpd anuncia DIAL e second screen em
+// portas sorteadas a cada boot, sempre em 1024–2047 (medido: 1434/1708/2003, depois 1467/1839/1900).
+// Fecha DevTools 9998, crashreportd 11111 e qualquer porta nova fora disso. Sem conntrack no kernel:
+// bloqueia só o SYN (resposta de conexão que a TV abre passa); UDP de descoberta (SSDP, mDNS, CoAP) fica.
+var TCP_OPEN = [22, '1024:2047', 3000, 3001, 18181, 36866];
 var FW_OFF = 'iptables -D INPUT -j TVOS 2>/dev/null; iptables -F TVOS 2>/dev/null; iptables -X TVOS 2>/dev/null';
 var ELEVATE = '/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service';
 
