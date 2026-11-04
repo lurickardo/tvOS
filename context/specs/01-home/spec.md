@@ -33,12 +33,15 @@ Atalhos, Clima e Sistema. Tudo com o controle, a 60 fps.
 10. QUANDO Voltar é pressionado com a gaveta aberta O SISTEMA DEVE fechá-la; na home, devolver ao
     webOS.
 11. O SISTEMA DEVE manter ≥ 55 fps ao mover o foco por toda a home e a gaveta.
-12. QUANDO OK é pressionado no botão Buscar do topo O SISTEMA DEVE abrir a busca de filmes e séries
+12. QUANDO OK é pressionado na barra de busca (entre os destaques e a prateleira) O SISTEMA DEVE abrir a busca de filmes e séries
     (TMDB, todos os serviços); cada resultado mostra o serviço onde passa no Brasil (verde = app
     instalado) e OK abre o app desse serviço. Deep link direto no título continua fora de escopo.
 
+13. O SISTEMA DEVE mostrar na prateleira todos os apps instalados como carrossel (conhecidos primeiro,
+    com o logo da marca); a trilha rola com ←/→ mantendo o foco no meio, com `‹ ›` nas bordas.
+
 ## Navegação
-Foco inicial na prateleira. ↑ da prateleira → destaques → abas/botões. ↓ da prateleira → gaveta;
+Foco inicial na prateleira. ↑ da prateleira → barra de busca → destaques → abas/botões. ↓ da prateleira → gaveta;
 ↑ ou Voltar fecham. ←/→ dentro de cada linha. Foco volta ao último elemento ao fechar a gaveta.
 
 ## Fora de escopo

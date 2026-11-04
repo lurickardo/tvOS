@@ -41,10 +41,11 @@ visual aprovada: `context/specs/01-home/mockup-home.jpg` e `mockup-drawer.jpg` (
 ┌──────────────────────────────────────────────────────────────┐
 │ Para você (76px)                  (TV ao vivo)(Entradas)(Ajustes) ← Round  │ top 52 / 69
 │ [Explorar] [Filmes] [Séries] ← Tab      CPU 12%  Memória 48%  60 fps  24° … │ top 158 / 178
-│ ┌──────── Card em foco (1040 de largura) ───┐ ┌pôster 320┐ ┌pôster 320┐     │ top 262, h 442
+│ ┌──────── Card em foco (1040 de largura) ───┐ ┌pôster 320┐ ┌pôster 320┐     │ top 250, h 372
 │ └───────────────────────────────────────────┘ └──────────┘ └──────────┘     │
-│ Título · gênero · duração · serviço             Título       Título        │ top 726
-│ ╭──────────────── Platter (prateleira, 7 Tiles de 210) ─────────────────╮  │ top 814, h 206
+│ Título · gênero · duração · serviço             Título       Título        │ top 650
+│ (🔍 Buscar filmes e séries ........................ OK para digitar)  ← Barra │ top 738, h 64
+│ ╭── Platter: carrossel de Tiles de 210, anda por transform, ‹ › nas bordas ╮ │ top 826, h 190
 │ ╰───────────────────────────────────────────────────────────────────────╯  │
 └──────────────────────────────────────────────────────────────┘
 ```

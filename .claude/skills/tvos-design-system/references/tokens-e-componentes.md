@@ -70,9 +70,10 @@ Fonte do sistema: `'LG Smart UI', 'Helvetica Neue', Arial, sans-serif`; números
 |---|---|---|
 | **Round** (botão só-ícone) | 68×68, ícone 28 | foco: branco, `scale(1.1)`, nome aparece embaixo (23px) |
 | **Tab** | altura 68, padding 0 26 | ativa: 600; foco: fundo branco, `scale(1.05)` |
-| **Card** (destaque) | altura 442; em foco largo (backdrop), demais pôster | foco: `translateY(-6px) scale(1.05)`, borda interna clara |
-| **Platter** | top 814, altura 206, raio 62, gradiente de vidro | — |
-| **Tile** (app) | altura 126, raio 22, cor da marca, logo 70%×50% | foco: `scale(1.2)`, sombra de foco |
+| **Card** (destaque) | altura 372; em foco largo (backdrop), demais pôster | foco: `translateY(-6px) scale(1.05)`, borda interna clara |
+| **Platter** | top 826, altura 190, raio 62, gradiente de vidro; carrossel: a trilha anda por `transform` (foco no meio), `‹ ›` esmaecem nas bordas quando há mais | — |
+| **Barra de busca** | top 738, altura 64, largura dos destaques, pílula de vidro; abre a busca (`data-a=search`) | foco: branco, `scale(1.015)` |
+| **Tile** (app) | 210×112, raio 22, fundo `.b-<key>`, logo SVG de `app/assets/brands/` (máx. 140×66; origem em `SOURCES.md`); app sem logo: ícone da TV + nome | foco: `scale(1.2)`, sombra de foco |
 | **Drawer** | sobe 560 px; home faz `translateY(-560px)` | aberta/fechada; Voltar fecha |
 | **Sheet** (modal de ajustes) | centralizada, `--surface` opaco | foco preso dentro; Voltar fecha |
 | **Metric** | 320 de largura, padding 32/40, raio 24 | valor grande + rótulo; "—" se indisponível |

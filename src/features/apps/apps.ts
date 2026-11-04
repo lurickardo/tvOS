@@ -1,6 +1,6 @@
 // Apps instalados na TV: Luna listLaunchPoints; se negado (apps de Developer Mode), SSAP com
 // pareamento único. Negado nos dois = sem apps (nunca apps fictícios). Ver tvos-webos-api.
-import { esc, $ } from '../../lib/html';
+import { esc, $, qsa } from '../../lib/html';
 import { isWebOS, luna } from '../../platform/luna';
 import { actions, ensureFocus } from '../../ui/nav';
 import { openOverlay, setOverlay } from '../../ui/overlay';
@@ -8,29 +8,35 @@ import { toast } from '../../ui/toast';
 
 export interface App { id: string; title: string; icon?: string }
 
-interface Service { key: string; label: string; provider?: number }
+interface Service { key: string; label: string; match: RegExp; provider?: number }
 
-// Ordem da prateleira (a da imagem de referência). `provider` = id do TMDB no Brasil; as cores da
-// marca ficam no CSS (.b-<key>), porque a CSP não aceita style inline.
+// Ordem da prateleira (a da imagem de referência, depois os demais). `key` = arquivo em
+// assets/brands/<key>.svg e classe .b-<key> (cor do tile; a CSP não aceita style inline).
+// `provider` = id do TMDB no Brasil.
 const SERVICES: Service[] = [
-  { key: 'netflix', label: 'NETFLIX', provider: 8 },
-  { key: 'youtube', label: '▶ YouTube' },
-  { key: 'globoplay', label: 'globoplay', provider: 307 },
-  { key: 'primevideo', label: 'prime video', provider: 119 },
-  { key: 'disney', label: 'Disney+', provider: 337 },
-  { key: 'hbo', label: 'HBO max', provider: 1899 },
-  { key: 'appletv', label: 'tv', provider: 350 },
-  { key: 'paramount', label: 'paramount+', provider: 531 },
+  { key: 'netflix', label: 'Netflix', match: /netflix/, provider: 8 },
+  { key: 'youtube', label: 'YouTube', match: /youtube/ },
+  { key: 'globoplay', label: 'Globoplay', match: /globoplay/, provider: 307 },
+  { key: 'primevideo', label: 'Prime Video', match: /prime video|primevideo|amazon/, provider: 119 },
+  { key: 'disney', label: 'Disney+', match: /disney/, provider: 337 },
+  { key: 'hbomax', label: 'HBO Max', match: /hbo|(^| )max( |$)/, provider: 1899 },
+  { key: 'appletv', label: 'Apple TV', match: /apple ?tv/, provider: 350 },
+  { key: 'paramountplus', label: 'Paramount+', match: /paramount/, provider: 531 },
+  { key: 'spotify', label: 'Spotify', match: /spotify/ },
+  { key: 'plex', label: 'Plex', match: /(^| )plex( |$)/ },
+  { key: 'twitch', label: 'Twitch', match: /twitch/ },
+  { key: 'crunchyroll', label: 'Crunchyroll', match: /crunchyroll/ },
 ];
-const SHELF_SIZE = 7;
+const TILE_PITCH = 258; // 210 de tile + 48 de espaço
+const TILES_VISIBLE = 7;
 const LAUNCH = 'luna://com.webos.applicationManager/launch';
 
 let apps: App[] = [];
 let loading = true;
 let launching = false;
 
-const normalize = (app: App) => `${app.id} ${app.title}`.toLowerCase().replace(/[^a-z0-9]/g, '').replace('amazonprime', 'primevideo');
-const serviceOf = (app: App): Service | undefined => SERVICES.filter((s) => normalize(app).indexOf(s.key) >= 0)[0];
+const normalize = (app: App) => `${app.id} ${app.title}`.toLowerCase().replace(/[^a-z0-9]+/g, ' ');
+const serviceOf = (app: App): Service | undefined => SERVICES.filter((s) => s.match.test(normalize(app)))[0];
 const providerOf = (app: App): number => (serviceOf(app) || { provider: 0 }).provider || 0;
 
 /** Ids de provedor do TMDB (Brasil) cujo app está instalado — filtra o catálogo. */
@@ -62,16 +68,21 @@ export function sortedApps(): App[] {
   return apps.slice().sort((a, b) => rank(a) - rank(b) || a.title.localeCompare(b.title));
 }
 
+const logo = (s: Service) => `<img class="logo" src="assets/brands/${s.key}.svg" alt="${s.label}">`;
+
 function tile(app: App): string {
   const s = serviceOf(app);
-  const attrs = `class="tile f${s ? '' : ' other'}" data-a="app" data-id="${esc(app.id)}" data-title="${esc(app.title)}"`;
-  if (s) return `<button ${attrs.replace('tile f', `tile f b-${s.key}`)}>${s.label}</button>`;
-  return `<button ${attrs}>${app.icon ? `<img src="${esc(app.icon)}" alt="">` : ''}<span>${esc(app.title)}</span></button>`;
+  const attrs = `data-a="app" data-id="${esc(app.id)}" data-title="${esc(app.title)}"`;
+  if (s) return `<button class="tile f b-${s.key}" ${attrs} aria-label="${s.label}">${logo(s)}</button>`;
+  return `<button class="tile f other" ${attrs}>${app.icon ? `<img src="${esc(app.icon)}" alt="">` : ''}<span>${esc(app.title)}</span></button>`;
 }
 
 /** Cartão da lista "Todos os apps". */
 export function appCard(app: App): string {
-  return `<button class="poster app f" data-a="app" data-id="${esc(app.id)}" data-title="${esc(app.title)}">${app.icon ? `<img src="${esc(app.icon)}" alt="">` : ''}<span>${esc(app.title)}</span></button>`;
+  const s = serviceOf(app);
+  const attrs = `data-a="app" data-id="${esc(app.id)}" data-title="${esc(app.title)}"`;
+  if (s) return `<button class="poster app f b-${s.key}" ${attrs}>${logo(s)}<span>${esc(app.title)}</span></button>`;
+  return `<button class="poster app f" ${attrs}>${app.icon ? `<img src="${esc(app.icon)}" alt="">` : ''}<span>${esc(app.title)}</span></button>`;
 }
 
 /** Lista completa (atalho "Todos os apps" da gaveta). */
@@ -86,10 +97,18 @@ export function openAllApps(): void {
   if (first) (first as HTMLElement).focus();
 }
 
+/** Carrossel: a trilha anda por transform para o tile focado ficar no meio; setas nas bordas avisam que há mais. */
+function scrollShelf(index: number, count: number): void {
+  const first = Math.max(0, Math.min(index - 3, count - TILES_VISIBLE));
+  $('#track').style.transform = `translateX(${-first * TILE_PITCH}px)`;
+  $('#platter').className = `${first > 0 ? 'more-l ' : ''}${first < count - TILES_VISIBLE ? 'more-r' : ''}`;
+}
+
 function renderShelf(): void {
-  const shown = sortedApps().slice(0, SHELF_SIZE);
+  const list = sortedApps();
   const note = loading ? (isWebOS ? 'Aguardando autorização na TV…' : 'Carregando apps…') : isWebOS ? 'Apps indisponíveis · OK para tentar de novo' : 'Os apps aparecem na TV';
-  $('#shelf').innerHTML = shown.length ? shown.map(tile).join('') : `<button class="tile other f" data-a="apps-retry"><span>${note}</span></button>`;
+  $('#shelf').innerHTML = `<div id="track">${list.length ? list.map(tile).join('') : `<button class="tile other f" data-a="apps-retry"><span>${note}</span></button>`}</div>`;
+  scrollShelf(0, list.length);
   ensureFocus('#platter .f');
 }
 
@@ -146,6 +165,12 @@ export function loadApps(): void {
     listOverSsap().then((list) => { apps = list; loading = false; renderShelf(); });
   });
 }
+
+$('#shelf').addEventListener('focusin', (event) => {
+  const tiles = qsa('#track .tile');
+  const index = tiles.indexOf(event.target as HTMLElement);
+  if (index >= 0) scrollShelf(index, tiles.length);
+});
 
 actions.app = (el) => launchApp(el.dataset.id as string, el.dataset.title as string);
 actions['apps-retry'] = () => loadApps();

@@ -12,6 +12,14 @@ fitStage($('#stage'));
 // Pouca RAM (≤ 1 GB): sem animação de foco (tvos-performance, modo lite).
 if (((navigator as Navigator & { deviceMemory?: number }).deviceMemory || 2) <= 1) document.body.className = 'lite';
 
+$('#searchbar').innerHTML = `${icon('search')}<span>Buscar filmes e séries</span><em>OK para digitar</em>`;
+
+// O navegador rola o contêiner ao focar algo fora dele; o carrossel anda por transform, então desfaz.
+document.addEventListener('scroll', (event) => {
+  const el = event.target as HTMLElement;
+  if (el.id === 'shelf' || el.id === 'stage') { el.scrollLeft = 0; el.scrollTop = 0; }
+}, true);
+
 // Ícone de app que não carrega (caminho inválido na TV) some e deixa só o nome.
 document.addEventListener('error', (event) => {
   const img = event.target as HTMLElement;
@@ -19,11 +27,11 @@ document.addEventListener('error', (event) => {
 }, true);
 
 setBase({
-  selector: '#top .f, #cards .f, #platter .f',
+  selector: '#top .f, #cards .f, #searchbar, #platter .f',
   edge: (code, current) => { if (code === KEY.down && current.closest('#platter')) { openDrawer(); return true; } return false; },
 });
 
-const rounds: Array<'search' | 'live' | 'hdmi' | 'gear'> = ['search', 'live', 'hdmi', 'gear'];
+const rounds: Array<'live' | 'hdmi' | 'gear'> = ['live', 'hdmi', 'gear'];
 qsa('#rounds .round').forEach((button, i) => { button.innerHTML = `${icon(rounds[i])}<span class="rl">${button.getAttribute('aria-label')}</span>`; });
 
 // Linha de estado do topo: CPU · memória · FPS · clima.

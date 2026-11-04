@@ -62,8 +62,9 @@ function pick(current: HTMLElement, key: number, candidates: HTMLElement[]): HTM
     const gap = sign > 0 ? b0 - a1 : a0 - b1;
     const perpGap = Math.max(0, q0 - p1, p0 - q1);
     if (horizontal && perpGap > 0) return; // esquerda/direita ficam na mesma linha
-    const perpCenter = Math.abs((q0 + q1 - p0 - p1) / 2);
-    const score = Math.max(0, gap) + perpGap * 3 + perpCenter * 0.3;
+    const c = (p0 + p1) / 2; // centro de quem está focado: 0 se cai dentro do candidato
+    const perpCenter = c < q0 ? q0 - c : c > q1 ? c - q1 : 0;
+    const score = Math.max(0, gap) + perpGap * 3 + perpCenter * 0.5;
     if (score < bestScore) { bestScore = score; best = el; }
   });
   return best;
