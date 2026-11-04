@@ -1,9 +1,10 @@
-# Plataforma — LG 43UP7500PSF e webOS TV 6.x
+# Plataforma — LG 43LM631C0SB e webOS TV 4.x
 
 ## Conteúdo
 - Ficha do hardware
 - webOS TV e motor web
-- O que o Chromium 79 NÃO tem
+- O que o Chromium 53 NÃO tem
+- Node 0.12 no JS service
 - Entrada: controle remoto e ponteiro
 - App web no webOS (resumo)
 - UI de 3 metros
@@ -11,59 +12,66 @@
 
 ## Ficha do hardware
 
+Alvo desde o ADR 0006. Dados em **medido** vieram de `npx ares-device -i -d tv` (2026-11-04);
+o resto é **verificar**. A 43UP7500PSF (webOS 6) deixou de ser alvo.
+
 | Item | Valor | Nota |
 |---|---|---|
-| Modelo | LG 43UP7500PSF (linha UP75, 2021) | versão brasileira |
-| Tela | 43", LED, 4K UHD 3840×2160, 60 Hz | TV UHD desenha app com `resolution: 1920x1080` nesse tamanho (TV Full HD/HD usa 1280×720, free-my-tv #402) — **verificar** `window.innerWidth` |
-| HDR | HDR10, HLG | |
-| Processador | Quad Core 4K | CPU/GPU modestas: anime só `transform`/`opacity` |
-| Memória | não divulgada | trate como dispositivo de **pouca RAM**; app pesado é encerrado pelo sistema; total real: painel do tvOS ou `npx ares-device -d tv -r` |
-| Conexões | 2× HDMI (uma com ARC), 1× USB, Wi-Fi, Bluetooth, LAN | entradas `com.webos.app.hdmi1`/`hdmi2` (`tvos-webos-api`) |
-| Sistema | webOS TV 6.x | ThinQ AI, assistente de voz |
-| Controle | Magic Remote (setas, OK, Voltar, ponteiro, roda) ou controle simples | **verificar** qual veio |
+| Modelo | LG **43LM631C0SB** (medido) | placa `M3R_ATSC_KR`, OTA `HE_DTV_W19R_AFAAATAA` (linha W19R = 2019) |
+| Sistema | webOS TV **4.x** (medido: SDK 4.10.0, firmware 05.40.97) | Chromium 53 no app, Node 0.12.2 no service |
+| Tela | 43", provável **Full HD** 1920×1080 — **verificar** | modelos Full HD desenham apps em **1280×720** (LG); `appinfo.json` usa `1280x720` e o palco 1920×1080 é escalado por `window.innerWidth` |
+| Processador/memória | não divulgados | trate como **pouca RAM e CPU modesta**; total real: painel do tvOS ou `npx ares-device -d tv -r` |
+| Conexões | HDMI, USB, Wi-Fi, Bluetooth — **verificar quantas portas HDMI** | entradas `com.webos.app.hdmi1`/`hdmi2` (`tvos-webos-api`) |
+| Controle | **verificar** se veio Magic Remote (ponteiro/roda) ou controle simples | navegação por setas funciona nos dois |
 
 ## webOS TV e motor web
 
-| webOS TV | Ano | Motor |
-|---|---|---|
-| 5.x | 2020 | Chromium 68 |
-| **6.x** | **2021 (esta TV)** | **Chromium 79** |
-| 22 | 2022 | Chromium 87 |
-| 23 | 2023 | Chromium 94 |
-| 24 | 2024 | Chromium 108 |
+| webOS TV | Ano | Motor | Node (service) |
+|---|---|---|---|
+| 3.x | 2016–2017 | Chromium 38 | 0.12.2 |
+| **4.x** | **2018–2019 (esta TV)** | **Chromium 53** | **0.12.2** |
+| 5.x | 2020 | Chromium 68 | 8.12.0 |
+| 6.x | 2021 | Chromium 79 | 8.12.0 |
+| 22 | 2022 | Chromium 87 | 12.21.0 |
 
-JS service (Node.js): webOS TV 6.0 = **Node 8.12** (ES2017; sem `?.`/`??`), webOS 22 = 12.21,
-webOS 24 = 16.19.
+Fonte: tabelas "Web engine" e "Supported Node.js version" do webOS TV Developer. Web Inspector
+(`ares-inspect`) de TV antiga pode exigir Chrome compatível no PC (a LG lista Chrome 68 para
+webOS 5 e Chrome 38 para 3.x; para 4.x **verificar** — se o inspector não abrir no Chrome atual,
+ver `tvos-debug`).
 
-Fonte: tabela "Web engine" do webOS TV Developer. Web Inspector (`ares-inspect`) do 6.x funciona
-com Chrome recente no PC.
+## O que o Chromium 53 NÃO tem
 
-## O que o Chromium 79 NÃO tem
-
-Precisa de transpile (alvo `chrome79` no bundler/Babel/TS), polyfill ou alternativa:
+O `tsconfig` (`lib: ES2016`) barra a API ausente; o esbuild (`target: chrome53`) rebaixa a
+sintaxe. Confira em caniuse/MDN (coluna Chrome ≤ 53) antes de usar algo novo.
 
 | Recurso | Chegou em | Alternativa |
 |---|---|---|
-| Optional chaining `a?.b`, nullish `a ?? b` | Chrome 80 | transpile |
-| `String.prototype.replaceAll` | 85 | `split/join` ou regex com `g` |
-| Atribuição lógica `??=`, `\|\|=`, `&&=` | 85 | transpile |
-| Métodos/acessores privados `#m()` | 84 | transpile (campos `#x` já existem desde 74) |
-| `Promise.any`, `AggregateError` | 85 | polyfill |
-| Top-level `await` | 89 | função `async` de entrada |
-| `Array.prototype.at`, `Object.hasOwn` | 92 / 93 | índice, `Object.prototype.hasOwnProperty.call` |
-| `structuredClone` | 98 | `JSON.parse(JSON.stringify())` para dado simples |
-| CSS `gap` em **flexbox** | 84 | margem nos filhos (grid `gap` funciona) |
-| CSS `:focus-visible` | 86 | classe de foco própria controlada pela navegação |
-| CSS `inset` | 87 | `top/right/bottom/left` |
-| CSS `aspect-ratio` | 88 | hack do `padding-top` |
-| CSS `:is()`, `:where()` | 88 | seletores explícitos |
-| CSS `@container`, `:has()` | 105 | layout fixo para 1920×1080 |
+| `async`/`await` | 55 | rebaixado pelo esbuild (vira generator + helper) |
+| Spread/rest de objeto `{...a}` | 60 | rebaixado pelo esbuild |
+| Optional chaining `?.`, nullish `??` | 80 | rebaixado pelo esbuild |
+| `Object.entries`, `Object.values` | 54 | `Object.keys(o).map(k => [k, o[k]])` |
+| `String.prototype.padStart`/`padEnd` | 57 | `('0' + n).slice(-2)` |
+| `AbortController` | 66 | `XMLHttpRequest` com `timeout` e `abort()` |
+| `ResizeObserver` | 64 | evento `resize` da janela; layout fixo |
+| `Promise.prototype.finally` | 63 | `.then(f, f)` |
+| `Array.prototype.flat`/`flatMap`, `Object.fromEntries` | 69 / 73 | `reduce`/laço |
+| `globalThis`, `queueMicrotask` | 71 | `window`, `Promise.resolve().then` |
+| CSS Grid | 57 | flexbox; posição absoluta no palco fixo |
+| CSS `gap` em flexbox | 84 | margem nos filhos |
+| CSS `position: sticky` | 56 | posição absoluta |
+| CSS `min()`/`max()`/`clamp()` | 79 | valores em px (palco fixo) |
+| CSS `inset`, `aspect-ratio`, `:is()`, `:focus-visible` | 87 / 88 / 88 / 86 | `top/right/…`, hack do `padding-top`, seletores explícitos, classe de foco própria |
 
-Funcionam: ES modules, `import()` dinâmico, `async/await`, classes com campos públicos e `#x`,
-`Promise.allSettled`, `IntersectionObserver`, `ResizeObserver`, CSS Grid, custom properties,
-`position: sticky`, Web Animations básico.
+Funcionam: `let`/`const`, arrow, classes, template strings, `Promise`, `fetch` (sem abort),
+`Array.prototype.includes`, `**`, `IntersectionObserver`, custom properties (`var(--x)`),
+`requestAnimationFrame`, `Intl.DateTimeFormat`, `localStorage`.
 
-Antes de usar API/CSS moderno: confira no MDN/caniuse a coluna Chrome ≤ 79 ou teste na TV.
+## Node 0.12 no JS service
+
+O `service/` roda em Node 0.12.2: **só ES5** (`var`, `function`, concatenação de string), sem
+`let`/`const`, arrow, template string, `Buffer.from` (use `new Buffer`), `Object.assign`. Módulos
+nativos (`fs`, `net`) e `webos-service` (do sistema). Não há transpile do `service/`: escreva
+ES5 à mão (molde: `service/index.js`).
 
 ## Entrada: controle remoto e ponteiro
 
@@ -82,7 +90,7 @@ Eventos `keydown` com `keyCode`:
 - **Voltar**: o padrão do webOS navega no histórico; para tratar a tecla no app, `appinfo.json`
   com `"disableBackHistoryAPI": true` e capture 461. Voltar na tela raiz deve sair/minimizar, não
   travar.
-- **Ponteiro do Magic Remote**: evento `cursorStateChange` (`event.detail.visibility`). Com
+- **Ponteiro do Magic Remote** (só se a TV tiver o controle com ponteiro): evento `cursorStateChange` (`event.detail.visibility`). Com
   ponteiro visível, hover move o foco; ao sumir, a navegação por setas continua de onde o foco
   estava. Nunca dependa de hover para mostrar ação.
 - Navegação espacial (setas entre elementos) não é nativa: precisa de implementação ou lib
@@ -105,8 +113,8 @@ Decidido no ADR 0002: app `.ipk` pelo Developer Mode, sem root.
 |---|---|
 | Foco **sempre** visível e óbvio (contorno + escala/brilho), um elemento focado por vez | sem mouse, o foco é o cursor |
 | Ordem de foco previsível: setas seguem o layout visual; nunca "prender" o foco | navegação espacial |
-| Safe area ~5% nas bordas (≈ 96 px × 54 px em 1920×1080) | overscan e conforto |
-| Texto de corpo ≥ 24 px CSS em 1920×1080; título ≥ 36 px | leitura a 3 m |
+| Safe area ~5% nas bordas (≈ 96 px × 54 px no palco 1920×1080) | overscan e conforto |
+| Texto de corpo ≥ 24 px no palco 1920×1080 (≈ 16 px reais em 1280×720 — não desça disso); título ≥ 36 px | leitura a 3 m |
 | Alvos grandes e espaçados; ação principal a ≤ 2 cliques do início | controle impreciso |
 | Contraste AA (≥ 4,5:1), sem informação só por cor; cores do controle sempre com rótulo | TVs variam muito |
 | Animação curta (≤ 300 ms), só `transform`/`opacity`; respeite `prefers-reduced-motion` | GPU modesta |
@@ -114,6 +122,7 @@ Decidido no ADR 0002: app `.ipk` pelo Developer Mode, sem root.
 
 ## Perguntas que só a TV responde
 
-Registre a resposta aqui ao descobrir: versão exata do webOS, `innerWidth`/`devicePixelRatio`,
-keyCodes de mídia/canal, se o Magic Remote veio, memória livre para o app, se o navegador da TV
-abre o app hospedado (caso "web hospedado").
+Registre a resposta aqui ao descobrir: `window.innerWidth`/`innerHeight` reais (esperado 1280×720),
+painel Full HD ou HD, quantas portas HDMI, keyCodes de mídia/canal, se há Magic Remote, memória
+total e livre para o app, se `listLaunchPoints` é negado nesta TV, se o inspector abre no Chrome
+atual.

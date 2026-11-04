@@ -3,7 +3,7 @@
 Status: rascunho   ·   Data: 2026-11-04
 
 ## Problema
-A home do webOS 6 da LG 43UP7500PSF é lenta (travadas ao abrir, banners e anúncios carregando) e
+A home do webOS da LG 43LM631C0SB é lenta (travadas ao abrir, banners e anúncios carregando) e
 não mostra nada útil sobre a TV. A casa quer uma tela que abra na hora, leve aos apps em um clique
 e mostre clima, entradas e como o sistema está rodando.
 

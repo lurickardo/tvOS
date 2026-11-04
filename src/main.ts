@@ -11,6 +11,14 @@ function el(id: string): HTMLElement {
   return node;
 }
 
+// O palco é 1920×1080; a janela da TV pode ser 1280×720 (Full HD) ou 1920×1080: escala para caber.
+const stage = el('stage');
+function fit() {
+  stage.style.transform = `scale(${window.innerWidth / 1920})`;
+}
+fit();
+window.addEventListener('resize', fit);
+
 const clock = el('clock');
 const cpu = el('cpu');
 const mem = el('mem');

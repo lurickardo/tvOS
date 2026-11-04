@@ -9,7 +9,7 @@
   "largeIcon": "assets/largeIcon.png",
   "bgColor": "#0B0B0D",
   "iconColor": "#0B0B0D",
-  "resolution": "1920x1080",
+  "resolution": "1280x720",
   "disableBackHistoryAPI": true,
   "handlesRelaunch": false,
   "supportQuickStart": true,

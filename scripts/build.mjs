@@ -1,5 +1,5 @@
 // Monta dist/app (app/ + bundle) e dist/service, prontos para o ares-package.
-// Bundle único, minificado, com sintaxe rebaixada para o Chromium 79 do webOS TV 6 (ADR 0003).
+// Bundle único, minificado, com sintaxe rebaixada para o Chromium 53 do webOS TV 4.x (ADR 0003, 0006).
 // Config pessoal do .env entra no bundle (ADR 0005): dist/ e o .ipk ficam só no seu PC e na TV.
 // --serve: servidor local em http://127.0.0.1:8000 para testar no navegador do PC.
 import { build, context } from 'esbuild';
@@ -27,7 +27,7 @@ const options = {
   minify: !serve,
   sourcemap: serve, // ponytail: source map só em dev, nunca no .ipk
   format: 'iife',
-  target: 'chrome79',
+  target: 'chrome53',
   define: { __TVOS_CONFIG__: JSON.stringify(config) },
   logLevel: 'info',
 };

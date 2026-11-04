@@ -1,6 +1,6 @@
 # 0002 — tvOS é um app home webOS instalado pelo Developer Mode, sem root
 
-Status: aceito (2026-11-04)
+Status: aceito (2026-11-04); a TV de destino passou a ser a 43LM631C0SB, webOS 4.x (ADR 0006)
 Decisores: Lurickardo
 
 ## Contexto

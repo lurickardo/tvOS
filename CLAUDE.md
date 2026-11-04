@@ -1,17 +1,20 @@
 # tvOS — instruções do projeto
 
-**tvOS**: home screen própria, rápida e sem anúncios, para a TV **LG 43UP7500PSF** (43", 4K UHD,
-webOS TV 6.x de 2021 → app em **Chromium 79**, JS service em **Node 8.12**, Magic Remote, 2 HDMI).
+**tvOS**: home screen própria, rápida e sem anúncios, para a TV **LG 43LM631C0SB**
+(2019, webOS TV 4.x → app em **Chromium 53**, JS service em **Node 0.12**, tela provável Full HD).
 Mostra apps, destaques de filmes/séries, clima, entradas e o **estado do sistema** (CPU, memória,
 FPS…). Produto: `tvos-produto`; plataforma: `tvos-context`.
 
 **Estado:** esqueleto funcionando (build → `.ipk`, painel CPU/memória/FPS). MVP a construir.
 
 Decisões tomadas (não reabra sem ADR novo):
+- **ADR 0006**: a TV de destino é a **43LM631C0SB (webOS 4.x)** — medida por `ares-device -i`, não a
+  43UP7500PSF. Alvo `chrome53`, `lib: ES2016`, service em ES5, `appinfo` `1280x720` com palco
+  1920×1080 escalado.
 - **ADR 0002**: app `.ipk` + JS service instalados pelo **Developer Mode, sem root** (linha do
   FreeMyTvWebOS); abre por atalho numérico; Key Server OFF depois de instalar.
 - **ADR 0003**: **TypeScript + esbuild, sem framework, zero dependência em runtime**, bundle único
-  `target: chrome79`, `lib: ES2019`; **performance é o critério nº 1**.
+  `target: chrome53`, `lib: ES2016`; **performance é o critério nº 1**.
 - **ADR 0004**: TMDB (imagens leves) e Open-Meteo; sem telemetria.
 - **ADR 0005**: config pessoal no `.env` (`TV_IP`, `TMDB_TOKEN`, `CITY`; modelo em
   `.env.example`) injetada no build local. **A IA nunca lê nem imprime o `.env`**; `.ipk`/`dist/`
@@ -56,7 +59,7 @@ plano) só para feature grande ou decisão de arquitetura.
 npm install            # uma vez (devDependencies fixadas); depois cp .env.example .env e preencher
 npm run tv:setup       # cadastra a TV pelo TV_IP e busca a chave (passphrase: a pessoa digita)
 npm run dev            # http://localhost:8000 no navegador do PC (1920×1080, só teclado)
-npm run check          # typecheck (lib ES2019) + skills + encoding
+npm run check          # typecheck (lib ES2016) + skills + encoding
 npm run tv:package     # build + .ipk em dist/ (sem TV; o CI roda)
 npm run tv:install     # build com o .env, instala e abre na TV "tv" (tutorial: README)
 npm run tv:inspect     # DevTools do app na TV
@@ -102,7 +105,7 @@ visual e refatoração interna normalmente não pedem nada.
   na TV. Dependência em runtime só com ADR.
 - **Plataforma TV**: tudo navegável **só com o controle** (setas + OK + Voltar), foco sempre visível,
   texto legível a 3 m, safe area, **dark only** (`tvos-design-system`). API da TV só por
-  `src/platform/` (`tvos-webos-api`). CSS sem flex `gap`/`:focus-visible`; service sem `?.`/`??`.
+  `src/platform/` (`tvos-webos-api`). CSS sem flex `gap`/`:focus-visible`; service só ES5.
 - **Decisão duradoura** (lib/serviço novo, arquitetura, distribuição, custo, convenção) → ADR em
   `context/adr/` (`tvos-adr`).
 

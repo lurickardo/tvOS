@@ -20,7 +20,8 @@ description: >-
 ## Regras de rede
 
 1. Um módulo por fonte (`src/features/<x>/api.ts` ou repository), nunca `fetch` na UI.
-2. `fetch` com `AbortController` e timeout de 8 s; validar a forma da resposta antes de usar.
+2. Timeout de 8 s com `XMLHttpRequest` (`timeout` + `abort()`): o Chromium 53 não tem
+   `AbortController`; validar a forma da resposta antes de usar.
 3. Cache no `localStorage` com `{ savedAt, data }` e TTL (TMDB 1 h, clima 30 min); abrir a tela
    com o cache e atualizar depois. Leitura com `try/catch` (dado velho ou corrompido = sem cache).
 4. Sem rede: mostrar o último dado com "desatualizado"; sem cache, estado vazio com mensagem.

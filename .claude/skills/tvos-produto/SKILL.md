@@ -1,7 +1,7 @@
 ---
 name: tvos-produto
 description: >-
-  Visão de produto do tvOS (home screen própria para a TV LG 43UP7500PSF): por que existe (a home da
+  Visão de produto do tvOS (home screen própria para a TV LG 43LM631C0SB): por que existe (a home da
   LG é lenta e cheia de anúncios), princípios (performance acima de tudo, dark only, sem anúncios,
   sem telemetria, controle remoto primeiro, reversível), público (a casa, no sofá), módulos e o que
   cada um mostra — prateleira de apps, destaques de filmes/séries do TMDB, painel do sistema com
@@ -19,7 +19,7 @@ description: >-
 
 ## Por que existe
 
-A home do webOS 6 é um portal de tela cheia: banners que tocam sozinhos, promoções, travadas de
+A home do webOS é um portal de tela cheia: banners que tocam sozinhos, promoções, travadas de
 3–5 s ao apertar Home. O tvOS é uma home própria, instalada como app (ADR 0002), que abre na hora
 e mostra só o que a casa usa — e mais informação útil sobre a TV do que a LG mostra.
 

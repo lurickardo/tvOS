@@ -2,7 +2,7 @@
   "name": "tvos",
   "version": "0.1.0",
   "private": true,
-  "description": "Home screen rápida e sem anúncios para a TV LG 43UP7500PSF (webOS TV 6.x)",
+  "description": "Home screen rápida e sem anúncios para a TV LG 43LM631C0SB (webOS TV 4.x)",
   "license": "MIT",
   "type": "module",
   "scripts": {

@@ -45,7 +45,7 @@ jobs:
 
       - run: npm ci
 
-      - name: Typecheck (lib ES2019 = API do Chromium 79)
+      - name: Typecheck (lib ES2016 = API do Chromium 53)
         run: npm run typecheck
 
       # build + ares-package: valida appinfo.json e o pacote sem precisar da TV.

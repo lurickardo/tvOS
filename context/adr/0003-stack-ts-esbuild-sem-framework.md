@@ -1,6 +1,6 @@
 # 0003 — TypeScript + esbuild, sem framework, bundle único para o Chromium 79
 
-Status: aceito (2026-11-04)
+Status: aceito (2026-11-04); alvo Chromium 79/Node 8.12/ES2019 substituído pelo 0006 (Chromium 53/Node 0.12/ES2016)
 Decisores: Lurickardo
 
 ## Contexto

@@ -36,7 +36,7 @@ Abrir app: ignore OK repetido enquanto a abertura está pendente; sem resposta e
 | launch `com.webos.app.hdmi1` / `hdmi2` | — | abre a entrada | provado (ref) |
 | launch `com.webos.app.livetv` | — | TV ao vivo (antena/cabo) | provado (ref, free-my-tv) |
 
-A 43UP7500PSF tem 2 HDMI. Nome do dispositivo por porta é escolha da pessoa (não há detecção
+Quantas portas HDMI a 43LM631C0SB tem: **verificar** (a gaveta assume HDMI 1 e 2). Nome do dispositivo por porta é escolha da pessoa (não há detecção
 confiável de console).
 
 ## Sistema e rede
@@ -67,6 +67,11 @@ antes de ligar o screensaver dele; responder `ack: false` enquanto o do tvOS vai
 (ref, free-my-tv).
 
 ## Fallback SSAP (lista de apps)
+
+**Risco nesta TV (webOS 4.x):** o free-my-tv relata `listLaunchPoints` negado, sem `getAppLoadStatus`
+e `invalid origin` no socket em webOS 3 (Chromium 38); no 4.x **verificar**. Plano B documentado lá:
+um script no PC (`webos/apps.py`) lista os apps pelo socket (a TV pede uma aprovação na tela) e grava
+um JSON que entra no pacote, em vez de a TV listar sozinha.
 
 Quando `listLaunchPoints` é negado: o socket de controle remoto da TV (`ws://127.0.0.1:3000`,
 protocolo SSAP) lista apps depois de um **pareamento único** que a pessoa aceita na tela.

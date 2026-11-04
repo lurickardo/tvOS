@@ -1,13 +1,13 @@
 ---
 name: tvos-webos-api
 description: >-
-  Integração do tvOS com o sistema da TV LG (webOS TV 6.x, sem root): barramento Luna via
+  Integração do tvOS com o sistema da TV LG (webOS TV 4.x, sem root): barramento Luna via
   PalmServiceBridge (src/platform/luna.ts, timeout, null em falha), catálogo de chamadas provadas
   pelos projetos de referência (abrir app, listar apps com listLaunchPoints e o fallback SSAP com
   pareamento, entradas HDMI pelo eim, info do sistema, rede pelo connectionmanager, ajustes,
   screensaver), appinfo.json (resolution, requiredPermissions, disableBackHistoryAPI,
   supportQuickStart, requiredACG só no webOS 26+), JS service do pacote (service/, services.json,
-  webos-service, Node 8.12 = ES2017, métricas por /proc, allowlist de métodos), tecla Voltar e
+  webos-service, Node 0.12 = ES5, métricas por /proc, allowlist de métodos), tecla Voltar e
   platformBack, ponteiro do Magic Remote e origem file://. Acione ao chamar qualquer API da TV,
   mexer em appinfo.json ou service/, ler dado do sistema (CPU, memória, rede, modelo, entradas),
   abrir app/entrada/ajustes, e em erros como "invalid origin", "listLaunchPoints negado",
@@ -28,7 +28,7 @@ description: >-
    `Promise<resultado | null>`, guarda a bridge até a resposta (senão o GC a coleta) e no PC
    responde `null` — o app roda no navegador sem quebrar.
 3. **JS service** (`service/`) é a saída para o que a página não alcança (arquivos de `/proc`,
-   socket local). Node **8.12** → ES2017, sem `?.`/`??`, sem dependência além de `webos-service`.
+   socket local). Node **0.12.2** → só ES5 (sem `const`/`let`, arrow, template string, `?.`), sem dependência além de `webos-service`.
    **Métodos em allowlist**, sem parâmetro livre vindo da página.
 4. IDs: app `com.lurickardo.tvos`; service `com.lurickardo.tvos.service` (precisa começar com o
    id do app). URI: `luna://com.lurickardo.tvos.service/<método>`.

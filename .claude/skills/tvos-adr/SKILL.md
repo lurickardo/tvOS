@@ -69,10 +69,11 @@ Decisores: <nomes>
 - `0002-app-home-webos-sem-root.md` — app `.ipk` + JS service pelo Developer Mode, sem root,
   atalho numérico, Key Server OFF, reuso MIT com atribuição.
 - `0003-stack-ts-esbuild-sem-framework.md` — TypeScript + esbuild, sem framework nem dependência
-  em runtime, bundle `chrome79`, `lib: ES2019`, service ES2017, orçamento de performance,
-  `@webos-tools/cli`.
+  em runtime, orçamento de performance, `@webos-tools/cli` (alvo Chromium 79 substituído pelo 0006).
 - `0004-dados-externos-tmdb-open-meteo.md` — TMDB com imagens leves e token do usuário na TV,
   Open-Meteo, cache com TTL, CSP, sem telemetria (item do token substituído pelo 0005).
+- `0006-tv-alvo-lg-43lm631c0sb-webos-4.md` — TV de destino medida (webOS 4.x): Chromium 53, Node 0.12,
+  `chrome53`, `lib: ES2016`, service ES5, `1280x720` escalado; substitui o alvo do 0003.
 - `0005-configuracao-pessoal-pelo-env.md` — `.env` (TV_IP, TMDB_TOKEN, CITY) injetado no
   build local; passphrase fora; `.ipk`/`dist/` com `.env` nunca publicados.
 

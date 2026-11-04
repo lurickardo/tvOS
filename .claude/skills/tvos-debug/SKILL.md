@@ -3,7 +3,7 @@ name: tvos-debug
 description: >-
   Depuração sistemática no tvOS: quatro fases (reproduzir, isolar, achar causa raiz, corrigir no
   ponto compartilhado e provar) e tabela de hotspots de TV/webOS — sintaxe que funciona no PC e
-  quebra na TV (Chromium 79, optional chaining, flex gap), tela branca após instalar, foco perdido
+  quebra na TV (Chromium 53, async/await, CSS grid, flex gap), tela branca após instalar, foco perdido
   ou preso, tecla Voltar fechando o app, ponteiro do Magic Remote roubando foco, CORS de app em
   file://, app encerrado por memória, lentidão/travadas ao rolar, imagem pesada, autoplay de
   mídia bloqueado, Developer Mode expirado, encoding quebrado. Acione quando algo quebrar e a
@@ -34,7 +34,8 @@ description: >-
 
 | Sintoma | Suspeito | Verifique |
 |---|---|---|
-| Funciona no PC, tela branca/erro de sintaxe na TV | recurso acima do Chromium 79 sem transpile/polyfill | console no `ares-inspect`; target do build; tabela em `tvos-context` |
+| Funciona no PC, tela branca/erro de sintaxe na TV | recurso acima do Chromium 53 sem transpile/polyfill | console no `ares-inspect`; target do build; tabela em `tvos-context` |
+| `tv:inspect` não conecta / DevTools em branco | Chrome do PC incompatível com o Chromium 53 da TV | a LG lista Chrome 68 para webOS 5 e 38 para 3.x; testar Chrome 68 para o 4.x e registrar em `tvos-context` |
 | Layout quebrado só na TV | flex `gap`, `aspect-ratio`, `inset`, `:is()` | `tvos-context` → plataforma |
 | Foco some / ninguém responde às setas | elemento focado removido do DOM sem mover o foco; foco fora de região registrada | dono do foco; restaurar foco ao desmontar |
 | Foco preso numa região | regra de saída ausente na navegação espacial | mapa de vizinhos da região |

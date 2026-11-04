@@ -10,7 +10,7 @@
 - Acessibilidade
 - Checklist
 
-Custom properties funcionam no Chromium 79: declare em `:root` no `app/style.css` e use
+Custom properties funcionam no Chromium 53: declare em `:root` no `app/style.css` e use
 `var(--…)`. Valores abaixo são o alvo; o CSS é a fonte de verdade depois de criado.
 
 ## Tokens de cor
@@ -51,7 +51,7 @@ Fonte do sistema: `'LG Smart UI', 'Helvetica Neue', Arial, sans-serif`; números
 - Raios: Tab/Round 34px (pílula/círculo), Tile 22px, Card 18px, Platter 62px, painel 24px.
 - Sombras: repouso `0 4px 22px rgba(0,0,0,.3)`; foco `0 18px 40px rgba(0,0,0,.6)`. Sombra **não
   anima**: no foco, uma pseudo-camada com a sombra de foco ganha `opacity: 1`.
-- Sem flex `gap` (Chromium 79): margem nos filhos; grid `gap` funciona.
+- Sem flex `gap` nem CSS Grid (Chromium 53): flexbox e posição absoluta no palco; margem nos filhos.
 
 ## Movimento
 

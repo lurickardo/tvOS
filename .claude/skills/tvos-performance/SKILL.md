@@ -1,7 +1,7 @@
 ---
 name: tvos-performance
 description: >-
-  Performance do tvOS na TV LG 43UP7500PSF (webOS 6, Chromium 79, CPU e GPU modestas, pouca RAM) —
+  Performance do tvOS na TV LG 43LM631C0SB (webOS 4, Chromium 53, CPU e GPU modestas, pouca RAM) —
   critério número 1 do projeto: orçamentos (bundle ≤ 60 KB gzip, 60 fps, abrir < 1 s, tecla <
   100 ms), como medir (overlay de FPS, npm run tv:monitor / ares-device -r, Performance e Memory no
   ares-inspect), técnicas que funcionam em TV (só transform/opacity, sem backdrop-filter, sombras
@@ -39,8 +39,8 @@ description: >-
 3. **Sombras**: fixas nos elementos; no foco troque por uma pseudo-camada com `opacity` em vez de
    animar `box-shadow`. free-my-tv mediu em LG de 1,3–1,5 GB: 23–28 fps → 60 sem sombras/animações
    pesadas; 45–50 → 55 só tirando sombras.
-4. **Modo lite** se `navigator.deviceMemory <= 1`: sem sombras e sem transições não essenciais
-   (`<html class="lite">`).
+4. **Modo lite por padrão** nesta TV de 2019 (ADR 0006; `navigator.deviceMemory` não existe no
+   Chromium 53): sem sombras animadas e sem transições não essenciais (`<html class="lite">`).
 5. **DOM pequeno**: só o que está na tela + 1 de folga; lista longa virtualizada; nada escondido
    com `display:none` pesando na memória (remova).
 6. **Leitura e escrita de layout separadas**; mudanças agrupadas num `requestAnimationFrame`.

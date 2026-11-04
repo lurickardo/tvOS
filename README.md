@@ -1,6 +1,6 @@
 # tvOS
 
-Home screen própria, rápida e sem anúncios para a TV **LG 43UP7500PSF** (43", 4K UHD, webOS TV 6.x):
+Home screen própria, rápida e sem anúncios para a TV **LG 43LM631C0SB** (43", webOS TV 4.x):
 apps, destaques de filmes e séries, clima, entradas e o estado do sistema (CPU, memória, FPS).
 Instalada como app pelo **Developer Mode da LG, sem root** — a home original continua lá e
 desinstalar devolve tudo como era.
@@ -104,6 +104,8 @@ Tempo: ~30 min na primeira vez. Você precisa de:
 - **Atalho rápido:** com o tvOS aberto, **segure uma tecla numérica** do controle (ex.: `1`) e
   confirme para fixar o tvOS nela. Depois, segurar `1` de qualquer lugar abre o tvOS.
 - Ele também aparece na lista de apps da TV como **tvOS**.
+- No webOS 4 (sua TV) o atalho por tecla numérica pode se comportar diferente: se segurar o número
+  não oferecer fixar o app, abra o tvOS pela lista de apps.
 - No tvOS: setas e OK navegam; **Voltar** fecha a camada aberta ou sai do tvOS.
 
 ### Parte 6 — Deixar a TV inteira mais leve (ajustes da LG)

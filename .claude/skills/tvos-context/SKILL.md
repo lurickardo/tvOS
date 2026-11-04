@@ -1,9 +1,9 @@
 ---
 name: tvos-context
 description: >-
-  Contexto técnico mestre e roteador do tvOS (home screen própria para a TV LG 43UP7500PSF,
+  Contexto técnico mestre e roteador do tvOS (home screen própria para a TV LG 43LM631C0SB,
   instalada como app .ipk pelo Developer Mode, sem root): hardware alvo (4K UHD, 2 HDMI, 1 USB,
-  Wi-Fi, Bluetooth, Magic Remote), plataforma webOS TV 6.x com Chromium 79 (app) e Node 8.12 (JS
+  Wi-Fi, Bluetooth, Magic Remote), plataforma webOS TV 4.x com Chromium 53 (app) e Node 0.12 (JS
   service) e o que isso proíbe (optional chaining, flex gap, :focus-visible sem transpile), stack
   (TypeScript + esbuild, sem framework), mapa de pastas (src/, app/, service/, scripts/), comandos
   npm, teclas do controle (setas, OK, Voltar 461, cores), ponteiro do Magic Remote, princípios de
@@ -15,7 +15,7 @@ description: >-
 
 # tvOS — Contexto técnico mestre
 
-Home screen própria para uma **LG 43UP7500PSF** (2021, webOS TV 6.x), instalada como app `.ipk`
+Home screen própria para uma **LG 43LM631C0SB** (2019, webOS TV 4.x, ADR 0006), instalada como app `.ipk`
 pelo Developer Mode, sem root (ADR 0002). Objetivo: ser muito mais rápida e limpa que a home da
 LG, e mostrar o estado do sistema (`tvos-produto`).
 
@@ -28,8 +28,8 @@ LG, e mostrar o estado do sistema (`tvos-produto`).
 1. **Repo único** (ADR 0001); skills só em `.claude/skills/`.
 2. **App webOS sem root** (ADR 0002): `com.lurickardo.tvos` + service `com.lurickardo.tvos.service`.
 3. **Stack** (ADR 0003): TypeScript strict + esbuild, **sem framework**, **zero dependência em
-   runtime**, um bundle `target: chrome79`; `tsconfig` `lib: ES2019` barra API ausente na TV.
-   Service em JS ES2017 (Node 8.12).
+   runtime**, um bundle `target: chrome53`; `tsconfig` `lib: ES2016` barra API ausente na TV.
+   Service em JS ES5 (Node 0.12).
 4. **Performance acima de tudo** (`tvos-performance`): bundle ≤ 60 KB gzip, 60 fps, abrir < 1 s.
 5. **Controle remoto primeiro**: tudo com setas + OK + Voltar; ponteiro e teclado são extras.
 6. **Dark only** (`tvos-design-system`).
@@ -54,7 +54,7 @@ context/        rules/, adr/, specs/ (01-home: spec + mockups)
 ```bash
 npm run dev          # http://localhost:8000 no navegador do PC (CPU/memória "—", FPS real)
 npm run build        # dist/app + dist/service
-npm run typecheck    # tsc strict, lib ES2019
+npm run typecheck    # tsc strict, lib ES2016
 npm run check        # typecheck + skills + encoding
 npm run tv:setup     # cadastra a TV (TV_IP do .env) e busca a chave
 npm run tv:package   # build + .ipk em dist/
@@ -89,7 +89,7 @@ npm run tv:monitor   # CPU/memória do processo na TV
 
 | Quero… | Carregue |
 |---|---|
-| Ficha do hardware, motor por versão do webOS, tabela do que o Chromium 79 não tem, keyCodes e ponteiro, UI de 3 m, perguntas que só a TV responde | `references/plataforma-lg-webos.md` |
+| Ficha do hardware, motor por versão do webOS, tabela do que o Chromium 53 não tem, keyCodes e ponteiro, UI de 3 m, perguntas que só a TV responde | `references/plataforma-lg-webos.md` |
 
 ## Verifique ao vivo antes de agir
 
@@ -103,5 +103,5 @@ Versão real do webOS: `npx ares-device -i -d tv` (ou Configurações → Suport
 ---
 
 Fontes: webostv.developer.lge.com (web engine por versão, Node.js por versão, back button, webOS
-events, CLI), ficha do produto LG 43UP7500PSF, ADRs 0001–0004, FreeMyTvWebOS e free-my-tv. Em
+events, CLI), saída de `ares-device -i` da TV, ADRs 0001–0006, FreeMyTvWebOS e free-my-tv. Em
 conflito, o que a TV real faz vence.

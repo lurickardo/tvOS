@@ -3,7 +3,7 @@ name: tvos-verify
 description: >-
   Gate de verificação do tvOS antes de dizer "pronto", marcar tarefa concluída ou abrir PR: roda
   de verdade os checks do repo (check-skills, check-encoding) e os do stack (build, typecheck,
-  testes, lint), confere o alvo Chromium 79 no build, verifica a UI rodando só com teclado/controle
+  testes, lint), confere o alvo Chromium 53 no build, verifica a UI rodando só com teclado/controle
   (setas, OK, Voltar) em 1920×1080 e, quando possível, na TV real, aplica checklist com itens de
   veto (segredo, custo cloud, conteúdo externo sem sanitizar, navegação sem saída, check falhando,
   doc desatualizada) e exige relato de gaps e skills atualizadas. Revisor deve ser contexto
@@ -31,11 +31,11 @@ aponta **apenas** defeitos de correção e requisitos faltando — não estilo n
    de arquivo gerado, `.env`, `.ipk`, chave, dump, binário grande, dado pessoal (repo público).
 2. **Comandos (rode e cole o resultado resumido):**
    ```bash
-   npm run check                        # typecheck (lib ES2019) + skills + encoding
+   npm run check                        # typecheck (lib ES2016) + skills + encoding
    npm run tv:package                   # build + .ipk (valida appinfo.json e o pacote)
    gzip -c dist/app/main.js | wc -c     # orçamento: ≤ 60 KB (tvos-performance)
-   grep -c '?\.\|??' dist/app/main.js   # 0: sintaxe rebaixada para o Chromium 79
-   node --check service/index.js        # se tocou o service (ES2017, Node 8.12)
+   grep -c '?\.\|??' dist/app/main.js   # 0: sintaxe rebaixada para o Chromium 53
+   node --check service/index.js        # se tocou o service (ES5, Node 0.12)
    ```
 3. **Comportamento.**
    - UI: `npm run dev` → http://localhost:8000 em 1920×1080 e usar **só teclado** (setas, Enter,
@@ -61,7 +61,7 @@ aponta **apenas** defeitos de correção e requisitos faltando — não estilo n
 | # | Item | Delega a |
 |---|---|---|
 | P1 | Reusa código existente; sem abstração ou dependência desnecessária | `tvos-code-patterns` |
-| P2 | Roda no Chromium 79 (sem API/CSS fora do alvo sem polyfill) | `tvos-context` |
+| P2 | Roda no Chromium 53 (sem API/CSS fora do alvo sem polyfill) | `tvos-context` |
 | P3 | Erros de rede/storage tratados com mensagem pt-BR e saída | `tvos-code-patterns` |
 | P4 | Sem vazamento (listener, timer, imagem, player) | `tvos-code-patterns` |
 | P5 | Texto ≥ 24 px, contraste AA, safe area, animação curta com reduced-motion | `tvos-context` |

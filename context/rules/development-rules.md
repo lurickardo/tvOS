@@ -24,7 +24,7 @@
 
 ## 5. Dependências
 - Antes de adicionar: existe na stdlib/plataforma? já há dependência que resolve? Se não: checar
-  manutenção, licença, tamanho no bundle e se roda no Chromium 79. Fixar versão (lockfile).
+  manutenção, licença, tamanho no bundle e se roda no Chromium 53. Fixar versão (lockfile).
 - Skill/MCP de terceiro: auditar antes de instalar (`tvos-skills`).
 
 ## 6. Documentação e skills

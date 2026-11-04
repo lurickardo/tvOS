@@ -27,7 +27,8 @@ description: >-
    sombra; os outros recuam. Um foco por vez, sempre visível.
 4. **Vidro sem blur**: superfícies semi-opacas com borda interna de 1 px clara — o "vidro" do
    free-my-tv sem `backdrop-filter` (`tvos-performance`).
-5. **Palco fixo 1920×1080** em px, com safe area (≈ 76–96 px nas laterais, 52–54 px em cima/baixo).
+5. **Palco fixo 1920×1080** em px (a TV Full HD desenha o app em 1280×720 e `src/main.ts` escala o
+   palco por `innerWidth / 1920` — o design não muda, ADR 0006), com safe area (≈ 76–96 px nas laterais, 52–54 px em cima/baixo).
 6. **Um movimento por ação**, curto (0,2–0,38 s), só `transform`/`opacity`.
 
 ## Layout da home (palco 1920×1080)
@@ -67,7 +68,7 @@ prateleira fica no alto e aparecem:
 
 - `tvos-performance` — o que o visual pode custar.
 - `tvos-produto` — o que cada módulo mostra.
-- `tvos-context` — UI de 3 m, teclas, limites de CSS do Chromium 79.
+- `tvos-context` — UI de 3 m, teclas, limites de CSS do Chromium 53.
 
 ---
 

@@ -37,7 +37,7 @@ description: >-
    - Contexto (1 parágrafo: por quê).
    - Arquivos a criar/alterar e o que reutilizar.
    - Ordem: dados/contratos → lógica → UI/navegação → integração com a plataforma → docs/skills.
-   - Riscos (Chromium 79, memória, foco/Voltar, segurança, custo).
+   - Riscos (Chromium 53, memória, foco/Voltar, segurança, custo).
    - Verificação concreta (comandos + o que olhar com o teclado/controle; TV real se possível).
    - Skills/docs/ADR que serão atualizados.
 6. **Aprovação** do plano (se pediu "planeje e implemente" sem revisar, siga e registre o plano).

@@ -11,7 +11,7 @@ carregado sob demanda.
 
 | Skill | Propósito | Quando utilizar |
 |---|---|---|
-| `tvos-context` | hub técnico: hardware, webOS 6.x/Chromium 79/Node 8.12, stack, mapa do repo, comandos, teclas, roteador | início de tarefa sem tema óbvio, "qual skill?", "o que a TV suporta?" |
+| `tvos-context` | hub técnico: hardware, webOS 4.x/Chromium 53/Node 0.12, stack, mapa do repo, comandos, teclas, roteador | início de tarefa sem tema óbvio, "qual skill?", "o que a TV suporta?" |
 | `tvos-produto` | visão, princípios, módulos (prateleira, destaques, painel do sistema, clima, entradas, ajustes), MVP | decidir o que construir e como a tela se comporta |
 
 ## Plataforma (TV)

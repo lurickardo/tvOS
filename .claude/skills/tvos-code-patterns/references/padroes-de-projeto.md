@@ -59,6 +59,6 @@ produto só, DI container, "manager" genérico que faz tudo.
 2. Fronteiras: UI não fala direto com rede/plataforma?
 3. Erros de rede/storage/parse tratados com saída para o usuário?
 4. Funciona só com setas + OK + Voltar? Foco visível e restaurado ao voltar?
-5. Roda no Chromium 79 (transpile/polyfill provado pelo build)?
+5. Roda no Chromium 53 (transpile/polyfill provado pelo build)?
 6. Sem vazamento (listener, timer, imagem, player)?
 7. Lógica não trivial tem um teste pequeno?

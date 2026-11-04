@@ -1,7 +1,7 @@
 ---
 name: tvos-deploy
 description: >-
-  Levar o tvOS para a TV LG 43UP7500PSF sem root: ligar o Developer Mode (conta LG grátis, Dev
+  Levar o tvOS para a TV LG 43LM631C0SB sem root: ligar o Developer Mode (conta LG grátis, Dev
   Mode Status, Key Server), cadastrar a TV no ares-setup-device, buscar a chave com ares-novacom
   --getkey, desligar o Key Server depois, empacotar e instalar com os scripts npm (tv:package,
   tv:install, tv:inspect, tv:monitor), fixar o tvOS numa tecla numérica, renovar a sessão do
