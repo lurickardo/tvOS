@@ -1,0 +1,21 @@
+{
+  "id": "com.lurickardo.tvos",
+  "version": "0.1.0",
+  "vendor": "lurickardo",
+  "type": "web",
+  "main": "index.html",
+  "title": "tvOS",
+  "icon": "assets/icon.png",
+  "largeIcon": "assets/largeIcon.png",
+  "bgColor": "#0B0B0D",
+  "iconColor": "#0B0B0D",
+  "resolution": "1920x1080",
+  "disableBackHistoryAPI": true,
+  "handlesRelaunch": false,
+  "supportQuickStart": true,
+  "requiredPermissions": [
+    "applications",
+    "applications.launcher",
+    "system.notifications"
+  ]
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://image.tmdb.org data:; connect-src 'self' https://api.themoviedb.org https://api.open-meteo.com https://geocoding-api.open-meteo.com">
+  <title>tvOS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="stage">
+    <header class="top">
+      <h1 class="title">tvOS</h1>
+      <time id="clock" class="clock"></time>
+    </header>
+    <section class="metrics" aria-label="Sistema">
+      <div class="metric"><span class="metric-label">CPU</span><span id="cpu" class="metric-value">…</span></div>
+      <div class="metric"><span class="metric-label">Memória</span><span id="mem" class="metric-value">…</span></div>
+      <div class="metric"><span class="metric-label">FPS</span><span id="fps" class="metric-value">…</span></div>
+    </section>
+    <p class="hint">Voltar fecha o tvOS</p>
+  </main>
+  <script src="main.js"></script>
+</body>
+</html>

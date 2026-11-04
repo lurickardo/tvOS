@@ -1,0 +1,23 @@
+{
+  "name": "tvos",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Home screen rápida e sem anúncios para a TV LG 43UP7500PSF (webOS TV 6.x)",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/build.mjs --serve",
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && node scripts/check-skills.mjs && node scripts/check-encoding.mjs",
+    "tv:package": "npm run build && ares-package dist/app dist/service -o dist",
+    "tv:install": "npm run tv:package && ares-install -d tv dist/com.lurickardo.tvos_0.1.0_all.ipk && ares-launch -d tv com.lurickardo.tvos",
+    "tv:inspect": "ares-inspect -d tv --app com.lurickardo.tvos --open",
+    "tv:monitor": "ares-device -d tv -r -id com.lurickardo.tvos -t 2"
+  },
+  "devDependencies": {
+    "@webos-tools/cli": "3.2.6",
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2"
+  }
+}

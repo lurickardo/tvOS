@@ -1,0 +1,10 @@
+{
+  "id": "com.lurickardo.tvos.service",
+  "description": "Métricas do sistema para o tvOS",
+  "services": [
+    {
+      "name": "com.lurickardo.tvos.service",
+      "description": "Métricas do sistema para o tvOS"
+    }
+  ]
+}

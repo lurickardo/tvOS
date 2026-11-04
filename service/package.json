@@ -1,0 +1,6 @@
+{
+  "name": "com.lurickardo.tvos.service",
+  "version": "0.1.0",
+  "description": "Métricas do sistema para o tvOS",
+  "main": "index.js"
+}

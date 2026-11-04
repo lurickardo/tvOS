@@ -1,0 +1,18 @@
+{
+  // lib ES2019: o typecheck recusa API que o Chromium 79 da TV não tem (replaceAll, at, Object.hasOwn…).
+  // A sintaxe nova (?. ??) é rebaixada pelo esbuild (target chrome79, scripts/build.mjs).
+  "compilerOptions": {
+    "target": "ES2019",
+    "lib": ["ES2019", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}

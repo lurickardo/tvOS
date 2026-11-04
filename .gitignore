@@ -32,3 +32,6 @@ Thumbs.db
 *.pem
 *.key
 id_rsa*
+
+# Config local da TV e dados gerados (lista de apps, chaves)
+*.local.json

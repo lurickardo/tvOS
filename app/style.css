@@ -1,0 +1,40 @@
+/* Palco fixo de 1920×1080 (TV UHD desenha o app nesse tamanho). Dark only, sem backdrop-filter:
+   performance primeiro (skills tvos-design-system e tvos-performance). */
+html, body {
+  margin: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #0B0B0D;
+  color: #F5F5F7;
+  font-family: 'LG Smart UI', 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#stage {
+  position: relative;
+  box-sizing: border-box;
+  width: 1920px;
+  height: 1080px;
+  padding: 54px 96px; /* safe area ~5% */
+  background: linear-gradient(#1C1C1E, #0B0B0D);
+}
+
+.top { display: flex; justify-content: space-between; align-items: baseline; }
+.title { margin: 0; font-size: 56px; font-weight: 700; }
+.clock { font-size: 48px; font-variant-numeric: tabular-nums; color: #AEAEB2; }
+
+.metrics { display: flex; margin-top: 96px; }
+.metric {
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  margin-right: 32px; /* sem flex gap: Chromium 79 */
+  padding: 32px 40px;
+  border-radius: 24px;
+  background: rgba(44, 44, 46, 0.72);
+}
+.metric-label { font-size: 28px; color: #AEAEB2; }
+.metric-value { margin-top: 12px; font-size: 64px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.hint { position: absolute; left: 96px; bottom: 54px; margin: 0; font-size: 24px; color: #8E8E93; }
