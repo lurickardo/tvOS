@@ -16,6 +16,8 @@ Decisões tomadas (não reabra sem ADR novo):
   `root/tvos-root.js` (`npm run tv:root -- apply|status|restore`). **Nunca** escrever em rootfs nem `chattr`.
 - **ADR 0008**: service elevado pelo Homebrew só para `uninstall`/`closeLgHome`; LG Input Hook recusado.
 - **ADR 0009**: preload zero (nenhum app da LG pré-carregado; `maxPreloadApp: 0`).
+- **ADR 0010**: firewall no hook — de fora só SSH por chave, cast DIAL e app LG ThinQ; DevTools
+  9998 só por túnel SSH.
 - **ADR 0003**: **TypeScript + esbuild, sem framework, zero dependência em runtime**, bundle único
   `target: chrome53`, `lib: ES2016`; **performance é o critério nº 1**.
 - **ADR 0004**: TMDB (imagens leves) e Open-Meteo; sem telemetria.
@@ -54,9 +56,6 @@ plano) só para feature grande ou decisão de arquitetura.
   decidir atalhos Sistema/Ajustes do tvOS. Ajustes e screensaver viram
   specs depois (`tvos-refine`).
 - **Confirmar na TV**: keyCodes de mídia.
-- **Segurança**: DevTools do WebAppMgr em `0.0.0.0:9998` sem senha (firmware) → qualquer aparelho do
-  Wi-Fi roda JS no tvOS; decidir firewall só-localhost no hook (`tvos-security`).
-
 ## Comandos
 
 ```bash

@@ -66,6 +66,8 @@ sistema, root via Homebrew Channel) e a rede da casa.
 16. **Hooks root**: nunca escrever em rootfs/kernel nem usar `chattr`; hook de boot em segundo
     plano e sempre `exit 0`; mudanças por settings, `/var` e bind mount em `/tmp` com original
     guardado e `restore` (`tvos-deploy`). Hosts bloqueia anúncio/ACR/telemetria/firmware.
+    Firewall (ADR 0010): TCP de fora só nas portas de `TCP_OPEN` (`root/tvos-root.js`); porta nova
+    ali = revisão de segurança. DevTools (9998) nunca exposto: só por túnel SSH.
 17. **`.env`**: a IA não lê nem imprime; só o `.env.example` (sem valores) é versionado.
 
 ## Gaps conhecidos
@@ -75,6 +77,7 @@ sistema, root via Homebrew Channel) e a rede da casa.
 | 1 | Token TMDB (v4, só leitura) vai do `.env` para o bundle (ADR 0005): fica em `dist/` no PC e no `.ipk` na TV. Nunca publicar `.ipk`/`dist/` gerados com `.env`; dev server só em `127.0.0.1` | baixa (risco aceito) |
 | 2 | `@webos-tools/cli` traz vulnerabilidades transitivas (express/`proxy-addr` crítica, `body-parser`, `js-yaml`, eslint…): só ferramenta de dev no PC, nunca vai ao `.ipk`; atualizar a CLI quando houver versão nova | média (só dev) |
 | 3 | Socket SSAP (`127.0.0.1:3000`) devolve `client-key` que abre o controle remoto da TV: guardar só para listar apps, nunca expor nem logar; service só repassa `listLaunchPoints` | média (quando implementado) |
+| 4 | Firewall (ADR 0010) só sobe ~40 s após o boot frio (hook); IPv6 sem filtro (sem `ip6tables`; só link-local, ouvem SSH e CoAP); 3000/3001 (SSAP) seguem abertos ao Wi-Fi para o app ThinQ, com pareamento na tela | baixa |
 
 ## Roteador
 

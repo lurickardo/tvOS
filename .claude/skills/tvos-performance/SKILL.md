@@ -83,8 +83,9 @@ LG abre como app e sai da memória ao voltar ao tvOS (ADR 0008).
 
 Não é gargalo (medido): CPU ~35 % navegando (4× A53, sem `cpufreq`); load ~5 vem de 4 kthreads
 MStar em estado D; o swap (`eswap`) já é zram (400 MB lz4) + 100 MB de eMMC nunca usado; fila de
-`keydown` ~1 ms, handler ~10 ms, autorepeat 48 ms. Trace por tecla: DevTools na porta 9998
-(`Tracing.start` + `Input.dispatchKeyEvent`), somar `RasterTask`/`GPUTask`.
+`keydown` ~1 ms, handler ~10 ms, autorepeat 48 ms. Trace por tecla: DevTools da 9998 por túnel
+(`ssh -L 19998:127.0.0.1:9998`, firewall do ADR 0010; `Tracing.start` + `Input.dispatchKeyEvent`),
+somar `RasterTask`/`GPUTask`.
 
 ## Checklist de regressão (tela nova ou mudança visual)
 

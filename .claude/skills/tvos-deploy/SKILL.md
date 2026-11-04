@@ -31,7 +31,7 @@ npm run tv:root -- apply     # tvOS como home + debloat + hook de boot (guarda o
 
 ```bash
 npm run tv:install           # reinstalar depois de mudar código
-npm run tv:root -- status    # home, preload (zero, ADR 0009), maxPreloadApp, hosts, daemons, memória/swap/carga, top RSS
+npm run tv:root -- status    # home, preload (zero, ADR 0009), maxPreloadApp, firewall (ADR 0010), hosts, daemons, memória/swap/carga, top RSS
 npm run tv:root -- elevate   # reeleva o service (toda instalação desfaz; o boot refaz)
 npm run tv:inspect           # Web Inspector (Chromium 68 do webOS TV IDE; ver README)
 npm run tv:monitor           # CPU/memória do processo do tvOS (ares-device -r)

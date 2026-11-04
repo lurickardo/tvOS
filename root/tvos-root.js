@@ -2,7 +2,8 @@
  * Ferramenta root do tvOS, roda NA TV com /usr/bin/node (0.12: só ES5). ADR 0007.
  *   apply   — uma vez: tvOS vira a home, debloat persistente (settings, preload) e hook de boot.
  *             Na primeira vez guarda os valores originais em orig.json (o restore volta a eles).
- *   boot    — a cada boot frio (hook do Homebrew): hosts sem anúncio/telemetria, para daemons e abre o tvOS.
+ *   boot    — a cada boot frio (hook do Homebrew): hosts sem anúncio/telemetria, para daemons, firewall
+ *             (iptables em memória, ADR 0010) e abre o tvOS.
  *   status  — o que está aplicado + memória, swap, carga e maiores processos.
  *   restore — desfaz tudo e devolve a home da LG (reboot recomendado depois).
  *   elevate — eleva o service do tvOS (toda instalação desfaz; o boot refaz).
@@ -28,6 +29,12 @@ var JOBS = ['rdxd', 'uploadd', 'contentminer', 'nudge', 'voiceconductor', 'voice
 var EULA_OFF = ['acrOnAllowed', 'acrAdAllowed', 'customAdAllowed', 'chpAllowed', 'voiceAllowed', 'voice2Allowed', 'additionalDataAllowed'];
 var OPTION_OFF = ['webOSPromotionVideo', 'channelplus'];
 var MARK = '# tvOS blocklist';
+// Firewall (ADR 0010): conexão TCP nova vinda da rede só nestas portas — SSH (só por chave), cast DIAL
+// (2003, 18181, 36866) e app LG ThinQ / second screen (1434, 1708, 3000, 3001). Fecha DevTools 9998,
+// crashreportd 11111, UPnP/DLNA e qualquer porta nova. Sem conntrack no kernel: bloqueia só o SYN
+// (resposta de conexão que a TV abre passa); UDP de descoberta (SSDP, mDNS, CoAP) fica.
+var TCP_OPEN = [22, 1434, 1708, 2003, 3000, 3001, 18181, 36866];
+var FW_OFF = 'iptables -D INPUT -j TVOS 2>/dev/null; iptables -F TVOS 2>/dev/null; iptables -X TVOS 2>/dev/null';
 var ELEVATE = '/media/developer/apps/usr/palm/services/org.webosbrew.hbchannel.service/elevate-service';
 
 function log(message) { console.log(new Date().toTimeString().slice(0, 8) + ' ' + message); }
@@ -178,8 +185,15 @@ function killLgBar(next) {
   run('kill $(pidof com.webos.app.home) 2>/dev/null', function () { log('barra da LG fora da memória'); next(); });
 }
 
+function firewall(next) {
+  var rules = ['-i lo -j ACCEPT'].concat(TCP_OPEN.map(function (port) { return '-p tcp --dport ' + port + ' -j ACCEPT'; }),
+    ['-p tcp --syn -j REJECT --reject-with tcp-reset']);
+  run(FW_OFF + '; iptables -N TVOS && ' + rules.map(function (r) { return 'iptables -A TVOS ' + r; }).join(' && ')
+    + ' && iptables -I INPUT -j TVOS', function (err) { log('firewall ' + (err ? 'FALHOU' : 'ok (TCP só ' + TCP_OPEN.join(' ') + ')')); next(); });
+}
+
 function boot(skipFront) {
-  series([mountHosts, stopJobs, elevate, killLgBar].concat(skipFront ? [] : [front]), function () { log('boot pronto'); });
+  series([mountHosts, stopJobs, firewall, elevate, killLgBar].concat(skipFront ? [] : [front]), function () { log('boot pronto'); });
 }
 
 function status() {
@@ -195,9 +209,9 @@ function status() {
       });
     },
     function (next) {
-      run("grep -c '^0.0.0.0' /etc/hosts; initctl list | grep -E '^(" + JOBS.join('|') + ") '; uptime; free"
+      run("iptables -S TVOS 2>&1 | grep -c ACCEPT; grep -c '^0.0.0.0' /etc/hosts; initctl list | grep -E '^(" + JOBS.join('|') + ") '; uptime; free"
         + "; awk '/^Name/{n=$2} /^VmRSS/{r=$2} /^VmSwap/{print r, $2, n}' /proc/[0-9]*/status 2>/dev/null | sort -rn | head -12", function (err, out) {
-        console.log('hosts bloqueados / daemons / carga / memória / top RSS(KB) swap(KB):\n' + out);
+        console.log('regras de firewall abertas / hosts bloqueados / daemons / carga / memória / top RSS(KB) swap(KB):\n' + out);
         next();
       });
     },
@@ -218,7 +232,7 @@ function restore() {
     function (next) {
       try { fs.unlinkSync(HOOK); } catch (e) { /* já removido */ }
       if (orig.blockUpdatesCreated) { try { fs.unlinkSync(BLOCK_UPDATES); } catch (e) { /* já removido */ } }
-      run(JOBS.map(function (job) { return 'initctl start ' + job; }).join('; '), function () { next(); });
+      run(FW_OFF + '; ' + JOBS.map(function (job) { return 'initctl start ' + job; }).join('; '), function () { next(); });
     },
   ], function () {
     fs.unlinkSync(ORIG);
