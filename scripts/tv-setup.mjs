@@ -20,5 +20,5 @@ else ares('ares-setup-device', ['-a', 'tv', '-i', JSON.stringify({ ...device, de
 
 console.log('\nDigite a passphrase mostrada no app Developer Mode da TV (Key Server precisa estar ON):');
 ares('ares-novacom', ['-d', 'tv', '--getkey']);
-ares('ares-device-info', ['-d', 'tv']);
+ares('ares-device', ['-i', '-d', 'tv']);
 console.log('\nPronto. Agora desligue o Key Server na TV e rode: npm run tv:install');

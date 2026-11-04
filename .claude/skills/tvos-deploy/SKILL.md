@@ -27,7 +27,7 @@ description: >-
    npm run tv:setup   # cadastra a TV "tv" pelo TV_IP, pede a passphrase (a PESSOA digita) e confirma a conexão
    ```
    Equivalente manual: `npx ares-setup-device` (nome `tv`, IP, porta 9922, usuário `prisoner`) +
-   `npx ares-novacom -d tv --getkey` + `npx ares-device-info -d tv`.
+   `npx ares-novacom -d tv --getkey` + `npx ares-device -i -d tv`.
 4. **Key Server OFF** no app Developer Mode (com ele ligado, qualquer um no Wi-Fi com a
    passphrase pega a chave SSH da TV).
 
@@ -69,7 +69,7 @@ instala o `.ipk` de `dist/` por interface gráfica.
 
 | Sintoma | Causa provável | O que fazer |
 |---|---|---|
-| `ares-install` não acha a TV / timeout | IP mudou, TV desligada, Dev Mode expirado | conferir IP no app Developer Mode; `ares-setup-device` para atualizar; `ares-device-info -d tv` |
+| `ares-install` não acha a TV / timeout | IP mudou, TV desligada, Dev Mode expirado | conferir IP no app Developer Mode; `ares-setup-device` para atualizar; `ares-device -i -d tv` |
 | Autenticação falha | chave antiga após reinstalar o Dev Mode | Key Server ON → `ares-novacom -d tv --getkey` → Key Server OFF |
 | `-5: ipk verified failed` | entradas do tar com data 1970 (visto no webOS 5) | aplicar `_fix_ipk_timestamps` do FreeMyTvWebOS (`scripts/build.py`, MIT) ao `.ipk`; só se acontecer nesta TV |
 | App sumiu da TV | sessão do Dev Mode expirou | renovar e reinstalar |

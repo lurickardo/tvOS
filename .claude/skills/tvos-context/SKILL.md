@@ -98,7 +98,7 @@ git branch --show-current && git log --oneline -5
 ls src/features                    # features que já existem
 npm run check
 ```
-Versão real do webOS: `npx ares-device-info -d tv` (ou Configurações → Suporte → Informações da TV).
+Versão real do webOS: `npx ares-device -i -d tv` (ou Configurações → Suporte → Informações da TV).
 
 ---
 
