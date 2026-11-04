@@ -48,8 +48,14 @@ scripts/check-skills.mjs         lint estrutural (roda no pr.yml)
 
 | Mexeu em… | Atualize |
 |---|---|
-| Decisão de "Decisões em aberto" (OS, stack, backend, MVP) | `CLAUDE.md` + `tvos-context` (estado atual) + ADR |
-| Comando de build/test/lint/empacotamento | `CLAUDE.md` (Comandos) + `tvos-verify` + `tvos-toolbelt` + `pr.yml` |
+| Decisão em aberto do `CLAUDE.md` resolvida | `CLAUDE.md` + `tvos-context` + ADR |
+| Módulo/comportamento do produto, MVP | `tvos-produto` |
+| `app/appinfo.json`, `src/platform/`, `service/`, chamada Luna nova ou confirmada na TV | `tvos-webos-api` (catálogo: status provado/verificar) |
+| Scripts `tv:*`, Developer Mode, instalação | `tvos-deploy` |
+| Token, cor, componente, layout | `tvos-design-system` |
+| Orçamento, técnica ou medição de performance | `tvos-performance` |
+| TMDB, Open-Meteo, domínio novo na CSP | `tvos-apis-externas` + ADR |
+| Script do `package.json` | `CLAUDE.md` (Comandos) + `tvos-context` + `tvos-verify` + `tvos-toolbelt` + `pr.yml` |
 | Estrutura de pastas, convenção de código, padrão adotado | `tvos-code-patterns` |
 | Fato da TV descoberto (webOS, resolução, keyCode, memória) | `tvos-context` → `references/plataforma-lg-webos.md` |
 | Rede, storage, credencial, API do sistema, dependência sensível | `tvos-security` (gaps se for dívida) |
@@ -68,8 +74,8 @@ scripts/check-skills.mjs         lint estrutural (roda no pr.yml)
 6. Sessão nova: rode os 3 prompts; não carregou → reescreva a description (termos concretos
    primeiro).
 
-Candidatas quando o stack existir (não crie antes): skill de padrões do framework de UI, skill de
-design system/UI de TV (tokens, componentes, foco), skill de empacotamento/deploy na TV.
+Candidata futura (não crie antes de existir código): skill de navegação por foco (gerenciador de
+foco, regiões, pilha de telas), quando esse módulo nascer.
 
 ## Skills e MCPs de terceiros
 

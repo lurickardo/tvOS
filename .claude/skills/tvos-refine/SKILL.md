@@ -7,8 +7,8 @@ description: >-
   recomendação, escreve requisitos no formato EARS ("QUANDO … O SISTEMA DEVE …"), fora de escopo,
   riscos e tarefas numeradas rastreáveis, e salva em context/specs/<slug>/spec.md; ideia grande
   vira várias specs sequenciadas. Acione quando o usuário mandar uma ideia solta, "refina essa
-  ideia", "me ajuda a lapidar essa feature", "vale a pena fazer X?", ou na primeira sessão para
-  definir o que é o "OS" e o MVP. NÃO implementa nem desce a arquivos — isso é tvos-plan-prompt.
+  ideia", "me ajuda a lapidar essa feature", "vale a pena fazer X?", ou para transformar um
+  módulo do MVP (tvos-produto) em spec. NÃO implementa nem desce a arquivos — isso é tvos-plan-prompt.
 ---
 
 # tvOS — Refinar ideia em spec
@@ -18,7 +18,7 @@ description: >-
 
 ## Fluxo
 
-1. **Entender o hoje.** Leia `CLAUDE.md` (estado e decisões em aberto) e `tvos-context`. Confirme
+1. **Entender o hoje.** Leia `CLAUDE.md` (estado e "Em aberto"), `tvos-produto` (princípios e módulos) e `tvos-context`. Confirme
    no código se a ideia já existe.
 2. **Encaixe.** Funciona só com o controle? Legível a 3 m? Cabe na memória/CPU da TV? Precisa de
    rede/serviço pago? Se conflita, diga e proponha variação.

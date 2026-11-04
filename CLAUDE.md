@@ -1,20 +1,29 @@
 # tvOS — instruções do projeto
 
-**tvOS**: sistema/interface web pessoal para a TV **LG 43UP7500PSF** (43", 4K UHD, webOS TV 6.x de 2021 →
-motor **Chromium 79**, Magic Remote, 2 HDMI, 1 USB, Wi-Fi, Bluetooth). Plataforma, limites do motor e
-controle remoto: skill `tvos-context`.
+**tvOS**: home screen própria, rápida e sem anúncios, para a TV **LG 43UP7500PSF** (43", 4K UHD,
+webOS TV 6.x de 2021 → app em **Chromium 79**, JS service em **Node 8.12**, Magic Remote, 2 HDMI).
+Mostra apps, destaques de filmes/séries, clima, entradas e o **estado do sistema** (CPU, memória,
+FPS…). Produto: `tvos-produto`; plataforma: `tvos-context`.
 
-**Estado:** repositório recém-criado, só com contexto de IA — **nenhuma linha de código de produto**.
-Arquitetura e stack se decidem na primeira sessão de criação (seção "Decisões em aberto").
+**Estado:** esqueleto funcionando (build → `.ipk`, painel CPU/memória/FPS). MVP a construir.
 
-Repo **único** (ADR 0001): app, scripts, contexto e decisões moram aqui, sem divisão back/front/infra.
+Decisões tomadas (não reabra sem ADR novo):
+- **ADR 0002**: app `.ipk` + JS service instalados pelo **Developer Mode, sem root** (linha do
+  FreeMyTvWebOS); abre por atalho numérico; Key Server OFF depois de instalar.
+- **ADR 0003**: **TypeScript + esbuild, sem framework, zero dependência em runtime**, bundle único
+  `target: chrome79`, `lib: ES2019`; **performance é o critério nº 1**.
+- **ADR 0004**: TMDB (imagens leves, token do usuário digitado na TV) e Open-Meteo; sem telemetria.
+
+Repo **único** (ADR 0001):
 
 | Pasta | O quê |
 |---|---|
-| `.claude/skills/` | skills do projeto (catálogo em `.claude/skills/README.md`) |
-| `context/` | `rules/` (regras curtas), `adr/` (decisões), `specs/` (specs de feature) |
-| `scripts/` | `check-skills.mjs` (lint do contexto), `check-encoding.mjs` (UTF-8) |
-| `.github/workflows/` | `pr.yml`: checks de todo PR |
+| `app/` | `index.html` (casca + CSP), `style.css`, `appinfo.json`, `assets/` |
+| `src/` | `main.ts`, `platform/` (ponte com a TV), `features/<x>/` |
+| `service/` | JS service no barramento Luna (métricas de `/proc`) |
+| `scripts/` | `build.mjs` (esbuild → `dist/`), `check-skills.mjs`, `check-encoding.mjs` |
+| `context/` | `rules/`, `adr/`, `specs/` |
+| `.claude/skills/` | skills (catálogo em `.claude/skills/README.md`) |
 
 ## Primeiros passos em toda tarefa
 
@@ -28,31 +37,24 @@ Repo **único** (ADR 0001): app, scripts, contexto e decisões moram aqui, sem d
 **Ritmo**: tarefa pequena (bug, ajuste, 1 tela) = direto ao código. Processo completo (spec → ADR →
 plano) só para feature grande ou decisão de arquitetura.
 
-## Decisões em aberto (primeira sessão)
+## Em aberto
 
-Nada abaixo está decidido. Não assuma — pergunte (`AskUserQuestion`, opção recomendada primeiro) e
-registre cada resposta em ADR.
-
-1. **O que é o "OS"**: (a) app web instalado no webOS da TV como launcher/home (Developer Mode,
-   `ares-*`, `.ipk`); (b) web app hospedado aberto pelo navegador da TV; (c) hardware externo na HDMI
-   (mini PC, Raspberry Pi, stick) com navegador em kiosk; (d) outro. Muda motor-alvo, distribuição,
-   segurança e custo.
-2. **Stack**: linguagem, framework de UI, bundler, testes, lint. Em (a)/(b) o alvo de transpile é
-   Chromium 79.
-3. **Backend/serviços** (perfis, catálogo, sync, mídia)? Custo cloud passa pelo gate.
-4. **MVP**: quais telas/apps entram primeiro.
-
-Ritual: `tvos-refine` (spec) → `tvos-adr` (decisão) → `tvos-plan-prompt` (plano) → implementar →
-`tvos-verify`. Ao decidir, **atualize esta seção**, a skill `tvos-context` e as skills afetadas.
+- **MVP em specs**: casca + navegação por foco, prateleira, destaques, painel do sistema, clima,
+  entradas, ajustes (`tvos-produto`). Cada módulo: `tvos-refine` → spec → `tvos-plan-prompt`.
+- **Confirmar na TV** (primeira instalação): o JS service lê `/proc` sem root? Versão exata do
+  webOS, keyCodes de mídia, memória total. Registrar em `tvos-webos-api`/`tvos-context`.
 
 ## Comandos
 
 ```bash
-node scripts/check-skills.mjs          # tocou .claude/skills ou CLAUDE.md
-node scripts/check-encoding.mjs        # texto com acento; --fix corrige (revise o diff)
+npm install            # uma vez (devDependencies fixadas)
+npm run dev            # http://localhost:8000 no navegador do PC (1920×1080, só teclado)
+npm run check          # typecheck (lib ES2019) + skills + encoding
+npm run tv:package     # build + .ipk em dist/ (sem TV; o CI roda)
+npm run tv:install     # instala e abre na TV "tv" (primeira vez: tvos-deploy)
+npm run tv:inspect     # DevTools do app na TV
+npm run tv:monitor     # CPU/memória do processo na TV
 ```
-Quando o stack existir: registre aqui build/typecheck/test/lint e empacotamento para a TV, e em
-`tvos-verify`.
 
 ## REGRA 1 — Documentação e skills em dia quando a mudança as desatualiza
 
@@ -88,9 +90,12 @@ visual e refatoração interna normalmente não pedem nada.
   apresente decisão, custo mensal, comparação com hoje, e peça aprovação. < US$ 2 não precisa.
 - **Segurança** (`tvos-security`): nada confia em dado externo (rede, USB, outro app, URL); segredo
   nunca em arquivo versionado, bundle, log ou resposta; HTML externo só sanitizado.
+- **Performance** (`tvos-performance`): bundle ≤ 60 KB gzip, 60 fps, abrir < 1 s; anima só
+  `transform`/`opacity`, sem `backdrop-filter`, imagem no tamanho exibido. Mudança visual = medir
+  na TV. Dependência em runtime só com ADR.
 - **Plataforma TV**: tudo navegável **só com o controle** (setas + OK + Voltar), foco sempre visível,
-  texto legível a 3 m, safe area nas bordas, código transpilado para **Chromium 79** (sem `?.`/`??`
-  nativos, sem `gap` em flexbox, sem `:focus-visible`). Detalhe: `tvos-context`.
+  texto legível a 3 m, safe area, **dark only** (`tvos-design-system`). API da TV só por
+  `src/platform/` (`tvos-webos-api`). CSS sem flex `gap`/`:focus-visible`; service sem `?.`/`??`.
 - **Decisão duradoura** (lib/serviço novo, arquitetura, distribuição, custo, convenção) → ADR em
   `context/adr/` (`tvos-adr`).
 
@@ -98,8 +103,9 @@ visual e refatoração interna normalmente não pedem nada.
 
 | Grupo | Skills |
 |---|---|
-| Contexto | `context` (hub, plataforma LG/webOS) |
-| Engenharia | `code-patterns` (boas práticas + padrões de projeto), `debug`, `verify` |
+| Contexto | `context` (hub, plataforma LG/webOS), `produto` (visão, módulos, MVP) |
+| Plataforma | `webos-api` (Luna, appinfo, service), `deploy` (Developer Mode, `tv:*`), `apis-externas` (TMDB, Open-Meteo) |
+| Engenharia | `code-patterns` (boas práticas + padrões), `performance`, `design-system` (dark), `debug`, `verify` |
 | Segurança | `security` (regras + revisão de diff), `security-audit` (auditoria profunda, manual) |
 | Workflow | `refine`, `plan-prompt`, `adr`, `gitflow`, `toolbelt`, `skills` |
 
@@ -110,5 +116,6 @@ Sem acionamento automático (chame pelo `/nome`): `tvos-verify`, `tvos-security-
 - Plan mode só para feature grande ou decisão de design real. `AskUserQuestion` só para dúvida real
   de requisito (opção recomendada primeiro).
 - Subagentes só quando o usuário pedir. Revisão separada (`/tvos-verify`) só sob pedido.
-- Documentação de biblioteca/plataforma (webOS TV, framework escolhido): MCP context7 antes de
-  responder de memória.
+- Documentação de plataforma/API (webOS TV, `@webos-tools/cli`, TMDB, Open-Meteo): MCP context7
+  antes de responder de memória.
+- Passphrase do Developer Mode e chave TMDB: a pessoa digita no terminal/TV dela; nunca no chat.

@@ -4,10 +4,10 @@ description: >-
   Registro de decisões de arquitetura (ADR) do tvOS em context/adr/NNNN-slug.md, formato
   Nygard/MADR enxuto (contexto, decisão, alternativas, consequências, como verificar), imutável
   depois de aceito e substituído por outro ADR quando mudar. Define quando uma decisão merece ADR
-  (o que é o "OS" e como ele chega à TV, stack, framework, lib ou serviço novo, navegação de foco,
+  (distribuição na TV, root, stack, lib ou serviço novo, dependência em runtime, navegação de foco,
   persistência, backend, qualquer custo cloud, telemetria, convenção de código) e traz o template.
   Acione ao tomar ou propor decisão duradoura, quando um plano diz "vamos usar/trocar X", ao
-  resolver um item de "Decisões em aberto" do CLAUDE.md, ou em perguntas "por que foi feito
+  resolver um item "Em aberto" do CLAUDE.md, ou em perguntas "por que foi feito
   assim?", "isso já foi decidido?".
 ---
 
@@ -20,7 +20,7 @@ description: >-
 
 | Escreva ADR | Não precisa |
 |---|---|
-| O que é o "OS", distribuição (webOS `.ipk`, web hospedado, hardware na HDMI) | Bump de versão menor |
+| Distribuição na TV, root, Homebrew Channel (hoje: ADR 0002) | Bump de versão menor |
 | Stack, framework de UI, bundler, alvo de transpile | Nova tela seguindo o padrão |
 | Lib ou serviço novo (navegação espacial, player, sanitizer) | Usar lib já adotada |
 | Persistência, sync, backend, qualquer custo cloud recorrente | Refatoração interna |
@@ -33,7 +33,7 @@ description: >-
 2. Criar `context/adr/NNNN-slug-kebab.md` com o template, status `proposto`.
 3. Usuário aprova → status `aceito (AAAA-MM-DD)`. Reverter → novo ADR `Substitui: NNNN` e o antigo
    ganha só `Status: substituído por MMMM`.
-4. Atualizar o que a decisão muda: `CLAUDE.md` ("Decisões em aberto", comandos), `tvos-context`
+4. Atualizar o que a decisão muda: `CLAUDE.md` (decisões tomadas, "Em aberto", comandos), `tvos-context`
    (estado atual) e a skill afetada; adicionar a linha no índice abaixo.
 
 ## Template
@@ -66,6 +66,13 @@ Decisores: <nomes>
 
 - `0001-contexto-ia-claude-code-repo-unico.md` — repo único, `CLAUDE.md` como fonte, skills
   `tvos-*` em `.claude/skills`, `context/` para rules/adr/specs.
+- `0002-app-home-webos-sem-root.md` — app `.ipk` + JS service pelo Developer Mode, sem root,
+  atalho numérico, Key Server OFF, reuso MIT com atribuição.
+- `0003-stack-ts-esbuild-sem-framework.md` — TypeScript + esbuild, sem framework nem dependência
+  em runtime, bundle `chrome79`, `lib: ES2019`, service ES2017, orçamento de performance,
+  `@webos-tools/cli`.
+- `0004-dados-externos-tmdb-open-meteo.md` — TMDB com imagens leves e token do usuário na TV,
+  Open-Meteo, cache com TTL, CSP, sem telemetria.
 
 ## Skills irmãs
 

@@ -55,12 +55,20 @@ sistema, Developer Mode) e a rede da casa.
     casa; logs sem conteúdo assistido, tokens ou dados pessoais.
 13. **Erro**: mensagem genérica ao usuário, detalhe técnico só no log local; nunca fail-open em
     checagem (erro na validação = negar).
+14. **JS service** (`service/`): métodos em allowlist, sem parâmetro livre da página virando
+    caminho de arquivo, comando ou URI; só lê o necessário (`/proc/stat`, `/proc/meminfo`).
+15. **CSP** do `app/index.html`: `connect-src`/`img-src` só com os domínios do ADR 0004; domínio
+    novo = ADR. Nada de `unsafe-eval`.
+16. **Developer Mode**: Key Server OFF depois de instalar; passphrase digitada pela pessoa, nunca no
+    chat, em arquivo ou argumento de comando (`tvos-deploy`).
 
 ## Gaps conhecidos
 
 | # | Gap | Severidade |
 |---|---|---|
-| — | nenhum código ainda; registre aqui o que auditorias e revisões encontrarem | — |
+| 1 | Token TMDB (v4, só leitura) fica em texto puro no `localStorage` da TV (ADR 0004): quem tem acesso à TV/Dev Mode lê | baixa (risco aceito) |
+| 2 | `@webos-tools/cli` traz vulnerabilidades transitivas (express/`proxy-addr` crítica, `body-parser`, `js-yaml`, eslint…): só ferramenta de dev no PC, nunca vai ao `.ipk`; atualizar a CLI quando houver versão nova | média (só dev) |
+| 3 | Socket SSAP (`127.0.0.1:3000`) devolve `client-key` que abre o controle remoto da TV: guardar só para listar apps, nunca expor nem logar; service só repassa `listLaunchPoints` | média (quando implementado) |
 
 ## Roteador
 

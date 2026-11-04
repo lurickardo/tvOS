@@ -11,13 +11,24 @@ carregado sob demanda.
 
 | Skill | Propósito | Quando utilizar |
 |---|---|---|
-| `tvos-context` | hub técnico: hardware da TV, webOS 6.x/Chromium 79, controle remoto, UI de 3 m, roteador de skills | início de tarefa sem tema óbvio, "qual skill?", "o que a TV suporta?" |
+| `tvos-context` | hub técnico: hardware, webOS 6.x/Chromium 79/Node 8.12, stack, mapa do repo, comandos, teclas, roteador | início de tarefa sem tema óbvio, "qual skill?", "o que a TV suporta?" |
+| `tvos-produto` | visão, princípios, módulos (prateleira, destaques, painel do sistema, clima, entradas, ajustes), MVP | decidir o que construir e como a tela se comporta |
+
+## Plataforma (TV)
+
+| Skill | Propósito | Quando utilizar |
+|---|---|---|
+| `tvos-webos-api` | Luna (`src/platform/luna.ts`), catálogo de chamadas, `appinfo.json`, JS service, `/proc` | chamar API da TV, mexer em `service/` ou `appinfo.json` |
+| `tvos-deploy` | Developer Mode, `npm run tv:*`, instalar/medir/inspecionar, problemas de instalação | levar o app para a TV |
+| `tvos-apis-externas` | TMDB (imagens leves, token na TV), Open-Meteo, cache, CSP | filmes/séries, clima, domínio novo |
 
 ## Engenharia
 
 | Skill | Propósito | Quando utilizar |
 |---|---|---|
-| `tvos-code-patterns` | boas práticas, padrões de projeto, escada do minimalismo, performance em TV | escrever, refatorar ou revisar código; escolher lib/padrão |
+| `tvos-code-patterns` | boas práticas, padrões de projeto, escada do minimalismo, estrutura `src/` | escrever, refatorar ou revisar código; escolher lib/padrão |
+| `tvos-performance` | orçamentos, medição na TV, técnicas (sem blur, só transform/opacity, lite) | tela/animação/imagem nova, "está lento" |
+| `tvos-design-system` | dark only, tokens, layout da home, componentes, foco, a11y | qualquer UI |
 | `tvos-debug` | depuração sistemática + hotspots de TV/webOS | bug sem causa óbvia |
 | `tvos-verify` | gate com evidência antes de "pronto"/PR (manual: `/tvos-verify`) | fim de implementação |
 

@@ -5,7 +5,7 @@
 - webOS TV e motor web
 - O que o Chromium 79 NÃO tem
 - Entrada: controle remoto e ponteiro
-- App web no webOS (Developer Mode, ares-*, appinfo.json)
+- App web no webOS (resumo)
 - UI de 3 metros
 - Perguntas que só a TV responde
 
@@ -14,11 +14,11 @@
 | Item | Valor | Nota |
 |---|---|---|
 | Modelo | LG 43UP7500PSF (linha UP75, 2021) | versão brasileira |
-| Tela | 43", LED, 4K UHD 3840×2160, 60 Hz | app web costuma renderizar em 1920×1080 CSS e a TV escala — **verificar** `window.innerWidth`/`devicePixelRatio` |
+| Tela | 43", LED, 4K UHD 3840×2160, 60 Hz | TV UHD desenha app com `resolution: 1920x1080` nesse tamanho (TV Full HD/HD usa 1280×720, free-my-tv #402) — **verificar** `window.innerWidth` |
 | HDR | HDR10, HLG | |
 | Processador | Quad Core 4K | CPU/GPU modestas: anime só `transform`/`opacity` |
-| Memória | não divulgada | trate como dispositivo de **pouca RAM**; app pesado é encerrado pelo sistema |
-| Conexões | 2× HDMI (uma com ARC), 1× USB, Wi-Fi, Bluetooth, LAN | USB e HDMI interessam se o "OS" for hardware externo |
+| Memória | não divulgada | trate como dispositivo de **pouca RAM**; app pesado é encerrado pelo sistema; total real: painel do tvOS ou `npx ares-device -d tv -r` |
+| Conexões | 2× HDMI (uma com ARC), 1× USB, Wi-Fi, Bluetooth, LAN | entradas `com.webos.app.hdmi1`/`hdmi2` (`tvos-webos-api`) |
 | Sistema | webOS TV 6.x | ThinQ AI, assistente de voz |
 | Controle | Magic Remote (setas, OK, Voltar, ponteiro, roda) ou controle simples | **verificar** qual veio |
 
@@ -31,6 +31,9 @@
 | 22 | 2022 | Chromium 87 |
 | 23 | 2023 | Chromium 94 |
 | 24 | 2024 | Chromium 108 |
+
+JS service (Node.js): webOS TV 6.0 = **Node 8.12** (ES2017; sem `?.`/`??`), webOS 22 = 12.21,
+webOS 24 = 16.19.
 
 Fonte: tabela "Web engine" do webOS TV Developer. Web Inspector (`ares-inspect`) do 6.x funciona
 com Chrome recente no PC.
@@ -85,31 +88,16 @@ Eventos `keydown` com `keyCode`:
 - Navegação espacial (setas entre elementos) não é nativa: precisa de implementação ou lib
   (decisão de stack — ADR).
 
-## App web no webOS (Developer Mode, ares-*, appinfo.json)
+## App web no webOS (resumo)
 
-Aplica-se se a decisão for "app instalado na TV".
+Decidido no ADR 0002: app `.ipk` pelo Developer Mode, sem root.
 
-1. Conta LG Developer → app **Developer Mode** na LG Content Store → ligar Dev Mode e Key Server.
-   Sessão expira (~50 h, **verificar** no app); `ares-extend-dev` estende.
-2. CLI: `npm install -g @webos-tools/cli` (comandos `ares-*`).
-3. Fluxo:
-   ```bash
-   ares-setup-device                         # cadastra a TV (IP, porta 9922, usuário prisoner)
-   ares-novacom --device tv --getkey         # chave do dispositivo (passphrase exibida no app)
-   ares-package <dir-do-app> -o dist         # gera .ipk
-   ares-install --device tv dist/<id>_<versão>_all.ipk
-   ares-launch --device tv <id>
-   ares-inspect --device tv --app <id> --open   # Web Inspector
-   ares-device -i --device tv                # versão do sistema
-   ```
-4. `appinfo.json` mínimo: `id` (reverso de domínio, minúsculo), `version` (x.y.z), `vendor`,
-   `type: "web"`, `main`, `title`, `icon`, `largeIcon`; `disableBackHistoryAPI` se tratar Voltar.
-5. App web roda de `file://`: chamada HTTP externa sofre CORS como origem `null` — o servidor
-   precisa permitir, ou o app usa serviço JS/proxy (decisão de arquitetura).
-6. APIs do sistema (Luna Service, `webOSTV.js`) dão acesso a recursos da TV: trate cada chamada
-   como privilégio (`tvos-security`).
-
-IP da TV, chave e passphrase **não entram no git** (`.gitignore` cobre `*.ipk`, `*.pem`, `*.key`).
+- Passo a passo do Developer Mode, `ares-*`, renovação da sessão e problemas de instalação:
+  skill `tvos-deploy`.
+- `appinfo.json`, chamadas Luna, JS service, Voltar/`platformBack`: skill `tvos-webos-api`.
+- App roda de `file://`: chamada HTTP externa sofre CORS como origem `null`; o servidor precisa
+  permitir (TMDB e Open-Meteo permitem) ou a chamada sai pelo JS service.
+- IP da TV, chave e passphrase **não entram no git** (`.gitignore` cobre `*.ipk`, `*.pem`, `*.key`).
 
 ## UI de 3 metros
 

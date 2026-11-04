@@ -12,8 +12,9 @@ description: >-
 
 # tvOS — Gitflow e pipelines
 
-Repo **público** `lurickardo/tvOS`. CI: `.github/workflows/pr.yml` (check-skills + check-encoding;
-build/test do stack entram quando existirem).
+Repo **público** `lurickardo/tvOS`. CI: `.github/workflows/pr.yml` — job `context` (check-skills +
+check-encoding) e job `app` (`npm ci`, typecheck, `tv:package`). Release não publica `.ipk`
+(uso pessoal; instala-se com `npm run tv:install`).
 
 ## Branches
 
@@ -81,7 +82,7 @@ Notas da release (corpo da PR = notas):
 ### PRs incluídas
 - #<n> <título>
 ### Verificação
-- `pr.yml` verde; testado na TV (<versão do webOS>) ou "não testado na TV: <motivo>"
+- `pr.yml` verde; testado na TV (<versão do webOS>, FPS, CPU/memória) ou "não testado na TV: <motivo>"
 ### Rollback
 - reinstalar a versão anterior (vX.Y.(Z-1)) / PR revertendo o merge
 ```

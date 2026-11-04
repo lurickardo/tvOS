@@ -50,7 +50,7 @@ description: >-
 
 - Não expandir escopo: melhoria vista no caminho vira "gaps".
 - Decisão duradoura no plano → tarefa de ADR (`tvos-adr`).
-- Item de "Decisões em aberto" do `CLAUDE.md` resolvido → atualizar a seção na mesma entrega.
+- Item "Em aberto" do `CLAUDE.md` resolvido → atualizar a seção na mesma entrega.
 
 ## Skills irmãs
 

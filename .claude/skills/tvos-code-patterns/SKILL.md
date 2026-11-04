@@ -7,7 +7,8 @@ description: >-
   borda, tipagem estrita, testes do que tem lógica, padrões de projeto que valem numa UI de TV
   (máquina de estados de foco/telas, observer/event bus, command para teclas, adapter para APIs do
   webOS, strategy, repository) e quando NÃO usar padrão, orçamento de performance em TV (bundle,
-  memória, imagens, animação, listas virtualizadas, timers e listeners vazando). Acione ao
+  memória, animação, timers e listeners vazando), TypeScript com lib ES2019 para o
+  Chromium 79 e estrutura src/features + src/platform + service. Acione ao
   escrever, refatorar ou revisar código, criar módulo/componente/serviço, escolher lib ou padrão,
   e em dúvidas como "onde coloco isso?", "precisa de abstração?", "qual padrão uso?", "isso está
   over-engineered?", "por que a TV está lenta?". Segurança fica em tvos-security; plataforma em
@@ -34,9 +35,10 @@ Atalho consciente leva comentário `ponytail:` dizendo o teto e o caminho de evo
 
 ## Regras de implementação
 
-1. **Por feature, não por tipo.** `src/features/<feature>/` com o que a feature usa; compartilhado
-   (`src/lib`, `src/ui`) nunca importa de feature. Feature fala com outra só pela API pública dela
-   (`index`). Estrutura real é decidida com o stack (ADR); depois disso, siga a do vizinho.
+1. **Por feature, não por tipo** (ADR 0003). `src/features/<feature>/` com o que a feature usa
+   (`api.ts`, estado, render); `src/platform/` fala com a TV (`luna.ts`); compartilhado nunca
+   importa de feature; feature fala com outra só pelo que ela exporta. `service/` é o JS service
+   (ES2017, Node 8.12). Molde atual: `src/features/system/` (`fps.ts`, `metrics.ts`).
 2. **Fronteiras explícitas.** UI ↔ estado ↔ serviços ↔ plataforma (webOS/rede/storage). UI não
    chama `fetch` nem API do webOS direto; passa por um módulo que dá para trocar/simular.
 3. **Nomes dizem intenção** (`focusNextTile`, não `handle2`). Inglês no código, pt-BR na UI.
@@ -53,17 +55,19 @@ Atalho consciente leva comentário `ponytail:` dizendo o teto e o caminho de evo
     falha se a lógica quebrar. One-liner trivial não precisa.
 11. **Formato e lint** do stack, quando existir, sem discussão de estilo em revisão.
 
-## Performance em TV (orçamento desde o início)
+## Performance
 
-| Área | Regra |
-|---|---|
-| Bundle | carregamento inicial pequeno; tela pesada em `import()` dinâmico; meça o tamanho a cada dependência nova |
-| Memória | descarte o que saiu da tela (imagens, players, listeners); lista longa = virtualizada; sem cache sem teto |
-| Imagens | tamanho exato de exibição (não 4K para um card de 300 px), WebP/JPEG, `loading="lazy"`, decodificação fora do caminho do foco |
-| Animação | só `transform`/`opacity`, ≤ 300 ms, `will-change` pontual; nada em loop sem motivo |
-| Foco | mover foco nunca dispara layout pesado nem fetch síncrono; resposta à tecla < 100 ms |
-| Timers/listeners | todo `setInterval`/`addEventListener`/subscription tem cleanup no desmontar |
-| Rede | timeout, retry com backoff limitado, estado offline visível |
+Critério número 1 do projeto. Orçamentos, medição e técnicas: `tvos-performance`. Mínimo em todo
+código: só `transform`/`opacity` em animação, cleanup de todo timer/listener, imagem no tamanho
+exibido, polling só com a tela visível.
+
+## TypeScript para o Chromium 79
+
+- `tsconfig` `lib: ES2019`: se o typecheck reclamar de `replaceAll`, `at`, `Object.hasOwn`,
+  `structuredClone`, use a alternativa (tabela em `tvos-context`) — não amplie o `lib`.
+- `?.` e `??` podem ser usados no TS (o esbuild rebaixa); no `service/` (JS puro, Node 8.12) não.
+- Sem `any`; dado externo entra como `unknown` e passa por um type guard (ex.: `isStats` em
+  `src/features/system/metrics.ts`).
 
 ## Roteador
 

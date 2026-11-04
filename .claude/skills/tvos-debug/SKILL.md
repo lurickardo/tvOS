@@ -44,7 +44,14 @@ description: >-
 | App fecha sozinho / recarrega | memória (imagens grandes, lista sem virtualização, vazamento) | Memory no inspector; descartar o que saiu da tela |
 | Rolagem trava | layout/paint por frame, animação fora de `transform`/`opacity`, imagem decodificando | Performance no inspector |
 | Mídia não toca sozinha | política de autoplay | iniciar por ação do usuário ou `muted` |
-| Não instala / "device not found" | Developer Mode expirado ou IP mudou | app Developer Mode; `ares-setup-device`; `ares-extend-dev` |
+| Não instala / "device not found" | Developer Mode expirado ou IP mudou | app Developer Mode; `ares-setup-device`; botão EXTEND (`tvos-deploy`) |
+| `-5: ipk verified failed` ao instalar | tar do `.ipk` com datas de 1970 (visto no webOS 5) | receita `_fix_ipk_timestamps` (`tvos-deploy`) |
+| App sumiu da TV | sessão do Developer Mode expirou (a TV apaga apps de dev) | renovar (EXTEND) e `npm run tv:install` |
+| CPU/memória "—" na TV | service não instalado/encerrado, ou `/proc` negado no jail do Dev Mode | `npx ares-install -d tv --list`; `luna-send` pelo `ares-shell`; registrar em `tvos-webos-api` |
+| `listLaunchPoints` falha / prateleira vazia | webOS nega a lista a apps de Dev Mode | fallback SSAP (`tvos-webos-api`) |
+| `invalid origin` no socket 127.0.0.1:3000 | página com origem própria (webOS novo) | conexão pelo JS service com `Origin: file://` |
+| Chamada Luna nunca responde | bridge coletada pelo GC ou serviço sem permissão em `requiredPermissions` | usar `luna()` de `src/platform/luna.ts` (guarda a bridge, timeout); conferir `appinfo.json` |
+| FPS cai ao mover o foco | sombra/blur animados, DOM grande, imagem decodificando no foco | `tvos-performance` (checklist de regressão) |
 | Acento vira caracteres estranhos | arquivo salvo fora de UTF-8 | `node scripts/check-encoding.mjs` (`--fix`, revise o diff) |
 | Dado salvo derruba o app ao abrir | formato antigo/corrompido no storage sem validação | leitura com `try/catch` + validação + versão |
 

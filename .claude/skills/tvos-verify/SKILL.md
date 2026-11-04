@@ -31,16 +31,17 @@ aponta **apenas** defeitos de correção e requisitos faltando — não estilo n
    de arquivo gerado, `.env`, `.ipk`, chave, dump, binário grande, dado pessoal (repo público).
 2. **Comandos (rode e cole o resultado resumido):**
    ```bash
-   node scripts/check-encoding.mjs
-   node scripts/check-skills.mjs        # se tocou .claude/skills ou CLAUDE.md
-   # stack (registre aqui os comandos reais quando existirem):
-   # build · typecheck · test · lint · empacotamento para a TV
+   npm run check                        # typecheck (lib ES2019) + skills + encoding
+   npm run tv:package                   # build + .ipk (valida appinfo.json e o pacote)
+   gzip -c dist/app/main.js | wc -c     # orçamento: ≤ 60 KB (tvos-performance)
+   grep -c '?\.\|??' dist/app/main.js   # 0: sintaxe rebaixada para o Chromium 79
+   node --check service/index.js        # se tocou o service (ES2017, Node 8.12)
    ```
-   Build prova o alvo Chromium 79 (target do transpile/browserslist), não a memória.
 3. **Comportamento.**
-   - UI: abrir a tela em 1920×1080 e usar **só teclado** (setas, Enter, Backspace/Esc mapeado para
-     Voltar). Foco visível sempre? Voltar sai de toda tela? Estados vazio/carregando/erro?
-   - TV real (se disponível): instalar e abrir (`tvos-toolbelt`); `ares-inspect` sem erro no console.
+   - UI: `npm run dev` → http://localhost:8000 em 1920×1080 e usar **só teclado** (setas, Enter,
+     Esc = Voltar). Foco visível sempre? Voltar sai de toda tela? Estados vazio/carregando/erro?
+   - TV real (se disponível): `npm run tv:install`; `npm run tv:inspect` sem erro no console;
+     FPS ≥ 55 navegando; `npm run tv:monitor` sem memória subindo sem parar.
    - Sem TV/ambiente: diga isso no relato.
 4. **Checklist.**
 
