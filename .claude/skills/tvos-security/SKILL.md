@@ -61,12 +61,13 @@ sistema, Developer Mode) e a rede da casa.
     novo = ADR. Nada de `unsafe-eval`.
 16. **Developer Mode**: Key Server OFF depois de instalar; passphrase digitada pela pessoa, nunca no
     chat, em arquivo ou argumento de comando (`tvos-deploy`).
+17. **`.env`**: a IA não lê nem imprime; só o `.env.example` (sem valores) é versionado.
 
 ## Gaps conhecidos
 
 | # | Gap | Severidade |
 |---|---|---|
-| 1 | Token TMDB (v4, só leitura) fica em texto puro no `localStorage` da TV (ADR 0004): quem tem acesso à TV/Dev Mode lê | baixa (risco aceito) |
+| 1 | Token TMDB (v4, só leitura) vai do `.env` para o bundle (ADR 0005): fica em `dist/` no PC e no `.ipk` na TV. Nunca publicar `.ipk`/`dist/` gerados com `.env`; dev server só em `127.0.0.1` | baixa (risco aceito) |
 | 2 | `@webos-tools/cli` traz vulnerabilidades transitivas (express/`proxy-addr` crítica, `body-parser`, `js-yaml`, eslint…): só ferramenta de dev no PC, nunca vai ao `.ipk`; atualizar a CLI quando houver versão nova | média (só dev) |
 | 3 | Socket SSAP (`127.0.0.1:3000`) devolve `client-key` que abre o controle remoto da TV: guardar só para listar apps, nunca expor nem logar; service só repassa `listLaunchPoints` | média (quando implementado) |
 

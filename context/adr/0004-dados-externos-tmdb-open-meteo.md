@@ -1,6 +1,6 @@
 # 0004 — Dados externos: TMDB com imagens leves e Open-Meteo, sem telemetria
 
-Status: aceito (2026-11-04)
+Status: aceito (2026-11-04); item 2 (token digitado na TV) substituído por 0005
 Decisores: Lurickardo
 
 ## Contexto

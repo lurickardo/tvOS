@@ -12,16 +12,21 @@ Decisões tomadas (não reabra sem ADR novo):
   FreeMyTvWebOS); abre por atalho numérico; Key Server OFF depois de instalar.
 - **ADR 0003**: **TypeScript + esbuild, sem framework, zero dependência em runtime**, bundle único
   `target: chrome79`, `lib: ES2019`; **performance é o critério nº 1**.
-- **ADR 0004**: TMDB (imagens leves, token do usuário digitado na TV) e Open-Meteo; sem telemetria.
+- **ADR 0004**: TMDB (imagens leves) e Open-Meteo; sem telemetria.
+- **ADR 0005**: config pessoal no `.env` (`TV_IP`, `TMDB_TOKEN`, `CITY`, `HDMI*_NAME`; modelo em
+  `.env.example`) injetada no build local. **A IA nunca lê nem imprime o `.env`**; `.ipk`/`dist/`
+  gerados com ele nunca são publicados.
+- **Layout da home**: imagens do free-my-tv em modo escuro, sistema no lugar das criptomoedas
+  (`context/specs/01-home/`: `spec.md` + mockups).
 
 Repo **único** (ADR 0001):
 
 | Pasta | O quê |
 |---|---|
 | `app/` | `index.html` (casca + CSP), `style.css`, `appinfo.json`, `assets/` |
-| `src/` | `main.ts`, `platform/` (ponte com a TV), `features/<x>/` |
+| `src/` | `main.ts`, `config.ts` (valores do `.env`), `platform/` (ponte com a TV), `features/<x>/` |
 | `service/` | JS service no barramento Luna (métricas de `/proc`) |
-| `scripts/` | `build.mjs` (esbuild → `dist/`), `check-skills.mjs`, `check-encoding.mjs` |
+| `scripts/` | `build.mjs` (esbuild → `dist/`), `tv-setup.mjs`, `check-skills.mjs`, `check-encoding.mjs` |
 | `context/` | `rules/`, `adr/`, `specs/` |
 | `.claude/skills/` | skills (catálogo em `.claude/skills/README.md`) |
 
@@ -39,19 +44,21 @@ plano) só para feature grande ou decisão de arquitetura.
 
 ## Em aberto
 
-- **MVP em specs**: casca + navegação por foco, prateleira, destaques, painel do sistema, clima,
-  entradas, ajustes (`tvos-produto`). Cada módulo: `tvos-refine` → spec → `tvos-plan-prompt`.
+- **MVP**: implementar `context/specs/01-home/spec.md` (casca, foco, prateleira, destaques, gaveta
+  com entradas/atalhos/clima/sistema) via `tvos-plan-prompt`; ajustes e screensaver viram specs
+  depois (`tvos-refine`).
 - **Confirmar na TV** (primeira instalação): o JS service lê `/proc` sem root? Versão exata do
   webOS, keyCodes de mídia, memória total. Registrar em `tvos-webos-api`/`tvos-context`.
 
 ## Comandos
 
 ```bash
-npm install            # uma vez (devDependencies fixadas)
+npm install            # uma vez (devDependencies fixadas); depois cp .env.example .env e preencher
+npm run tv:setup       # cadastra a TV pelo TV_IP e busca a chave (passphrase: a pessoa digita)
 npm run dev            # http://localhost:8000 no navegador do PC (1920×1080, só teclado)
 npm run check          # typecheck (lib ES2019) + skills + encoding
 npm run tv:package     # build + .ipk em dist/ (sem TV; o CI roda)
-npm run tv:install     # instala e abre na TV "tv" (primeira vez: tvos-deploy)
+npm run tv:install     # build com o .env, instala e abre na TV "tv" (tutorial: README)
 npm run tv:inspect     # DevTools do app na TV
 npm run tv:monitor     # CPU/memória do processo na TV
 ```

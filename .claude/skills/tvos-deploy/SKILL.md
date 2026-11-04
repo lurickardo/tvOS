@@ -22,12 +22,12 @@ description: >-
 1. LG Content Store → instalar **Developer Mode** → entrar com a conta grátis de
    webostv.developer.lge.com → **Dev Mode Status ON** (a TV reinicia).
 2. Abrir o Developer Mode de novo → **Key Server ON**. Anotar IP e passphrase (6 caracteres).
-3. No PC (pasta do repo, `npm install` feito):
+3. No PC (pasta do repo, `npm install` feito, `TV_IP` no `.env` — ver `.env.example`):
    ```bash
-   npx ares-setup-device        # adicionar: nome "tv", IP da TV, porta 9922, usuário prisoner
-   npx ares-novacom -d tv --getkey   # pede a passphrase — a PESSOA digita no terminal dela
-   npx ares-device-info -d tv   # confirma conexão, modelo e versão do webOS
+   npm run tv:setup   # cadastra a TV "tv" pelo TV_IP, pede a passphrase (a PESSOA digita) e confirma a conexão
    ```
+   Equivalente manual: `npx ares-setup-device` (nome `tv`, IP, porta 9922, usuário `prisoner`) +
+   `npx ares-novacom -d tv --getkey` + `npx ares-device-info -d tv`.
 4. **Key Server OFF** no app Developer Mode (com ele ligado, qualquer um no Wi-Fi com a
    passphrase pega a chave SSH da TV).
 
@@ -36,7 +36,7 @@ O nome do dispositivo **tem que ser `tv`**: os scripts usam `-d tv`.
 ## Ciclo do dia a dia
 
 ```bash
-npm run tv:install    # build → ares-package (dist/*.ipk) → ares-install -d tv → ares-launch
+npm run tv:install    # build (lê o .env) → ares-package (dist/*.ipk) → ares-install -d tv → ares-launch
 npm run tv:inspect    # Web Inspector (DevTools) do app rodando na TV
 npm run tv:monitor    # CPU/memória do processo do tvOS a cada 2 s (ares-device -r)
 npx ares-device -d tv -r       # CPU/memória da TV inteira

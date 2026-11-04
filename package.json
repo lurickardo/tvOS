@@ -10,6 +10,7 @@
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && node scripts/check-skills.mjs && node scripts/check-encoding.mjs",
+    "tv:setup": "node scripts/tv-setup.mjs",
     "tv:package": "npm run build && ares-package dist/app dist/service -o dist",
     "tv:install": "npm run tv:package && ares-install -d tv dist/com.lurickardo.tvos_0.1.0_all.ipk && ares-launch -d tv com.lurickardo.tvos",
     "tv:inspect": "ares-inspect -d tv --app com.lurickardo.tvos --open",

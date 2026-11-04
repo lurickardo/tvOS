@@ -51,7 +51,8 @@ scripts/check-skills.mjs         lint estrutural (roda no pr.yml)
 | Decisão em aberto do `CLAUDE.md` resolvida | `CLAUDE.md` + `tvos-context` + ADR |
 | Módulo/comportamento do produto, MVP | `tvos-produto` |
 | `app/appinfo.json`, `src/platform/`, `service/`, chamada Luna nova ou confirmada na TV | `tvos-webos-api` (catálogo: status provado/verificar) |
-| Scripts `tv:*`, Developer Mode, instalação | `tvos-deploy` |
+| Scripts `tv:*`, Developer Mode, instalação | `tvos-deploy` + tutorial do `README.md` |
+| Variável nova no `.env` | `.env.example` (com instrução) + `scripts/build.mjs`/`src/config.ts` + README (tabela) + ADR 0005 se mudar a regra |
 | Token, cor, componente, layout | `tvos-design-system` |
 | Orçamento, técnica ou medição de performance | `tvos-performance` |
 | TMDB, Open-Meteo, domínio novo na CSP | `tvos-apis-externas` + ADR |
