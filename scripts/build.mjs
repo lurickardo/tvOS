@@ -12,8 +12,6 @@ const env = (name) => (process.env[name] || '').trim();
 const config = {
   tmdbToken: env('TMDB_TOKEN'),
   city: env('CITY'),
-  hdmi1Name: env('HDMI1_NAME'),
-  hdmi2Name: env('HDMI2_NAME'),
 };
 
 rmSync('dist/app', { recursive: true, force: true });

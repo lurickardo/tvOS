@@ -13,7 +13,7 @@ Decisões tomadas (não reabra sem ADR novo):
 - **ADR 0003**: **TypeScript + esbuild, sem framework, zero dependência em runtime**, bundle único
   `target: chrome79`, `lib: ES2019`; **performance é o critério nº 1**.
 - **ADR 0004**: TMDB (imagens leves) e Open-Meteo; sem telemetria.
-- **ADR 0005**: config pessoal no `.env` (`TV_IP`, `TMDB_TOKEN`, `CITY`, `HDMI*_NAME`; modelo em
+- **ADR 0005**: config pessoal no `.env` (`TV_IP`, `TMDB_TOKEN`, `CITY`; modelo em
   `.env.example`) injetada no build local. **A IA nunca lê nem imprime o `.env`**; `.ipk`/`dist/`
   gerados com ele nunca são publicados.
 - **Layout da home**: imagens do free-my-tv em modo escuro, sistema no lugar das criptomoedas

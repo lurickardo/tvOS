@@ -66,8 +66,9 @@ description: >-
 | Chave | não precisa |
 | Condição | `weather_code` (WMO) → texto pt-BR + ícone (tabela no código) |
 
-Cidade vem de `CITY` no `.env` (`config.city`); coordenadas no cache (geocoding só ao trocar a
-cidade).
+Cidade vem de `CITY` no `.env` (`config.city`), no formato `<cidade>, <estado>` (ex.: `São Vicente,
+São Paulo`; o nome sozinho acha cidades de outros países). Geocoding com `countryCode=BR`, `count=1`;
+coordenadas no cache (geocoding só ao trocar a cidade).
 Confirme parâmetros na doc atual (context7 / open-meteo.com/en/docs) antes de mudar a URL.
 
 ## Skills irmãs

@@ -65,8 +65,7 @@ Tempo: ~30 min na primeira vez. Você precisa de:
 |---|---|---|---|
 | `TV_IP` | sim | IP da TV na rede | Parte 3, passo 6 |
 | `TMDB_TOKEN` | para os destaques | "Token de Leitura da API" (v4) do TMDB, começa com `eyJ` | themoviedb.org → criar conta → Configurações → API → solicitar chave (tipo *Developer*, uso pessoal) → copiar **Token de Leitura da API** (não a "Chave da API" curta) |
-| `CITY` | para o clima | sua cidade, ex.: `São Paulo` | — (clima pelo Open-Meteo, sem chave) |
-| `HDMI1_NAME`, `HDMI2_NAME` | não | nome das entradas, ex.: `PS5` | — |
+| `CITY` | para o clima | cidade e estado, ex.: `São Vicente, São Paulo` (só o nome acha cidades de outros países) | — (clima pelo Open-Meteo, sem chave) |
 
 > O `.env` nunca vai para o git. A **passphrase do Developer Mode não vai no `.env`**: você digita
 > uma vez na Parte 4. Nunca envie o `.env` nem o `.ipk` gerado com ele para ninguém: o token vai

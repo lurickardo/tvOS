@@ -14,8 +14,8 @@ release publica o pacote (`tvos-gitflow`).
 ## Decisão
 
 1. `.env` na raiz (ignorado pelo git) guarda a configuração pessoal. `.env.example` (versionado)
-   documenta cada chave: `TV_IP`, `TMDB_TOKEN`, `CITY`, `HDMI1_NAME`, `HDMI2_NAME`.
-2. `scripts/build.mjs` lê o `.env` e injeta `TMDB_TOKEN`, `CITY` e os nomes HDMI no bundle
+   documenta cada chave: `TV_IP`, `TMDB_TOKEN`, `CITY`.
+2. `scripts/build.mjs` lê o `.env` e injeta `TMDB_TOKEN` e `CITY` no bundle
    (`define __TVOS_CONFIG__`, lido por `src/config.ts`). Falta de valor = recurso desligado, sem
    quebrar o build (o CI builda sem `.env`).
 3. `TV_IP` só é usado no PC: `npm run tv:setup` cadastra a TV no ares e busca a chave SSH.

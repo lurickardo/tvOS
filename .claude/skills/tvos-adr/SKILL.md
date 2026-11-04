@@ -73,7 +73,7 @@ Decisores: <nomes>
   `@webos-tools/cli`.
 - `0004-dados-externos-tmdb-open-meteo.md` — TMDB com imagens leves e token do usuário na TV,
   Open-Meteo, cache com TTL, CSP, sem telemetria (item do token substituído pelo 0005).
-- `0005-configuracao-pessoal-pelo-env.md` — `.env` (TV_IP, TMDB_TOKEN, CITY, HDMI*) injetado no
+- `0005-configuracao-pessoal-pelo-env.md` — `.env` (TV_IP, TMDB_TOKEN, CITY) injetado no
   build local; passphrase fora; `.ipk`/`dist/` com `.env` nunca publicados.
 
 ## Skills irmãs

@@ -68,14 +68,13 @@ Pedido explícito do usuário: o tvOS mostra como a TV está rodando.
 
 - TV ao vivo (`com.webos.app.livetv`), HDMI 1 e 2 (a TV tem 2), com estado conectado quando o
   sistema informar (`service.eim/getAllInputStatus`).
-- Nome por porta vem de `HDMI1_NAME`/`HDMI2_NAME` no `.env` (ex.: PS5); OK abre
-  `com.webos.app.hdmiN`.
+- Nomes fixos "HDMI 1"/"HDMI 2" (sem configuração: YAGNI); OK abre `com.webos.app.hdmiN`.
 
 ## Ajustes
 
 - Atalho para os ajustes da TV (`com.palm.app.settings`).
 - Ajustes do tvOS: apps da prateleira, formato do relógio, indicador de FPS/CPU, "Sobre" (versão,
-  créditos, atribuição TMDB, licenças). Cidade, token e nomes HDMI vêm do `.env` (ADR 0005).
+  créditos, atribuição TMDB, licenças). Cidade e token vêm do `.env` (ADR 0005).
 - Todos os apps: folha interna com todos os apps instalados (não é app da LG).
 
 ## Screensaver e dim (depois)
