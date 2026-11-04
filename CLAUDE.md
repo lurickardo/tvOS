@@ -5,7 +5,7 @@
 Mostra apps, destaques de filmes/séries, clima, entradas e o **estado do sistema** (CPU, memória,
 FPS…). Produto: `tvos-produto`; plataforma: `tvos-context`.
 
-**Estado:** esqueleto funcionando (build → `.ipk`, painel CPU/memória/FPS). MVP a construir.
+**Estado:** home do MVP implementada e testada no PC em telas de 1024×768 a 4K; falta validar na TV.
 
 Decisões tomadas (não reabra sem ADR novo):
 - **ADR 0006**: a TV de destino é a **43LM631C0SB (webOS 4.x)** — medida por `ares-device -i`, não a
@@ -27,7 +27,7 @@ Repo **único** (ADR 0001):
 | Pasta | O quê |
 |---|---|
 | `app/` | `index.html` (casca + CSP), `style.css`, `appinfo.json`, `assets/` |
-| `src/` | `main.ts`, `config.ts` (valores do `.env`), `platform/` (ponte com a TV), `features/<x>/` |
+| `src/` | `main.ts`, `config.ts` (valores do `.env`), `platform/` (ponte com a TV, palco), `lib/` (rede/cache), `ui/` (foco, camadas, toast), `features/<x>/` |
 | `service/` | JS service no barramento Luna (métricas de `/proc`) |
 | `scripts/` | `build.mjs` (esbuild → `dist/`), `tv-setup.mjs`, `check-skills.mjs`, `check-encoding.mjs` |
 | `context/` | `rules/`, `adr/`, `specs/` |
@@ -47,9 +47,9 @@ plano) só para feature grande ou decisão de arquitetura.
 
 ## Em aberto
 
-- **MVP**: implementar `context/specs/01-home/spec.md` (casca, foco, prateleira, destaques, gaveta
-  com entradas/atalhos/clima/sistema) via `tvos-plan-prompt`; ajustes e screensaver viram specs
-  depois (`tvos-refine`).
+- **Home** (`context/specs/01-home/spec.md`): feita; medir na TV (R1 abrir < 1 s, R11 ≥ 55 fps) e
+  decidir atalhos Sistema/Ajustes do tvOS e entrada sem sinal esmaecida. Ajustes e screensaver viram
+  specs depois (`tvos-refine`).
 - **Confirmar na TV** (primeira instalação): o JS service lê `/proc` sem root? Versão exata do
   webOS, keyCodes de mídia, memória total. Registrar em `tvos-webos-api`/`tvos-context`.
 

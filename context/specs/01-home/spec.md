@@ -1,6 +1,6 @@
 # Home do tvOS (casca, destaques, prateleira e gaveta)
 
-Status: rascunho   ·   Data: 2026-11-04
+Status: implementada (testada no PC; falta medir na TV)   ·   Data: 2026-11-04
 
 ## Problema
 A home do webOS da LG 43LM631C0SB é lenta (travadas ao abrir, banners e anúncios carregando) e
@@ -40,6 +40,9 @@ Foco inicial na prateleira. ↑ da prateleira → destaques → abas/botões. �
 
 ## Fora de escopo
 Screensaver, dim, editar a prateleira na TV, deep link para o título no serviço, criptomoedas.
+Adiados: atalhos "Sistema" e "Ajustes do tvOS" (sem função ainda) e entrada HDMI sem sinal esmaecida
+(formato do `eim/getAllInputStatus` não confirmado). Na home, CPU/memória atualizam a cada 10 s (R2
+exige a linha); na gaveta, a cada 2 s; com catálogo/lista em tela, nada (R7).
 
 ## Riscos e perguntas abertas
 - `listLaunchPoints` pode ser negado a apps de Developer Mode → fallback SSAP (`tvos-webos-api`).

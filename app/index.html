@@ -2,23 +2,33 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://image.tmdb.org data:; connect-src 'self' https://api.themoviedb.org https://api.open-meteo.com https://geocoding-api.open-meteo.com">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' file:; style-src 'self' file:; img-src 'self' file: https://image.tmdb.org data:; connect-src 'self' https://api.themoviedb.org https://api.open-meteo.com https://geocoding-api.open-meteo.com ws://127.0.0.1:3000">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>tvOS</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main id="stage">
-    <header class="top">
-      <h1 class="title">tvOS</h1>
-      <time id="clock" class="clock"></time>
-    </header>
-    <section class="metrics" aria-label="Sistema">
-      <div class="metric"><span class="metric-label">CPU</span><span id="cpu" class="metric-value">…</span></div>
-      <div class="metric"><span class="metric-label">Memória</span><span id="mem" class="metric-value">…</span></div>
-      <div class="metric"><span class="metric-label">FPS</span><span id="fps" class="metric-value">…</span></div>
-    </section>
-    <p class="hint">Voltar fecha o tvOS</p>
+    <div id="home">
+      <div id="top">
+        <h1 id="title">Para você</h1>
+        <nav id="tabs" aria-label="Categorias">
+          <button class="tab f on" data-a="tab" data-v="all">Explorar</button><button class="tab f" data-a="tab" data-v="movie">Filmes</button><button class="tab f" data-a="tab" data-v="tv">Séries</button>
+        </nav>
+        <div id="rounds">
+          <button class="round f" data-a="app" data-id="com.webos.app.livetv" data-title="TV ao vivo" aria-label="TV ao vivo"></button>
+          <button class="round f" data-a="drawer" aria-label="Entradas"></button>
+          <button class="round f" data-a="app" data-id="com.palm.app.settings" data-title="Ajustes da TV" aria-label="Ajustes"></button>
+        </div>
+        <div id="stats"><span>CPU <b id="s-cpu">—</b></span><span>Memória <b id="s-mem">—</b></span><span><b id="s-fps">—</b> fps</span><span id="s-wx">Clima …</span></div>
+        <div id="note"></div>
+      </div>
+      <div id="cards"></div>
+      <div id="platter"><div id="shelf"></div></div>
+    </div>
+    <div id="drawer"></div>
+    <section id="overlay" aria-live="polite"></section>
+    <div id="toast" role="status"></div>
   </main>
   <script src="main.js"></script>
 </body>

@@ -6,6 +6,7 @@ import { build, context } from 'esbuild';
 import { cpSync, existsSync, rmSync } from 'node:fs';
 
 const serve = process.argv.includes('--serve');
+const debug = process.argv.includes('--debug');
 
 if (existsSync('.env')) process.loadEnvFile('.env');
 const env = (name, fallback = '') => (process.env[name] || '').trim() || fallback;
@@ -13,6 +14,8 @@ const env = (name, fallback = '') => (process.env[name] || '').trim() || fallbac
 const config = {
   tmdbToken: env('TMDB_TOKEN'),
   city: env('CITY', 'São Vicente, São Paulo'),
+  hdmi1Name: env('HDMI1_NAME', 'HDMI 1'),
+  hdmi2Name: env('HDMI2_NAME', 'HDMI 2'),
 };
 
 rmSync('dist/app', { recursive: true, force: true });
@@ -24,7 +27,7 @@ const options = {
   entryPoints: ['src/main.ts'],
   outfile: 'dist/app/main.js',
   bundle: true,
-  minify: !serve,
+  minify: !serve && !debug,
   sourcemap: serve, // ponytail: source map só em dev, nunca no .ipk
   format: 'iife',
   target: 'chrome53',

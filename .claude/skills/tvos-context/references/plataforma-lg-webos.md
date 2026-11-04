@@ -19,7 +19,7 @@ o resto é **verificar**. A 43UP7500PSF (webOS 6) deixou de ser alvo.
 |---|---|---|
 | Modelo | LG **43LM631C0SB** (medido) | placa `M3R_ATSC_KR`, OTA `HE_DTV_W19R_AFAAATAA` (linha W19R = 2019) |
 | Sistema | webOS TV **4.x** (medido: SDK 4.10.0, firmware 05.40.97) | Chromium 53 no app, Node 0.12.2 no service |
-| Tela | 43", provável **Full HD** 1920×1080 — **verificar** | modelos Full HD desenham apps em **1280×720** (LG); `appinfo.json` usa `1280x720` e o palco 1920×1080 é escalado por `window.innerWidth` |
+| Tela | 43", provável **Full HD** 1920×1080 — **verificar** | modelos Full HD desenham apps em **1280×720** (LG); `appinfo.json` usa `1280x720` e o palco 1920×1080 é escalado pelo menor de `innerWidth/1920` e `innerHeight/1080`, centralizado (`src/platform/stage.ts`) |
 | CPU | **4 núcleos** (medido) | ~12% em repouso (medido, `ares-device -r`) |
 | Memória | **658 MB** de RAM total, ~160 MB disponíveis em repouso, **~300 MB de swap em uso** (medido, 2026-11-04) | a TV já troca memória com o armazenamento: **RAM é o gargalo**; orçamento do tvOS em `tvos-performance` |
 | Conexões | HDMI, USB, Wi-Fi, Bluetooth — **verificar quantas portas HDMI** | entradas `com.webos.app.hdmi1`/`hdmi2` (`tvos-webos-api`) |

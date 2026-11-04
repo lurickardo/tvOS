@@ -28,7 +28,7 @@ description: >-
 4. **Vidro sem blur**: superfícies semi-opacas com borda interna de 1 px clara — o "vidro" do
    free-my-tv sem `backdrop-filter` (`tvos-performance`).
 5. **Palco fixo 1920×1080** em px (a TV Full HD desenha o app em 1280×720 e `src/main.ts` escala o
-   palco por `innerWidth / 1920` — o design não muda, ADR 0006), com safe area (≈ 76–96 px nas laterais, 52–54 px em cima/baixo).
+   palco por `min(innerWidth/1920, innerHeight/1080)`, centralizado, em `src/platform/stage.ts` — o design não muda, ADR 0006), com safe area (≈ 76–96 px nas laterais, 52–54 px em cima/baixo).
 6. **Um movimento por ação**, curto (0,2–0,38 s), só `transform`/`opacity`.
 
 ## Layout da home (palco 1920×1080)

@@ -2,6 +2,8 @@
 export interface TvosConfig {
   tmdbToken: string;
   city: string;
+  hdmi1Name: string;
+  hdmi2Name: string;
 }
 
 declare const __TVOS_CONFIG__: TvosConfig;

@@ -25,7 +25,7 @@ services (webOS 6: Chromium 79 e Node 8.12). Modelos Full HD desenham a interfac
 2. **JS service em ES5** (Node 0.12.2): sem `const`/`let`, arrow, template string. Escrito à mão,
    sem transpile.
 3. **Resolução:** `appinfo.json` com `1280x720`; o palco de 1920×1080 do design é escalado por
-   `window.innerWidth / 1920` (`src/main.ts`), então o layout aprovado não muda.
+   `min(innerWidth/1920, innerHeight/1080)` centralizado (`src/platform/stage.ts`), então o layout aprovado não muda.
 4. **CSS sem Grid, sem flex `gap`, sem `sticky`** (Chrome 53); layout por flexbox e posição
    absoluta no palco fixo.
 5. **Rede sem `AbortController`:** `XMLHttpRequest` com `timeout` e `abort()`.
