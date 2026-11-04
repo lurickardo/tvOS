@@ -40,7 +40,12 @@ description: >-
    animar `box-shadow`. free-my-tv mediu em LG de 1,3–1,5 GB: 23–28 fps → 60 sem sombras/animações
    pesadas; 45–50 → 55 só tirando sombras.
 4. **Modo lite por padrão** nesta TV de 2019 (ADR 0006; `navigator.deviceMemory` não existe no
-   Chromium 53): sem sombras animadas e sem transições não essenciais (`<html class="lite">`).
+   Chromium 53): sem sombras animadas e sem transições não essenciais (`body.lite`).
+   **A TV rasteriza em CPU** (WebAppMgr com `--disable-gpu-rasterization`, fixo no firmware): custo
+   ∝ área repintada. No lite, elemento grande nunca desliza (`#track` pula numa camada
+   `will-change`, gaveta troca sem animar) e foco sem `z-index` (cria stacking context e repinta a
+   camada). Medido por tecla (trace DevTools): prateleira 222 → 17 ms de raster, catálogo 169 → 40,
+   gaveta 189 → 124 por troca.
 5. **DOM pequeno**: só o que está na tela + 1 de folga; lista longa virtualizada; nada escondido
    com `display:none` pesando na memória (remova).
 6. **Leitura e escrita de layout separadas**; mudanças agrupadas num `requestAnimationFrame`.
@@ -71,10 +76,15 @@ segundo plano sozinho ocupa ~114 MB; meça com só o tvOS em frente.
 | tvOS em frente, antes do debloat (25 min) | 177 MB | 275 MB |
 | tvOS home + debloat (ADR 0007), só tvOS em frente (~9 min) | 256 MB | 227 MB |
 
-Maiores ganhos: `fullhome` fora (66 MB + swap), preload sem streaming, 8 daemons parados. A barra
+Maiores ganhos: `fullhome` fora (66 MB + swap), preload zero (ADR 0009: Netflix ~126 MB e CRIU
+de TV ao vivo/HDMI pós-ligar fora), 8 daemons parados. A barra
 `com.webos.app.home` (~17 MB + swap; ignora `closeByAppId`) é morta no boot e não volta; o webOS da
-LG abre como app e sai da memória ao voltar ao tvOS (ADR 0008). Residentes por escolha: TV ao vivo e
-HDMI 1–3 pré-carregados.
+LG abre como app e sai da memória ao voltar ao tvOS (ADR 0008).
+
+Não é gargalo (medido): CPU ~35 % navegando (4× A53, sem `cpufreq`); load ~5 vem de 4 kthreads
+MStar em estado D; o swap (`eswap`) já é zram (400 MB lz4) + 100 MB de eMMC nunca usado; fila de
+`keydown` ~1 ms, handler ~10 ms, autorepeat 48 ms. Trace por tecla: DevTools na porta 9998
+(`Tracing.start` + `Input.dispatchKeyEvent`), somar `RasterTask`/`GPUTask`.
 
 ## Checklist de regressão (tela nova ou mudança visual)
 

@@ -78,6 +78,8 @@ Decisores: <nomes>
   reversível por `root/tvos-root.js` (settings, preload, hosts, daemons), updates bloqueados.
 - `0008-service-elevado-e-acoes-de-app.md` — service elevado (desinstalar, fechar webOS da LG),
   barra antiga da LG fora da RAM, LG Input Hook recusado.
+- `0009-preload-zero.md` — nenhum preload (todo `isEnabled`/`isPinUp` false, `maxPreloadApp: 0`);
+  substitui o item preload do 0007.
 - `0005-configuracao-pessoal-pelo-env.md` — `.env` (TV_IP, TMDB_TOKEN, CITY) injetado no
   build local; passphrase fora; `.ipk`/`dist/` com `.env` nunca publicados.
 

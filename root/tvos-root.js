@@ -18,10 +18,10 @@ var HOOK = '/var/lib/webosbrew/init.d/50-tvos';
 var BLOCK_UPDATES = '/var/luna/preferences/webosbrew_block_updates';
 var APP = 'com.lurickardo.tvos';
 var LG_HOME = 'com.webos.app.fullhome';
+// Preload zero (ADR 0009): nenhum app fica pré-carregado na RAM nem volta por CRIU a cada ligar. Só
+// isEnabled não basta: app com isPinUp (Netflix) é relançado mesmo assim, e maxPreloadApp limita o resto.
 var PRELOAD_KEY = 'com.webos.service.preloadmanager.supportAppList';
-// Saem da RAM: home da LG (o tvOS é a home) e todo streaming (decisão do usuário); hdmi4 nem existe.
-var PRELOAD_OFF = ['com.webos.app.fullhome', 'com.webos.app.home', 'netflix', 'youtube.leanback.v4', 'amazon', 'pooq',
-  'com.webos.app.browser', 'com.webos.app.tips', 'com.webos.app.livemenu', 'com.webos.app.hdmi4'];
+var MAX_PRELOAD_KEY = 'com.webos.service.preloadmanager.maxPreloadApp';
 // Parados a cada boot: telemetria/ACR, voz e espelhamento/DLNA (não usados). Núcleo do sistema, Ginga,
 // ThinQ/IoT e teclado virtual (busca) nunca entram aqui.
 var JOBS = ['rdxd', 'uploadd', 'contentminer', 'nudge', 'voiceconductor', 'voiceinput', 'miracast', 'dmr'];
@@ -64,17 +64,17 @@ function setSettings(category, settings, label) {
   };
 }
 
-function getPreload(cb) {
-  luna('luna://com.webos.service.config/getConfigs', { configNames: [PRELOAD_KEY] }, function (r) {
-    cb(r && r.configs ? r.configs[PRELOAD_KEY] : null);
+function getConfig(key, cb) {
+  luna('luna://com.webos.service.config/getConfigs', { configNames: [key] }, function (r) {
+    cb(r && r.configs ? r.configs[key] : undefined);
   });
 }
 
-function setPreload(list, label) {
+function setConfig(key, value, label) {
   return function (next) {
-    if (!list) { log(label + ' sem lista'); next(); return; }
+    if (value === undefined || value === null) { log(label + ' sem valor'); next(); return; }
     var configs = {};
-    configs[PRELOAD_KEY] = list;
+    configs[key] = value;
     luna('luna://com.webos.service.config/setConfigs', { configs: configs }, function (r) { log(label + (r ? ' ok' : ' FALHOU')); next(); });
   };
 }
@@ -85,13 +85,19 @@ function readOrig() {
 
 /** Guarda o estado de fábrica uma única vez: rodar apply de novo nunca sobrescreve o original. */
 function saveOrig(done) {
-  if (readOrig()) { done(); return; }
+  var saved = readOrig();
+  if (saved && 'maxPreload' in saved) { done(); return; }
+  if (saved) { // orig.json de antes do ADR 0009: só acrescenta o maxPreloadApp de fábrica
+    getConfig(MAX_PRELOAD_KEY, function (n) { saved.maxPreload = n === undefined ? null : n; fs.writeFileSync(ORIG, JSON.stringify(saved, null, 1)); done(); });
+    return;
+  }
   var orig = { blockUpdatesCreated: !fs.existsSync(BLOCK_UPDATES) };
   series([
     function (next) { getSettings('general', ['defaultApps', 'homeAutoLaunch'], function (s) { orig.general = s; next(); }); },
     function (next) { getSettings('option', OPTION_OFF, function (s) { orig.option = s; next(); }); },
     function (next) { getSettings('', ['eulaStatus'], function (s) { orig.eula = s; next(); }); },
-    function (next) { getPreload(function (list) { orig.preload = list; next(); }); },
+    function (next) { getConfig(PRELOAD_KEY, function (list) { orig.preload = list; next(); }); },
+    function (next) { getConfig(MAX_PRELOAD_KEY, function (n) { orig.maxPreload = n === undefined ? null : n; next(); }); },
   ], function () {
     // A home original nunca é o tvOS (apply já rodou antes sem orig.json): volta a fullhome no restore.
     if (orig.general && orig.general.defaultApps) orig.general.defaultApps.home = LG_HOME;
@@ -111,14 +117,16 @@ function apply() {
     OPTION_OFF.forEach(function (k) { option[k] = 'off'; });
     var preload = (orig.preload || []).map(function (app) {
       var copy = JSON.parse(JSON.stringify(app));
-      if (PRELOAD_OFF.indexOf(copy.id) >= 0) copy.isEnabled = false;
+      copy.isEnabled = false;
+      if (copy.isPinUp) copy.isPinUp = false;
       return copy;
     });
     series([
       setSettings('general', { defaultApps: { home: APP }, homeAutoLaunch: 'on' }, 'tvOS como home'),
       setSettings('option', option, 'promoções e LG Channels off'),
       Object.keys(eula).length ? setSettings('', { eulaStatus: eula }, 'consentimentos de ACR/anúncio/voz off') : function (next) { next(); },
-      setPreload(orig.preload ? preload : null, 'preload enxuto'),
+      setConfig(PRELOAD_KEY, orig.preload ? preload : null, 'preload zero'),
+      setConfig(MAX_PRELOAD_KEY, 0, 'maxPreloadApp 0'),
       function (next) {
         fs.writeFileSync(BLOCK_UPDATES, '');
         fs.writeFileSync(HOOK, '#!/bin/sh\n# tvOS (ADR 0007): em segundo plano para nunca segurar o boot.\n'
@@ -181,9 +189,9 @@ function status() {
   series([
     function (next) { getSettings('general', ['defaultApps', 'homeAutoLaunch'], function (s) { log('general: ' + JSON.stringify(s)); next(); }); },
     function (next) {
-      getPreload(function (list) {
-        log('preload ligado: ' + (list || []).filter(function (a) { return a.isEnabled; }).map(function (a) { return a.id; }).join(' '));
-        next();
+      getConfig(PRELOAD_KEY, function (list) {
+        log('preload ligado: ' + (list || []).filter(function (a) { return a.isEnabled || a.isPinUp; }).map(function (a) { return a.id; }).join(' '));
+        getConfig(MAX_PRELOAD_KEY, function (n) { log('maxPreloadApp: ' + n); next(); });
       });
     },
     function (next) {
@@ -205,7 +213,8 @@ function restore() {
     setSettings('general', orig.general || { defaultApps: { home: LG_HOME }, homeAutoLaunch: 'on' }, 'home da LG de volta'),
     orig.option ? setSettings('option', orig.option, 'opções originais') : function (next) { next(); },
     eula ? setSettings('', { eulaStatus: eula }, 'consentimentos originais') : function (next) { next(); },
-    setPreload(orig.preload, 'preload original'),
+    setConfig(PRELOAD_KEY, orig.preload, 'preload original'),
+    setConfig(MAX_PRELOAD_KEY, orig.maxPreload, 'maxPreloadApp original'),
     function (next) {
       try { fs.unlinkSync(HOOK); } catch (e) { /* já removido */ }
       if (orig.blockUpdatesCreated) { try { fs.unlinkSync(BLOCK_UPDATES); } catch (e) { /* já removido */ } }

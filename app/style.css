@@ -238,8 +238,13 @@ svg { display: block; }
 /* modo lite (padrão na TV): sem animação de foco e, acima de tudo, sem repintar sombra borrada a cada
    tecla — só contorno sólido (blur 0 = barato na GPU da TV). É o que segura o FPS (tvos-performance R3). */
 .lite .f { transition: none; }
-.lite .f:focus, .lite #searchbar:focus { transform: none; }
+.lite .f:focus, .lite #searchbar:focus { transform: none; z-index: auto; } /* z-index no foco repinta a camada inteira */
+/* A TV rasteriza em CPU (WebAppMgr com --disable-gpu-rasterization): deslizar elemento grande sem camada
+   repinta a cada quadro (medido: 222 ms de raster por tecla na prateleira, 189 ms por troca da gaveta).
+   No lite o carrossel pula numa camada fixa e a gaveta troca sem animar (~15 ms por tecla). */
+.lite #track { transition: none; will-change: transform; }
+.lite #home, .lite #drawer { transition: none; }
 .lite .tab:focus, .lite .round:focus, .lite #searchbar:focus, .lite .key:focus, .lite .chip:focus,
 .lite .card:focus, .lite .tile:focus, .lite .poster:focus { box-shadow: 0 0 0 4px #fff; }
 /* o tile "pego" (reorganização) mantém o destaque por transform, que é barato; só a sombra vira contorno */
-.lite .tile.grab, .lite .tile.grab:focus { transform: translateY(-12px) scale(1.22); box-shadow: 0 0 0 4px #fff; }
+.lite .tile.grab, .lite .tile.grab:focus { transform: translateY(-12px) scale(1.22); box-shadow: 0 0 0 4px #fff; z-index: 4; }

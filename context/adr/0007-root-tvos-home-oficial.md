@@ -1,6 +1,6 @@
 # 0007 — TV rootada: tvOS é a home oficial e o sistema da LG é enxugado
 
-Status: aceito (2026-11-04)
+Status: aceito (2026-11-04); item preload (ficam TV ao vivo e HDMI 1–3) substituído por 0009
 Decisores: Lurickardo
 Substitui: ADR 0002 (Developer Mode, sem root, atalho numérico)
 

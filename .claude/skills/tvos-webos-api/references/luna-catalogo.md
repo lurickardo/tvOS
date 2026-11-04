@@ -59,8 +59,9 @@ dispositivo por porta é escolha da pessoa (`HDMI1_NAME`/`HDMI2_NAME` no `.env`)
 
 Mudar ajuste da TV pelo app: **não**. Settings de home/debloat (`general.defaultApps.home`,
 `homeAutoLaunch`, `option.*`, `eulaStatus` sem `category`) e preload
-(`com.webos.service.config` `com.webos.service.preloadmanager.supportAppList`) só pelo
-`root/tvos-root.js` (ADR 0007), com original guardado e `restore`.
+(`com.webos.service.config` `com.webos.service.preloadmanager.supportAppList` e `.maxPreloadApp`;
+entrada com `isPinUp` pré-carrega mesmo com `isEnabled: false`) só pelo `root/tvos-root.js`
+(ADR 0007, 0009), com original guardado e `restore`.
 
 ## Screensaver
 
