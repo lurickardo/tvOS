@@ -33,18 +33,20 @@ LG, e mostrar o estado do sistema (`tvos-produto`).
 4. **Performance acima de tudo** (`tvos-performance`): bundle ≤ 60 KB gzip, 60 fps, abrir < 1 s.
 5. **Controle remoto primeiro**: tudo com setas + OK + Voltar; ponteiro e teclado são extras.
 6. **Dark only** (`tvos-design-system`).
-7. **Dados externos** só TMDB (imagens leves) e Open-Meteo, sem telemetria (ADR 0004).
+7. **Dados externos** só TMDB (imagens leves) e Open-Meteo, sem telemetria (ADR 0004); chaves e
+   cidade pelo `.env` no build local (ADR 0005).
 8. **Repo público**: nada pessoal (IP/MAC da TV, chave do Developer Mode, chave TMDB) versionado.
 
 ## Mapa do repo
 
 ```
 app/            index.html (casca + CSP), style.css, appinfo.json, assets/ (ícones)
-src/            main.ts (boot), platform/ (luna.ts: ponte com o sistema), features/<x>/ (system, …)
+src/            main.ts (boot), config.ts (.env), platform/ (luna.ts), features/<x>/ (system, …)
 service/        JS service no barramento Luna (index.js, package.json, services.json)
-scripts/        build.mjs (esbuild → dist/), check-skills.mjs, check-encoding.mjs
+scripts/        build.mjs (esbuild + .env → dist/), tv-setup.mjs, check-skills.mjs, check-encoding.mjs
 dist/           gerado: app/, service/, *.ipk (fora do git)
-context/        rules/, adr/, specs/
+context/        rules/, adr/, specs/ (01-home: spec + mockups)
+.env            config pessoal (fora do git; modelo .env.example; a IA não lê)
 ```
 
 ## Comandos
@@ -54,6 +56,7 @@ npm run dev          # http://localhost:8000 no navegador do PC (CPU/memória "�
 npm run build        # dist/app + dist/service
 npm run typecheck    # tsc strict, lib ES2019
 npm run check        # typecheck + skills + encoding
+npm run tv:setup     # cadastra a TV (TV_IP do .env) e busca a chave
 npm run tv:package   # build + .ipk em dist/
 npm run tv:install   # empacota, instala e abre na TV (dispositivo "tv" — tvos-deploy)
 npm run tv:inspect   # DevTools do app na TV

@@ -14,10 +14,13 @@ Cada item é ponto de partida para uma spec (`tvos-refine`); a spec decide o det
 
 ## Casca e navegação
 
-- Topo: título da seção + abas (Filmes, Séries) à esquerda; botões só-ícone à direita (Entradas,
-  Sistema, Ajustes) com o nome aparecendo no foco.
+- Layout aprovado: imagens do free-my-tv em modo escuro (`context/specs/01-home/`).
+- Topo: título "Para você" + abas (Explorar, Filmes, Séries) à esquerda; botões só-ícone à direita
+  (TV ao vivo, Entradas, Ajustes) com o nome no foco; abaixo deles, linha discreta com CPU,
+  memória, FPS e clima (no lugar das criptomoedas da referência).
 - Meio: destaques. Base: prateleira de apps.
-- **↓ na prateleira abre a gaveta** (entradas, clima, sistema, atalhos); Voltar fecha.
+- **↓ na prateleira abre a gaveta**: Entradas, Atalhos, painel de Clima e painel de Sistema; Voltar
+  ou ↑ fecha.
 - Voltar na tela inicial devolve ao webOS (`platformBack`); em qualquer outra camada, fecha a camada.
 - Foco começa na prateleira (o que a pessoa mais usa) e volta para onde estava ao fechar algo.
 
@@ -31,10 +34,11 @@ Cada item é ponto de partida para uma spec (`tvos-refine`); a spec decide o det
 
 ## Destaques (TMDB)
 
-- Abas Filmes e Séries com "em alta da semana" (`/trending/{movie|tv}/week`).
+- Abas Explorar (filmes + séries), Filmes e Séries com "em alta da semana"
+  (`/trending/{all|movie|tv}/week`).
 - Card em foco largo com backdrop `w780`; os outros como pôster `w342`.
 - Embaixo do card em foco: título, tipo, gênero, ano/temporadas.
-- Sem chave TMDB → a seção mostra como configurar (Ajustes) em vez de cards vazios.
+- Sem `TMDB_TOKEN` no `.env` → a seção mostra como configurar em vez de cards vazios.
 - Sem rede → último cache com "desatualizado".
 
 ## Painel do sistema
@@ -57,20 +61,22 @@ Pedido explícito do usuário: o tvOS mostra como a TV está rodando.
 
 ## Clima
 
-- Agora (temperatura, condição), próximas 6 horas, nascer/pôr do sol, pela cidade configurada
-  (Open-Meteo). Sem cidade configurada: pede a cidade nos ajustes.
+- Agora (temperatura, condição), próximas 5–6 horas, nascer/pôr do sol, pela `CITY` do `.env`
+  (Open-Meteo). Sem cidade: o painel diz como configurar.
 
 ## Entradas
 
-- HDMI 1 e 2 (a TV tem 2), com estado conectado quando o sistema informar
-  (`service.eim/getAllInputStatus`).
-- Nome/ícone por porta escolhido na TV (PS5, Xbox, PC…); OK abre `com.webos.app.hdmiN`.
+- TV ao vivo (`com.webos.app.livetv`), HDMI 1 e 2 (a TV tem 2), com estado conectado quando o
+  sistema informar (`service.eim/getAllInputStatus`).
+- Nome por porta vem de `HDMI1_NAME`/`HDMI2_NAME` no `.env` (ex.: PS5); OK abre
+  `com.webos.app.hdmiN`.
 
 ## Ajustes
 
 - Atalho para os ajustes da TV (`com.palm.app.settings`).
-- Ajustes do tvOS: cidade, chave TMDB (digitada no teclado da TV), apps da prateleira, formato
-  do relógio, indicador de FPS/CPU, "Sobre" (versão, créditos, atribuição TMDB, licenças).
+- Ajustes do tvOS: apps da prateleira, formato do relógio, indicador de FPS/CPU, "Sobre" (versão,
+  créditos, atribuição TMDB, licenças). Cidade, token e nomes HDMI vêm do `.env` (ADR 0005).
+- Todos os apps: folha interna com todos os apps instalados (não é app da LG).
 
 ## Screensaver e dim (depois)
 

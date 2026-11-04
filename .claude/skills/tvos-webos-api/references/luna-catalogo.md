@@ -34,6 +34,7 @@ Abrir app: ignore OK repetido enquanto a abertura está pendente; sem resposta e
 |---|---|---|---|
 | `luna://com.webos.service.eim/getAllInputStatus` | `{}` | lista de entradas e se há sinal/dispositivo | provado (ref) |
 | launch `com.webos.app.hdmi1` / `hdmi2` | — | abre a entrada | provado (ref) |
+| launch `com.webos.app.livetv` | — | TV ao vivo (antena/cabo) | provado (ref, free-my-tv) |
 
 A 43UP7500PSF tem 2 HDMI. Nome do dispositivo por porta é escolha da pessoa (não há detecção
 confiável de console).

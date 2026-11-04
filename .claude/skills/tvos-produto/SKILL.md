@@ -33,6 +33,14 @@ e mostra só o que a casa usa — e mais informação útil sobre a TV do que a 
 6. **Reversível**: nada muda configuração da TV sem a pessoa pedir; desinstalar devolve o original.
 7. **pt-BR** em toda a interface.
 
+## O que o tvOS resolve (e o que não)
+
+Resolve a lentidão **da home**: troca o portal da LG por uma tela leve, abre apps/entradas por
+comando direto (~100 ms) e não carrega anúncio. **Não** muda: o botão Home do controle (continua na
+home da LG — sem root; usa-se o atalho numérico), a velocidade dentro dos apps de streaming, o
+liga/desliga e os menus da LG. Para a TV inteira, o README lista ajustes da LG que ajudam (Live
+Plus, promoções, recomendações). Nunca prometa mais que isso; meça antes/depois (README).
+
 ## Módulos
 
 | Módulo | O que é | Status |

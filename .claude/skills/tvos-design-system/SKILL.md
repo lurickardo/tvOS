@@ -32,20 +32,30 @@ description: >-
 
 ## Layout da home (palco 1920×1080)
 
+Cópia do layout do free-my-tv em modo escuro, com o sistema no lugar das criptomoedas. Referência
+visual aprovada: `context/specs/01-home/mockup-home.jpg` e `mockup-drawer.jpg` (fonte:
+`mockup.html`, abrir no Chrome em 1920×1080; `#drawer` mostra a gaveta).
+
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│ Título (76px)                                ( )( )( )  ← Round│  top 52
-│ [Filmes] [Séries]  ← Tab                       info discreta  │  top 158
-│                                                              │
-│ ┌───────────── Card em foco (largo) ──────┐ ┌pôster┐ ┌pôster┐ │  top 262, h 442
-│ └─────────────────────────────────────────┘ └──────┘ └──────┘ │
-│ Título · tipo · gênero · ano                                  │
-│ ╭──────────────── Platter (prateleira) ────────────────────╮ │  top 814, h 206
-│ │ [app] [app] [app] [app] [app] [app] [app]  ← Tile 126px   │ │
-│ ╰──────────────────────────────────────────────────────────╯ │
+│ Para você (76px)                  (TV ao vivo)(Entradas)(Ajustes) ← Round  │ top 52 / 69
+│ [Explorar] [Filmes] [Séries] ← Tab      CPU 12%  Memória 48%  60 fps  24° … │ top 158 / 178
+│ ┌──────── Card em foco (1040 de largura) ───┐ ┌pôster 320┐ ┌pôster 320┐     │ top 262, h 442
+│ └───────────────────────────────────────────┘ └──────────┘ └──────────┘     │
+│ Título · gênero · duração · serviço             Título       Título        │ top 726
+│ ╭──────────────── Platter (prateleira, 7 Tiles de 210) ─────────────────╮  │ top 814, h 206
+│ ╰───────────────────────────────────────────────────────────────────────╯  │
 └──────────────────────────────────────────────────────────────┘
-↓ na prateleira: a home sobe (translateY) e a Drawer aparece (entradas, clima, sistema, atalhos).
 ```
+
+**Gaveta** (↓ na prateleira): a home sobe 560 px, topo e destaques somem (`opacity 0`), a
+prateleira fica no alto e aparecem:
+- **Entradas** (esquerda): TV ao vivo, HDMI 1, HDMI 2 (nome do `.env`; sem sinal = esmaecida).
+- **Atalhos** (direita): Todos os apps, Sistema, Ajustes do tvOS, Ajustes da TV.
+- **Clima** (painel esquerdo, 1024 px): ícone + temperatura grande, condição, máx./mín., próximas
+  horas e nascer/pôr do sol.
+- **Sistema** (painel direito, no lugar de "Crypto"): CPU, Memória (usada/total), Interface (FPS),
+  Rede, com pílula de estado (verde/âmbar + texto); cabeçalho com webOS e modelo.
 
 ## Roteador
 
