@@ -1,0 +1,32 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  context:
+    name: Skills & encoding
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
+        with:
+          node-version: 22
+
+      - name: Check skills
+        run: node scripts/check-skills.mjs
+
+      - name: Check encoding
+        run: node scripts/check-encoding.mjs
+
+      # Quando o stack existir: adicione aqui build/typecheck/test (skill tvos-gitflow).

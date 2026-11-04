@@ -1,0 +1,34 @@
+# Dependências
+node_modules/
+
+# Variáveis de ambiente (qualquer .env*, exceto o exemplo)
+.env*
+!.env.example
+
+# Logs
+npm-debug.log*
+*.log
+
+# Builds e pacotes da TV
+dist/
+build/
+*.ipk
+
+# Sistema operacional e editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.cursor/
+
+# Config local do Claude Code (permissões pessoais — não versionar)
+.claude/settings.local.json
+.claude/settings.json
+
+# Relatórios de auditoria (achados exploráveis) não vão para o git
+.security/
+
+# Chaves de dispositivo (Developer Mode / SSH da TV)
+*.pem
+*.key
+id_rsa*

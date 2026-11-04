@@ -1,0 +1,17 @@
+* text=auto eol=lf working-tree-encoding=UTF-8
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.mp3 binary
+*.ogg binary
+*.svg text eol=lf
+*.mp4 binary
+*.webm binary
+*.ipk binary
